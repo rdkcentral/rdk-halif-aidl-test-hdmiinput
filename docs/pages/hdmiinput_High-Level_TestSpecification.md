@@ -29,25 +29,25 @@ It supports multiple HDMI ports, each with its own capabilities, state machine, 
 
 ## L2 Test Specification
 
-|Test|Description|HAL APIs|
+| Test | Description | HAL APIs |
 |----|-----------|--------|
-|Test the capabilities for HDMI input port|Verifies the capabilities for each HDMI input port|Capabilities getCapabilities()|
+|Test the capabilities for HDMI input port|Verifies the capabilities for each HDMI input port| getCapabilities()|
 |Validate property|Validate the property value for each input port|getProperty()|
 |Validate multi property|Verify the multiple property value from the PropertyKVPair|getPropertyMulti()|
-|Verifies the state of HDMI input state|Verifies the current HDMI input state when IHDMIInputEventListener.onStateChanged() changes  |getState()|
-|verifies the EDID |Verifies the current EDID for the HDMI input port.  |getEDID()|
-|Verifies the Default EDID |Verifies the default EDID for HDMI input port based on given HDMI version  |getDefaultEDID()|
-|Verifies the open for HDMI controller |Verifies open controller for each HDMI input port on OPENING state and swtiched to READY state   | open(),IHDMIInputControllerListener(),IHDMIInputControllerListener.onConnectionStateChanged(),IHDMIInputController.stop(), close() |
-|Verify states using listener |Verifies the HDMI input events for third party.  |open(),registerEventListener(), unregisterEventListener(), close()|
+|Verifies the state of HDMI input state|Verifies the current HDMI input state when IHDMIInputEventListener.onStateChanged() changes |getState()|
+|Verifies the EDID |Verifies the current EDID for the HDMI input port|getEDID()|
+|Verifies the Default EDID |Verifies the default EDID for HDMI input port based on given HDMI version|getDefaultEDID()|
+|Verifies the open for HDMI controller |Verifies open controller for each HDMI input port on OPENING state and switched to READY state| open(),IHDMIInputControllerListener(),IHDMIInputControllerListener.onConnectionStateChanged(),IHDMIInputController.stop(), close()|
+|Verify states using listener |Verifies the HDMI input events for third party|open(),registerEventListener(), unregisterEventListener(), close()|
 |Verify Connection state of each HDMI input |Verifies current connection state for a device attached to the HDMI input port.  |open(),IHDMIInputControllerListener.onConnectionStateChanged(), close()|
-|Verifies Platform Capabilities |Gets the platform capabilities for HDMI inputs.  |getCapabilities()|
+|Verifies Platform Capabilities |Gets the platform capabilities for HDMI inputs|getCapabilities()|
 
 
 ## L3 Test Specification
 
-|Test|	Description	|HAL APIs used|
+| Test | Description | HAL APIs used |
 |-----|------------|-------------|
-|Test the start of video start for HDMI input port|	Starts video for HDMI input and mapped to video plane and audio mixed 	|start(),IHDMIInputControllerListener.onSignalStateChanged(),IHDMIInputEventListener .onStateChanged(), stop()|
+|Test the Video start for HDMI Input port|Starts video for HDMI input and mapped to video plane and audio mixed |start(),IHDMIInputControllerListener.onSignalStateChanged(),IHDMIInputEventListener.onStateChanged(), stop()|
 |Verifies the HDCP status|Gets the HDCP status for each HDMI input port|start(),  getHDCPCurrentVersion(), IHDMIInputControllerListener.onHDCPStatusChanged(), stop()|
 |Verifies the SPDIF info frame for HDMI input|Gets the SDP info frame for each HDMI input port |start(),  IHDMIInputControllerListener.onSPDInfoFrame(), stop()|
 |Verifies the VIC(Video ID code) change for HDMI input|Verifies change in the video format from the HDMI source device. |start(),  IHDMIInputControllerListener.onVideoFormatChanged(), stop()|
@@ -55,4 +55,4 @@ It supports multiple HDMI ports, each with its own capabilities, state machine, 
 |Verifies the AVI info frame event change notification for HDMI input|Verifies received InfoFrame after the HDMI input port is in STARTED state or Info frame changes |start(),  IHDMIInputControllerListener.onAVIInfoFrame(), stop()|
 |Verifies the Audio InfoFrame event change notification for HDMI input|Verifies received InfoFrame after the HDMI input port is in STARTED state or Info frame changes |start(),  IHDMIInputControllerListener.onAudioInfoFrame(), stop()|
 |Verifies the Dynamic Range and Mastering (DRM) InfoFrame event change notification for HDMI input|Verifies received InfoFrame after the HDMI input port is in STARTED state or Info frame changes |start(),  IHDMIInputControllerListener.onDRMInfoFrame(), stop()|
-|Verifies the Vendor Specific InfoFrame (VSIF) event change notification for HDMI input|Verifies received InfoFrame after the HDMI input port is in STARTED state or Info frame changes |start(),  IHDMIInputControllerListener.onVendorSpecificInfoFrame(), stop()|
+|Verifies the Vendor Specific InfoFrame (VSIF) event change notification for HDMI input|Verifies received InfoFrame after the HDMI input port is in STARTED state or Info frame changes|start(), IHDMIInputControllerListener.onVendorSpecificInfoFrame(), stop()|
