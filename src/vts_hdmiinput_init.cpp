@@ -78,7 +78,7 @@
 #include "com/rdk/hal/hdmiinput/IHDMIInputControllerListener.h"
 #include "com/rdk/hal/hdmiinput/IHDMIInputEventListener.h"
 
-//#include "vts_hdmiinput_parse_hfp.h"
+#include "vts_hdmiinput_parse_hfp.h"
 #include "vts_hdmiinput_init.h"
 
 using android::sp;
@@ -113,10 +113,10 @@ UT_status_t VTS_HDMIINPUT_init()
         UT_LOG_ERROR("Failed to get HDMIInput Service");
         return UT_STATUS_FAILURE;
     }
-    /*if(vts_hdmiinput_parse_hfp() != UT_STATUS_OK)
+    if(vts_hdmiinput_parse_hfp() != UT_STATUS_OK)
     {
         UT_LOG_ERROR("Failed to process the HDMIInput HFP file");
-    }*/
+    }
 
     return UT_STATUS_OK;
 }

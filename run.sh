@@ -48,5 +48,5 @@ else
     start_vcomponent_service
 fi
 
-echo "Executing [vts_hdmiin_hal_test]"
-"${RUN_DIR}/vts_hdmiin_hal_test" "$@"
+echo "Executing [vts_hdmiinput_hal_test]"
+"${RUN_DIR}/vts_hdmiinput_hal_test" "$@"

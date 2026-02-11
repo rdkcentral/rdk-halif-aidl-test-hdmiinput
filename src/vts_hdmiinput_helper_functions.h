@@ -89,6 +89,11 @@
 #include "com/rdk/hal/hdmiinput/IHDMIInputControllerListener.h"
 #include "com/rdk/hal/hdmiinput/IHDMIInputEventListener.h"
 
+#include "com/rdk/hal/hdmiinput/HDCPProtocolVersion.h"
+#include "com/rdk/hal/hdmiinput/VIC.h"
+#include "com/rdk/hal/hdmiinput/HDMIVersion.h"
+#include "com/rdk/hal/hdmiinput/FreeSync.h"
+
 using android::sp;
 using android::String16;
 using android::defaultServiceManager;
@@ -101,6 +106,13 @@ using namespace com::rdk::hal::hdmiinput;
 
 extern const ut_control_keyStringMapping_t bool_mapTable_hdmiinput[];
 extern const ut_control_keyStringMapping_t statusHdmiInputException_mapTable[];
+extern const ut_control_keyStringMapping_t hdcpProtocolVersion_mapTable[];
+extern const ut_control_keyStringMapping_t vic_mapTable[];
+extern const ut_control_keyStringMapping_t hdmiVersion_mapTable[];
+extern const ut_control_keyStringMapping_t freeSync_mapTable[];
+
+std::string hdmiinputVecIntToString(std::vector<int32_t>& addrs);
+std::string hdmiinputVecByteToHexString(const std::vector<uint8_t>& data);
 
 #endif //__VTS_HDMIINPUT_HELPER_H__
 

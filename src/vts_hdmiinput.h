@@ -110,48 +110,87 @@ using namespace com::rdk::hal::hdmiinput;
 
 #define HDMIINPUT_MANAGER_GETHDMIINPUTIDS(hdmiinputIds) \
     do { \
-        ::android::binder::Status status; \
+        android::binder::Status status; \
         UT_LOG_DEBUG("Calling getHDMIInputIds(OUT:hdmiinputIds:[])"); \
         status = gHdmiInputManager->getHDMIInputIds(&hdmiinputIds); \
         UT_LOG_DEBUG("Result getHDMIInputIds(OUT:hdmiinputIds:[size: %d]), status:[isOK:%s, exception:%s]", \
-                                hdmiinputIds.size(), UT_Control_GetMapString(bool_mapTable_hdmiinput, status.isOk()), \
+                                static_cast<int>(hdmiinputIds.size()), UT_Control_GetMapString(bool_mapTable_hdmiinput, status.isOk()), \
                                 UT_Control_GetMapString(statusHdmiInputException_mapTable, status.exceptionCode())); \
         UT_ASSERT_TRUE_FATAL(status.isOk()); \
         UT_ASSERT_FALSE_FATAL(hdmiinputIds.empty()); \
         UT_ASSERT_EQUAL_FATAL(status.exceptionCode(), Status::EX_NONE); \
     } while (0)
 
-#define HDMIINPUT_GET_CAPABILITIES(hdmiinputHandle, capabilities) \
+#define HDMIINPUT_MANAGER_GETHDMIINPUT_SUCESSS(_hdmiinputId, hdmiinput) \
     do { \
-        ::android::binder::Status status; \
-        UT_LOG_DEBUG("Calling getCapabilities(OUT:capabilities[])"); \
-        status = (hdmiinputHandle)->getCapabilities(&capabilities); \
-        UT_LOG_DEBUG("Result getCapabilities(OUT:capabilities[%p]), status:[isOK:%s, exception:%s]", \
-            &capabilities, \
-            UT_Control_GetMapString(bool_mapTable_hdmiinput, status.isOk()), \
-            UT_Control_GetMapString(statusHDMIInputException_mapTable, status.exceptionCode())); \
-        UT_ASSERT_TRUE(status.isOk()); \
-        UT_ASSERT_EQUAL(status.exceptionCode(), Status::EX_NONE); \
+        android::binder::Status status; \
+        UT_LOG_DEBUG("Calling getHDMIInput(IN:_hdmiinputId:[%d], OUT:hdmiinput[])", _hdmiinputId.value); \
+        status = gHdmiInputManager->getHDMIInput(_hdmiinputId, &hdmiinput); \
+        UT_LOG_DEBUG("Result getHDMIInput(IN:_hdmiinputId:[%d], OUT:hdmiinput[0x%X]), status:[isOK:%s, exception:%s]", \
+                                _hdmiinputId.value, hdmiinput.get(), UT_Control_GetMapString(bool_mapTable_hdmiinput, status.isOk()), \
+                                UT_Control_GetMapString(statusHdmiInputException_mapTable, status.exceptionCode())); \
+        UT_ASSERT_TRUE_FATAL(status.isOk());\
+        UT_ASSERT_TRUE_FATAL(hdmiinput != nullptr); \
+        UT_ASSERT_EQUAL_FATAL(status.exceptionCode(), Status::EX_NONE); \
     } while (0)
-#if 0
+
+#define HDMIINPUT_MANAGER_GETHDMIINPUT_FAILURE(_hdmiinputId, hdmiinput) \
+    do { \
+        android::binder::Status status; \
+        UT_LOG_DEBUG("Calling getHDMIInput(IN:_hdmiinputId:[%d], OUT:hdmiinput[])", _hdmiinputId.value); \
+        status = gHdmiInputManager->getHDMIInput(_hdmiinputId, &hdmiinput); \
+        UT_LOG_DEBUG("Result getHDMIInput(IN:_hdmiinputId:[%d], OUT:hdmiinput[0x%X]), status:[isOK:%s, exception:%s]", \
+                                _hdmiinputId.value, hdmiinput.get(), UT_Control_GetMapString(bool_mapTable_hdmiinput, status.isOk()), \
+                                UT_Control_GetMapString(statusHdmiInputException_mapTable, status.exceptionCode())); \
+        UT_ASSERT_TRUE_FATAL(status.isOk());\
+        UT_ASSERT_TRUE_FATAL(hdmiinput == nullptr); \
+        UT_ASSERT_EQUAL_FATAL(status.exceptionCode(), Status::EX_NONE); \
+    } while (0)
+
+#define HDMIINPUT_MANAGER_GETCAPABILITIES(caps) \
+     do { \
+         android::binder::Status status; \
+         UT_LOG_DEBUG("Calling getCapabilities(OUT:caps[])"); \
+         status = gHdmiInputManager->getCapabilities(&caps); \
+         UT_LOG_DEBUG("Result getCapabilities(OUT:caps[concurrentPorts: %d, Freesync: %s]), status:[isOK:%s, exception:%s]", \
+            caps.maximumConcurrentStartedPorts,\
+            toString(caps.freeSync).c_str(), \
+            UT_Control_GetMapString(bool_mapTable_hdmiinput, status.isOk()), \
+            UT_Control_GetMapString(statusHdmiInputException_mapTable, status.exceptionCode())); \
+         UT_ASSERT_TRUE(status.isOk()); \
+         UT_ASSERT_EQUAL(status.exceptionCode(), android::binder::Status::EX_NONE); \
+     } while (0)
+
+#define HDMIINPUT_GET_CAPABILITIES(hdmiinputHandle, caps) \
+     do { \
+         android::binder::Status status; \
+         UT_LOG_DEBUG("Calling getCapabilities(OUT:caps[])"); \
+         status = (hdmiinputHandle)->getCapabilities(&caps); \
+         UT_LOG_DEBUG("Result getCapabilities(OUT:caps), status:[isOK:%s, exception:%s]", \
+            UT_Control_GetMapString(bool_mapTable_hdmiinput, status.isOk()), \
+            UT_Control_GetMapString(statusHdmiInputException_mapTable, status.exceptionCode())); \
+         UT_ASSERT_TRUE(status.isOk()); \
+         UT_ASSERT_EQUAL(status.exceptionCode(), android::binder::Status::EX_NONE); \
+     } while (0)
+
 #define HDMIINPUT_GET_PROPERTY(hdmiinputHandle, property, propertyValue) \
     do { \
-        ::android::binder::Status status; \
-        UT_LOG_DEBUG("Calling getProperty(IN:property[%s], OUT:propertyValue[])", com::rdk::hal::hdmiinput::toString(property).c_str()); \
+        android::binder::Status status; \
+        UT_LOG_DEBUG("Calling getProperty(IN:property[%s], OUT:propertyValue[])", hdmiinput::toString(property).c_str()); \
         status = (hdmiinputHandle)->getProperty(property, &propertyValue); \
         if(propertyValue.has_value()) { \
             switch (propertyValue->value.value().getTag()) { \
-                case com::rdk::hal::hdmiinput::PropertyValue::Value::Tag::intValue: \
+                case hdmiinput::PropertyValue::Value::Tag::intValue: \
                     UT_LOG_DEBUG("Result getProperty(IN:property[%s], OUT:propertyValue[%d]), status:[isOK:%s, exception:%s]", \
-                        com::rdk::hal::hdmiinput::toString(property).c_str(), \
-                        propertyValue->value->get<com::rdk::hal::hdmiinput::PropertyValue::Value::Tag::intValue>(), \
+                        hdmiinput::toString(property).c_str(), \
+                        propertyValue->value->get<hdmiinput::PropertyValue::Value::Tag::intValue>(), \
                         UT_Control_GetMapString(bool_mapTable_hdmiinput, status.isOk()), \
                         UT_Control_GetMapString(statusHDMIInputException_mapTable, status.exceptionCode())); \
                     break; \
-                case com::rdk::hal::hdmiinput::PropertyValue::Value::Tag::stringValue: \
+                case hdmiinput::PropertyValue::Value::Tag::stringValue: \
                     UT_LOG_DEBUG("Result getProperty(IN:property[%s], OUT:propertyValue[%s]), status:[isOK:%s, exception:%s]", \
-                        com::rdk::hal::hdmiinput::toString(property).c_str(), \
-                        propertyValue->value->get<com::rdk::hal::hdmiinput::PropertyValue::Value::Tag::stringValue>().string(), \
+                        hdmiinput::toString(property).c_str(), \
+                        propertyValue->value->get<hdmiinput::PropertyValue::Value::Tag::stringValue>().string(), \
                         UT_Control_GetMapString(bool_mapTable_hdmiinput, status.isOk()), \
                         UT_Control_GetMapString(statusHDMIInputException_mapTable, status.exceptionCode())); \
                     break; \
@@ -160,95 +199,25 @@ using namespace com::rdk::hal::hdmiinput;
             } \
         } else { \
             UT_LOG_DEBUG("Result getProperty(IN:property[%s], OUT:propertyValue[]), status:[isOK:%s, exception:%s]", \
-                com::rdk::hal::hdmiinput::toString(property).c_str(), \
+                hdmiinput::toString(property).c_str(), \
                 UT_Control_GetMapString(bool_mapTable_hdmiinput, status.isOk()), \
                 UT_Control_GetMapString(statusHDMIInputException_mapTable, status.exceptionCode())); \
             UT_ASSERT_TRUE(false); \
         } \
         UT_ASSERT_TRUE(status.isOk()); \
-        UT_ASSERT_EQUAL(status.exceptionCode(), Status::EX_NONE); \
-    } while (0)
-
-#define HDMIINPUT_GET_EDID(hdmiinputHandle, edid, result) \
-    do { \
-        ::android::binder::Status status; \
-        UT_LOG_DEBUG("Calling getEDID(OUT:edid[])"); \
-        status = (hdmiinputHandle)->getEDID(&edid, &result); \
-        UT_LOG_DEBUG("Result getEDID(OUT:edid[%s], OUT:result[%s]), status:[isOK:%s, exception:%s]", \
-            vecByteToHexString(edid).c_str(), \
-            UT_Control_GetMapString(bool_mapTable_hdmiinput, result), \
-            UT_Control_GetMapString(bool_mapTable_hdmiinput, status.isOk()), \
-            UT_Control_GetMapString(statusHDMIInputException_mapTable, status.exceptionCode())); \
-        UT_ASSERT_TRUE(status.isOk()); \
-        UT_ASSERT_TRUE(result); \
-        UT_ASSERT_EQUAL(status.exceptionCode(), Status::EX_NONE); \
-    } while (0)
-
-#define HDMIINPUT_GET_DEFAULT_EDID(hdmiinputHandle, version, edid, result) \
-    do { \
-        ::android::binder::Status status; \
-        UT_LOG_DEBUG("Calling getDefaultEDID(IN:version[%s], OUT:edid[])", com::rdk::hal::hdmiinput::toString(version).c_str()); \
-        status = (hdmiinputHandle)->getDefaultEDID(version, &edid, &result); \
-        UT_LOG_DEBUG("Result getDefaultEDID(IN:version[%s], OUT:edid[%s], OUT:result[%s]), status:[isOK:%s, exception:%s]", \
-            com::rdk::hal::hdmiinput::toString(version).c_str(), \
-            vecByteToHexString(edid).c_str(), \
-            UT_Control_GetMapString(bool_mapTable_hdmiinput, result), \
-            UT_Control_GetMapString(bool_mapTable_hdmiinput, status.isOk()), \
-            UT_Control_GetMapString(statusHDMIInputException_mapTable, status.exceptionCode())); \
-        UT_ASSERT_TRUE(status.isOk()); \
-        UT_ASSERT_TRUE(result); \
-        UT_ASSERT_EQUAL(status.exceptionCode(), Status::EX_NONE); \
-    } while (0)
-
-#define HDMIINPUT_GET_HDCP_CURRENT_VERSION(hdmiinputHandle, hdcpVersion) \
-    do { \
-        ::android::binder::Status status; \
-        UT_LOG_DEBUG("Calling getHDCPCurrentVersion(OUT:hdcpVersion[])"); \
-        status = (hdmiinputHandle)->getHDCPCurrentVersion(&hdcpVersion); \
-        UT_LOG_DEBUG("Result getHDCPCurrentVersion(OUT:hdcpVersion[%s]), status:[isOK:%s, exception:%s]", \
-            com::rdk::hal::hdmiinput::toString(hdcpVersion).c_str(), \
-            UT_Control_GetMapString(bool_mapTable_hdmiinput, status.isOk()), \
-            UT_Control_GetMapString(statusHDMIInputException_mapTable, status.exceptionCode())); \
-        UT_ASSERT_TRUE(status.isOk()); \
-        UT_ASSERT_EQUAL(status.exceptionCode(), Status::EX_NONE); \
-    } while (0)
-
-#define HDMIINPUT_GET_HDCP_STATUS(hdmiinputHandle, hdcpStatus) \
-    do { \
-        ::android::binder::Status status; \
-        UT_LOG_DEBUG("Calling getHDCPStatus(OUT:hdcpStatus[])"); \
-        status = (hdmiinputHandle)->getHDCPStatus(&hdcpStatus); \
-        UT_LOG_DEBUG("Result getHDCPStatus(OUT:hdcpStatus[%s]), status:[isOK:%s, exception:%s]", \
-            com::rdk::hal::hdmiinput::toString(hdcpStatus).c_str(), \
-            UT_Control_GetMapString(bool_mapTable_hdmiinput, status.isOk()), \
-            UT_Control_GetMapString(statusHDMIInputException_mapTable, status.exceptionCode())); \
-        UT_ASSERT_TRUE(status.isOk()); \
-        UT_ASSERT_EQUAL(status.exceptionCode(), Status::EX_NONE); \
-    } while (0)
-
-#define HDMIINPUT_GET_SPD_INFOFRAME(hdmiinputHandle, spdInfoFrame) \
-    do { \
-        ::android::binder::Status status; \
-        UT_LOG_DEBUG("Calling getSPDInfoFrame(OUT:spdInfoFrame[])"); \
-        status = (hdmiinputHandle)->getSPDInfoFrame(&spdInfoFrame); \
-        UT_LOG_DEBUG("Result getSPDInfoFrame(OUT:spdInfoFrame[%s]), status:[isOK:%s, exception:%s]", \
-            vecByteToHexString(spdInfoFrame).c_str(), \
-            UT_Control_GetMapString(bool_mapTable_hdmiinput, status.isOk()), \
-            UT_Control_GetMapString(statusHDMIInputException_mapTable, status.exceptionCode())); \
-        UT_ASSERT_TRUE(status.isOk()); \
-        UT_ASSERT_EQUAL(status.exceptionCode(), Status::EX_NONE); \
+        UT_ASSERT_EQUAL(status.exceptionCode(), android::binder::Status::EX_NONE); \
     } while (0)
 
 #define HDMIINPUT_GET_STATE(hdmiinputHandle, state) \
     do { \
-        ::android::binder::Status status; \
+        android::binder::Status status; \
         UT_LOG_DEBUG("Calling getState(OUT:state[]"); \
         status = (hdmiinputHandle)->getState(&state); \
-        UT_LOG_DEBUG("Result getState(OUT:state[%s]), status:[isOK:%s, exception:%s]", com::rdk::hal::toString(state).c_str(), \
+        UT_LOG_DEBUG("Result getState(OUT:state[%s]), status:[isOK:%s, exception:%s]", hdmiinput::toString(state).c_str(), \
                 UT_Control_GetMapString(bool_mapTable_hdmiinput, status.isOk()), \
-                UT_Control_GetMapString(statusHDMIInputException_mapTable, status.exceptionCode())); \
+                UT_Control_GetMapString(statusHdmiInputException_mapTable, status.exceptionCode())); \
         UT_ASSERT_TRUE(status.isOk()); \
-        UT_ASSERT_EQUAL(status.exceptionCode(), Status::EX_NONE); \
+        UT_ASSERT_EQUAL(status.exceptionCode(), android::binder::Status::EX_NONE); \
     } while (0)
 
 #define HDMIINPUT_WAIT_FOR_STATE(hdmiinputHandle, desiredState, lastState) \
@@ -263,6 +232,97 @@ using namespace com::rdk::hal::hdmiinput;
         } while (sleep_time < MAX_FINAL_STATE_WAIT_MS && lastState != desiredState); \
     } while (0)
 
+#define HDMIINPUT_GETEDID_SUCCESS(hdmiinputHandle, edid)\
+       do { \
+        android::binder::Status status; \
+        bool _aidl_return; \
+        UT_LOG_INFO("Calling getEDID( OUT:edid:size:[])"); \
+        status = (hdmiinputHandle)->getEDID(&edid,&_aidl_return);\
+        UT_LOG_DEBUG("Result getEDID(OUT:edid:size[%zu] ,OUT:_aidl_return[%s]), status:[isOK:%s, exception:%s]", edid.size(),\
+            UT_Control_GetMapString(bool_mapTable_hdmiinput, _aidl_return), \
+            UT_Control_GetMapString(bool_mapTable_hdmiinput, status.isOk()), \
+            UT_Control_GetMapString(statusHdmiInputException_mapTable, status.exceptionCode())); \
+        UT_ASSERT_FALSE(edid.empty());  \
+        UT_ASSERT_GREATER_EQUAL(edid.size(), static_cast<size_t>(128));\
+        UT_ASSERT_EQUAL(0u, edid.size() % 128);\
+        UT_ASSERT_TRUE(status.isOk()); \
+        UT_ASSERT_TRUE(_aidl_return); \
+        UT_ASSERT_EQUAL(status.exceptionCode(), android::binder::Status::EX_NONE); \
+    }while (0)
+
+#define HDMIINPUT_GETDEFAULTEDID_SUCCESS(hdmiinputHandle,version,edid)\
+    do { \
+        ::android::binder::Status status; \
+        bool _aidl_return; \
+        UT_LOG_INFO("Calling getDefaultEDID(IN:version:[%s], OUT:edid:size:[])",hdmiinput::toString(version).c_str()); \
+        status = (hdmiinputHandle)->getDefaultEDID(version, &edid, &_aidl_return);\
+        UT_LOG_DEBUG("Result getDefaultEDID(IN:version:[%s], OUT:edid:size[%zu], OUT:_aidl_return[%s]), status:[isOK:%s, exception:%s]", \
+            hdmiinput::toString(version).c_str(), edid.size(), \
+            UT_Control_GetMapString(bool_mapTable_hdmiinput, _aidl_return), \
+            UT_Control_GetMapString(bool_mapTable_hdmiinput, status.isOk()), \
+            UT_Control_GetMapString(statusHdmiInputException_mapTable, status.exceptionCode())); \
+        UT_ASSERT_TRUE(status.isOk()); \
+        UT_ASSERT_TRUE(_aidl_return); \
+        UT_ASSERT_FALSE(edid.empty());\
+        UT_ASSERT_EQUAL(status.exceptionCode(), Status::EX_NONE); \
+    }while (0)
+
+#define HDMIINPUT_GETDEFAULTEDID_FAILURE(hdmiinputHandle,version,edid)\
+    do { \
+        ::android::binder::Status status; \
+        bool _aidl_return; \
+        UT_LOG_INFO("Calling getDefaultEDID(IN:version:[%s], OUT:edid:size:[])",hdmiinput::toString(version).c_str()); \
+        status = (hdmiinputHandle)->getDefaultEDID(version, &edid, &_aidl_return);\
+        UT_LOG_DEBUG("Result getDefaultEDID(IN:version:[%s], OUT:edid:size[%zu], OUT:_aidl_return[%s]), status:[isOK:%s, exception:%s]", \
+            hdmiinput::toString(version).c_str(), edid.size(), \
+            UT_Control_GetMapString(bool_mapTable_hdmiinput, _aidl_return), \
+            UT_Control_GetMapString(bool_mapTable_hdmiinput, status.isOk()), \
+            UT_Control_GetMapString(statusHdmiInputException_mapTable, status.exceptionCode())); \
+        UT_ASSERT_TRUE(status.isOk()); \
+        UT_ASSERT_FALSE(_aidl_return); \
+        UT_ASSERT_TRUE(edid.empty());\
+        UT_ASSERT_EQUAL(status.exceptionCode(), Status::EX_NONE); \
+    }while (0)
+
+#define HDMIINPUT_GETHDCPCURRENTVERSION(hdmiinputHandle, hdcpVersion) \
+    do { \
+        android::binder::Status status; \
+        UT_LOG_DEBUG("Calling getHDCPCurrentVersion(OUT:hdcpVersion[])"); \
+        status = (hdmiinputHandle)->getHDCPCurrentVersion(&hdcpVersion); \
+        UT_LOG_DEBUG("Result getHDCPCurrentVersion(OUT:hdcpVersion[%s]), status:[isOK:%s, exception:%s]", \
+            hdmiinput::toString(hdcpVersion).c_str(), \
+            UT_Control_GetMapString(bool_mapTable_hdmiinput, status.isOk()), \
+            UT_Control_GetMapString(statusHdmiInputException_mapTable, status.exceptionCode())); \
+        UT_ASSERT_TRUE(status.isOk()); \
+        UT_ASSERT_EQUAL(status.exceptionCode(), android::binder::Status::EX_NONE); \
+    } while (0)
+
+#define HDMIINPUT_GETHDCPSTATUS(hdmiinputHandle, hdcpStatus) \
+    do { \
+        android::binder::Status status; \
+        UT_LOG_DEBUG("Calling getHDCPStatus(OUT:hdcpStatus[])"); \
+        status = (hdmiinputHandle)->getHDCPStatus(&hdcpStatus); \
+        UT_LOG_DEBUG("Result getHDCPStatus(OUT:hdcpStatus[%s]), status:[isOK:%s, exception:%s]", \
+            hdmiinput::toString(hdcpStatus).c_str(), \
+            UT_Control_GetMapString(bool_mapTable_hdmiinput, status.isOk()), \
+            UT_Control_GetMapString(statusHdmiInputException_mapTable, status.exceptionCode())); \
+        UT_ASSERT_TRUE(status.isOk()); \
+        UT_ASSERT_EQUAL(status.exceptionCode(), android::binder::Status::EX_NONE); \
+    } while (0)
+
+#define HDMIINPUT_GETSPDINFOFRAME(hdmiinputHandle, spdInfoFrame) \
+    do { \
+        android::binder::Status status; \
+        UT_LOG_DEBUG("Calling getSPDInfoFrame(OUT:spdInfoFrame[])"); \
+        status = (hdmiinputHandle)->getSPDInfoFrame(&spdInfoFrame); \
+        UT_LOG_DEBUG("Result getSPDInfoFrame(OUT:spdInfoFrame[%s]), status:[isOK:%s, exception:%s]", \
+            hdmiinputVecByteToHexString(spdInfoFrame).c_str(), \
+            UT_Control_GetMapString(bool_mapTable_hdmiinput, status.isOk()), \
+            UT_Control_GetMapString(statusHdmiInputException_mapTable, status.exceptionCode())); \
+        UT_ASSERT_TRUE(status.isOk()); \
+        UT_ASSERT_EQUAL(status.exceptionCode(), android::binder::Status::EX_NONE); \
+    } while (0)
+
 #define HDMIINPUT_OPEN_SUCCESS(hdmiinputHandle, controllerListener, hdmiinputController, stateCheck) \
     do { \
         android::binder::Status status; \
@@ -273,23 +333,23 @@ using namespace com::rdk::hal::hdmiinput;
         UT_LOG_DEBUG("Result open(IN:IN:controllerListener[%p], OUT:hdmiinputController[0x%X]), status:[isOK:%s, exception:%s]", \
             controllerListener, hdmiinputController.get(), \
             UT_Control_GetMapString(bool_mapTable_hdmiinput, status.isOk()), \
-            UT_Control_GetMapString(statusHDMIInputException_mapTable, status.exceptionCode())); \
+            UT_Control_GetMapString(statusHdmiInputException_mapTable, status.exceptionCode())); \
         UT_ASSERT_TRUE_FATAL(status.isOk()); \
         UT_ASSERT_NOT_EQUAL_FATAL(hdmiinputController.get(), nullptr); \
         UT_ASSERT_EQUAL_FATAL(status.exceptionCode(), Status::EX_NONE); \
         \
         if (stateCheck) \
         { \
-            com::rdk::hal::State lastState; \
-            HDMIINPUT_WAIT_FOR_STATE(hdmiinputHandle, State::STARTED, lastState); \
-            UT_ASSERT_EQUAL_FATAL(lastState, State::STARTED); \
+            hdmiinput::State lastState; \
+            HDMIINPUT_WAIT_FOR_STATE(hdmiinputHandle, State::READY, lastState); \
+            UT_ASSERT_EQUAL_FATAL(lastState, State::READY); \
         } \
     } while (0)
 
 #define HDMIINPUT_OPEN_FAILURE(hdmiinputHandle, controllerListener, hdmiinputController, expectedState, expectedException) \
     do { \
         android::binder::Status status; \
-        com::rdk::hal::State state; \
+        hdmiinput::State state; \
         \
         /* Attempt to open the Decoder (expected to fail) */ \
         UT_LOG_DEBUG("Calling open(IN:controllerListener[%p], OUT:hdmiinputController[])", controllerListener); \
@@ -297,14 +357,16 @@ using namespace com::rdk::hal::hdmiinput;
         UT_LOG_DEBUG("Result open(IN:controllerListener[%p], OUT:hdmiinputController[0x%X]), status:[isOk:%s, exception:%s]", \
             controllerListener, hdmiinputController.get(), \
             UT_Control_GetMapString(bool_mapTable_hdmiinput, status.isOk()), \
-            UT_Control_GetMapString(statusHDMIInputException_mapTable, status.exceptionCode())); \
+            UT_Control_GetMapString(statusHdmiInputException_mapTable, status.exceptionCode())); \
         \
-        if (expectedException == Status::EX_NONE) \
+        if (expectedException == Status::EX_NONE) {\
             UT_ASSERT_TRUE(status.isOk()); \
-        else \
+            UT_ASSERT_EQUAL(hdmiinputController.get(), nullptr); \
+        } \
+        else {\
             UT_ASSERT_FALSE(status.isOk()); \
+        } \
         UT_ASSERT_EQUAL(status.exceptionCode(), expectedException); \
-        UT_ASSERT_EQUAL(hdmiinputController.get(), nullptr); \
         HDMIINPUT_GET_STATE(hdmiinputHandle, state); \
         UT_ASSERT_EQUAL_FATAL(state, expectedState); \
     } while (0)
@@ -315,16 +377,16 @@ using namespace com::rdk::hal::hdmiinput;
         bool _aidl_return; \
         UT_LOG_DEBUG("Calling close(IN:hdmiinputController[%p], OUT:_aidl_return[])", hdmiinputController.get()); \
         status = hdmiinputHandle->close(hdmiinputController, &_aidl_return); \
-        UT_LOG_DEBUG("Result close(IN:hdmiinputController[%p], OUT:_aidl_return[%s %d]), status:[isOK:%s, exception:%s]", \
-            hdmiinputController.get(), UT_Control_GetMapString(bool_mapTable_hdmiinput, _aidl_return), _aidl_return,\
+        UT_LOG_DEBUG("Result close(IN:hdmiinputController[%p], OUT:_aidl_return[%s]), status:[isOK:%s, exception:%s]", \
+            hdmiinputController.get(), UT_Control_GetMapString(bool_mapTable_hdmiinput, _aidl_return),\
             UT_Control_GetMapString(bool_mapTable_hdmiinput, status.isOk()), \
-            UT_Control_GetMapString(statusHDMIInputException_mapTable, status.exceptionCode())); \
+            UT_Control_GetMapString(statusHdmiInputException_mapTable, status.exceptionCode())); \
         UT_ASSERT_TRUE_FATAL(status.isOk()); \
         UT_ASSERT_TRUE_FATAL(_aidl_return); \
         UT_ASSERT_EQUAL_FATAL(status.exceptionCode(), Status::EX_NONE); \
         if (stateCheck) \
         { \
-            ::com::rdk::hal::State lastState; \
+            hdmiinput::State lastState; \
             HDMIINPUT_WAIT_FOR_STATE(hdmiinputHandle, State::CLOSED, lastState); \
             UT_ASSERT_EQUAL_FATAL(lastState, State::CLOSED); \
         } \
@@ -334,7 +396,7 @@ using namespace com::rdk::hal::hdmiinput;
     do { \
         ::android::binder::Status status; \
         bool _aidl_return; \
-        com::rdk::hal::State state; \
+        hdmiinput::State state; \
         UT_LOG_DEBUG("Calling close(IN:hdmiinputController[%p], OUT:_aidl_return[])", hdmiinputController.get()); \
         status = hdmiinputHandle->close(hdmiinputController, &_aidl_return); \
         UT_LOG_DEBUG("Result close(IN:hdmiinputController[%p], OUT:_aidl_return[%s]), status:[isOK:%s, exception:%s]", \
@@ -582,8 +644,6 @@ using namespace com::rdk::hal::hdmiinput;
             UT_ASSERT_FALSE(status.isOk()); \
         UT_ASSERT_EQUAL(status.exceptionCode(), exception); \
     } while (0)
-
-#endif
 
 /* Contoller Listener Class */
 class HDMIInputControllerListener : public BnHDMIInputControllerListener
