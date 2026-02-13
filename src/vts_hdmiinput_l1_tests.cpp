@@ -318,11 +318,11 @@ UT_ADD_TEST(VTS_L1_HDMIINPUT, getCapabilities_pos)
 }
 
 /**
- * @brief Validate the HDMI Input Manager's ability to fetch HDMI Input objects
+ * @brief Validate the getProperty API for HDMI Input objects returns correct property values.
  *
- * This test iterates over a list of HDMI input ports, retrieves their respective ID using helper methods,
- * and then calls the getHDMIInput API to verify that a valid HDMI Input object is returned.
- * The test confirms that the API call returns a successful status and a non-null object for each port.
+ * This test iterates over all available HDMI input IDs, retrieves the corresponding HDMI Input object,
+ * and calls getProperty for RESOURCE_ID and METRIC_PACKET_ERRORS properties.
+ * It asserts that RESOURCE_ID matches the port ID and that METRIC_PACKET_ERRORS is present and initially zero (unless not implemented).
  *
  * **Test Group ID:** Basic: 01@n
  * **Test Case ID:** 006@n
@@ -335,14 +335,40 @@ UT_ADD_TEST(VTS_L1_HDMIINPUT, getCapabilities_pos)
  * **Test Procedure:**@n
  * | Variation / Step | Description | Test Data | Expected Result | Notes |
  * | :----: | --------- | ---------- |-------------- | ----- |
- * | 01 | Retrieve the count of HDMI input ports using the helper function UT_KVP_PROFILE_GET_LIST_COUNT. | hdmiinput.ports list | Returns the total number of HDMI input ports available. | Should be successful |
- * | 02 | Start a loop to iterate over each HDMI input port. | For each iteration: index = 0, 1, ... , numPorts-1 | Iteration proceeds for each available HDMI input port. | Should be successful |
- * | 03 | For the current iteration, extract the HDMI input's ID using UT_KVP_PROFILE_GET_UINT32 from hdmiinput.ports at the current index. | index = current loop index, hdmiinput.ports.<index>.id | Extracts a valid uint32 value representing the HDMI input ID. | Should be successful |
- * | 04 | Log the action of calling getHDMIInput with the retrieved HDMI input ID and then invoke mService->getHDMIInput. | Input: hdmiInputId = current port ID | API returns a binder Status with isOk true and a non-null HDMI Input object. | Should Pass |
- * | 05 | Assert that the status returned from getHDMIInput is ok and that the HDMI Input object is not null. | Assert status.isOk and hdmiInput != nullptr | Both assertions pass confirming successful API execution. | Should Pass |
+ * | 01 | Retrieve all HDMI input IDs using HDMIINPUT_MANAGER_GETHDMIINPUTIDS. | Output: hdmiInputIds vector | List of HDMI input IDs is obtained. | Should be successful |
+ * | 02 | For each HDMI input ID, retrieve the HDMI Input object using HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESSS. | Input: id | HDMI Input object is returned. | Should Pass |
+ * | 03 | Call getProperty for RESOURCE_ID and METRIC_PACKET_ERRORS. | Input: hdmiInput, property | Properties are returned. | Should Pass |
+ * | 04 | Assert RESOURCE_ID matches port ID and METRIC_PACKET_ERRORS is present and initially zero (unless not implemented). | Output: resourceID, metricPktErrors | All assertions pass. | Should Pass |
  */
 UT_ADD_TEST(VTS_L1_HDMIINPUT, getProperty_pos)
 {
+    std::vector<hdmiinput::IHDMIInput::Id> hdmiInputIds;
+
+    /* Get the HDMI INPUT IDs */
+    HDMIINPUT_MANAGER_GETHDMIINPUTIDS(hdmiInputIds);
+
+    for (const auto& id : hdmiInputIds)
+    {
+        android::sp<hdmiinput::IHDMIInput> hdmiInput;
+        std::optional<PropertyValue> resourceID;
+        std::optional<PropertyValue> metricPktErrors;
+        int32_t value = 0;
+
+        HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESSS(id, hdmiInput);
+
+        HDMIINPUT_GETPROPERTY_SUCCESS(hdmiInput, hdmiinput::Property::RESOURCE_ID, resourceID);
+        HDMIINPUT_GETPROPERTY_SUCCESS(hdmiInput, hdmiinput::Property::METRIC_PACKET_ERRORS, metricPktErrors);
+
+        UT_ASSERT_EQUAL(resourceID->value->get<PropertyValue::Value::Tag::intValue>(), id.value);
+
+        UT_ASSERT_TRUE(metricPktErrors.has_value());
+
+        value = metricPktErrors->value->get<PropertyValue::Value::Tag::intValue>();
+        if (value != -1) // -1 indicates not implemented
+        {
+            UT_ASSERT_EQUAL(value, 0); // Initial counters must be zero
+        }
+    }
 }
 
 /**
@@ -371,6 +397,23 @@ UT_ADD_TEST(VTS_L1_HDMIINPUT, getProperty_pos)
  */
 UT_ADD_TEST(VTS_L1_HDMIINPUT, getProperty_neg)
 {
+    std::vector<hdmiinput::IHDMIInput::Id> hdmiInputIds;
+
+    /* Get the HDMI INPUT IDs */
+    HDMIINPUT_MANAGER_GETHDMIINPUTIDS(hdmiInputIds);
+
+    for (const auto& id : hdmiInputIds)
+    {
+        android::sp<hdmiinput::IHDMIInput> hdmiInput;
+        std::optional<PropertyValue> propertyValue;
+        int32_t firstValue = static_cast<int32_t>(Property::RESOURCE_ID);
+        Property invalidProperty = static_cast<Property>(firstValue - 1);
+
+        HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESSS(id, hdmiInput);
+
+        // Query invalid property
+        HDMIINPUT_GETPROPERTY_FAILURE(hdmiInput, invalidProperty, propertyValue, Status::EX_NONE);
+    }
 }
 
 /**
@@ -1090,7 +1133,7 @@ UT_ADD_TEST(VTS_L1_HDMIINPUT, unregisterEventListener_neg)
  * The test asserts that the returned connection state is false (disconnected) after opening, confirming correct default behavior.
  *
  * **Test Group ID:** Basic: 01@n
- * **Test Case ID:** 022@n
+ * **Test Case ID:** 023@n
  * **Priority:** High@n
  *
  * **Pre-Conditions:** HDMI input port must be in State::CLOSED@n
@@ -1139,7 +1182,7 @@ UT_ADD_TEST(VTS_L1_HDMIINPUT, getConnectionState_pos)
  * The test asserts that start and stop operations succeed for each port, confirming correct behavior.
  *
  * **Test Group ID:** Basic: 01@n
- * **Test Case ID:** 023@n
+ * **Test Case ID:** 024@n
  * **Priority:** High@n
  *
  * **Pre-Conditions:** HDMI input port must be in State::READY@n
@@ -1191,7 +1234,7 @@ UT_ADD_TEST(VTS_L1_HDMIINPUT, start_pos)
  * The test asserts that the second start operation fails with EX_ILLEGAL_STATE.
  *
  * **Test Group ID:** Negative: 01@n
- * **Test Case ID:** 024@n
+ * **Test Case ID:** 025@n
  * **Priority:** High@n
  *
  * **Pre-Conditions:** HDMI input port must be in State::READY@n
@@ -1244,7 +1287,7 @@ UT_ADD_TEST(VTS_L1_HDMIINPUT, start_neg)
  * The test asserts that start and stop operations succeed for each port, confirming correct behavior.
  *
  * **Test Group ID:** Basic: 01@n
- * **Test Case ID:** 025@n
+ * **Test Case ID:** 026@n
  * **Priority:** High@n
  *
  * **Pre-Conditions:** HDMI input port must be in State::READY@n
@@ -1296,7 +1339,7 @@ UT_ADD_TEST(VTS_L1_HDMIINPUT, stop_pos)
  * The test asserts that stop operations fail with EX_ILLEGAL_STATE when not in the started state.
  *
  * **Test Group ID:** Negative: 01@n
- * **Test Case ID:** 026@n
+ * **Test Case ID:** 027@n
  * **Priority:** High@n
  *
  * **Pre-Conditions:** HDMI input port must be in State::READY or State::CLOSED@n
@@ -1349,7 +1392,7 @@ UT_ADD_TEST(VTS_L1_HDMIINPUT, stop_neg)
  * The test asserts that setEDID operations succeed for each port, confirming correct behavior.
  *
  * **Test Group ID:** Basic: 01@n
- * **Test Case ID:** 027@n
+ * **Test Case ID:** 028@n
  * **Priority:** High@n
  *
  * **Pre-Conditions:** HDMI input port must be in State::READY@n
@@ -1425,7 +1468,7 @@ UT_ADD_TEST(VTS_L1_HDMIINPUT, setEDID_pos)
  * The test asserts that setEDID operations fail with EX_ILLEGAL_ARGUMENT or similar error for invalid data.
  *
  * **Test Group ID:** Negative: 01@n
- * **Test Case ID:** 028@n
+ * **Test Case ID:** 029@n
  * **Priority:** High@n
  *
  * **Pre-Conditions:** HDMI input port must be in State::READY@n

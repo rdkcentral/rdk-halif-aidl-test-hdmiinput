@@ -415,7 +415,7 @@ using namespace com::rdk::hal::hdmiinput;
         UT_ASSERT_EQUAL_FATAL(state, expectedState); \
     } while (0)
 
-#define HDMIINPUT_GET_PROPERTY_SUCCESS(hdmiinputHandle, property, propertyValue) \
+#define HDMIINPUT_GETPROPERTY_SUCCESS(hdmiinputHandle, property, propertyValue) \
     do { \
         ::android::binder::Status status; \
         UT_LOG_DEBUG("Calling getProperty(IN:property[%s], OUT:propertyValue[]", hdmiinput::toString(property).c_str()); \
@@ -427,12 +427,6 @@ using namespace com::rdk::hal::hdmiinput;
                 case PropertyValue::Value::Tag::intValue: \
                     UT_LOG_DEBUG("Result getProperty(IN:property[%s], OUT:propertyValue[%d]), status:[isOK:%s, exception:%s]", hdmiinput::toString(property).c_str(), \
                     propertyValue->value->get<PropertyValue::Value::Tag::intValue>(), \
-                    UT_Control_GetMapString(bool_mapTable_hdmiinput, status.isOk()), \
-                    UT_Control_GetMapString(statusHdmiInputException_mapTable, status.exceptionCode())); \
-                    break; \
-                case PropertyValue::Value::Tag::stringValue: \
-                    UT_LOG_DEBUG("Result getProperty(IN:property[%s], OUT:propertyValue[%s]), status:[isOK:%s, exception:%s]", hdmiinput::toString(property).c_str(), \
-                    propertyValue->value->get<PropertyValue::Value::Tag::stringValue>().string(), \
                     UT_Control_GetMapString(bool_mapTable_hdmiinput, status.isOk()), \
                     UT_Control_GetMapString(statusHdmiInputException_mapTable, status.exceptionCode())); \
                     break; \
@@ -451,7 +445,7 @@ using namespace com::rdk::hal::hdmiinput;
         UT_ASSERT_EQUAL(status.exceptionCode(), Status::EX_NONE); \
     } while (0)
 
-#define HDMIINPUT_GET_PROPERTY_FAILURE(hdmiinputHandle, property, propertyValue, exception) \
+#define HDMIINPUT_GETPROPERTY_FAILURE(hdmiinputHandle, property, propertyValue, exception) \
     do { \
         ::android::binder::Status status; \
         UT_LOG_DEBUG("Calling getProperty(IN:property[%s], OUT:propertyValue[]", hdmiinput::toString(property).c_str()); \
@@ -462,6 +456,7 @@ using namespace com::rdk::hal::hdmiinput;
         UT_ASSERT_FALSE(propertyValue.has_value()); \
         if (exception == Status::EX_NONE) {\
             UT_ASSERT_TRUE(status.isOk()); \
+            UT_ASSERT_FALSE(propertyValue.has_value()); \
         } \
         else { \
             UT_ASSERT_FALSE(status.isOk()); \
