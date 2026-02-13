@@ -630,7 +630,7 @@ using namespace com::rdk::hal::hdmiinput;
         UT_LOG_DEBUG("Calling setEDID(OUT:edidBytes:size:[], OUT:_aidl_return[])"); \
         status = hdmiInputController->setEDID(edidBytes, &_aidl_return); \
         UT_LOG_DEBUG("Result setEDID(IN:edidBytes:size:[%s], OUT:_aidl_return[%s]), status:[isOK:%s, exception:%s]", \
-            hdmiinputVecByteToHexString(edidBytes), \
+            hdmiinputVecByteToHexString(edidBytes).c_str(), \
             UT_Control_GetMapString(bool_mapTable_hdmiinput, _aidl_return), \
             UT_Control_GetMapString(bool_mapTable_hdmiinput, status.isOk()), \
             UT_Control_GetMapString(statusHdmiInputException_mapTable, status.exceptionCode())); \
@@ -677,6 +677,29 @@ public:
     android::binder::Status onDRMInfoFrame(const ::std::vector<uint8_t>& data) override;
     android::binder::Status onVendorSpecificInfoFrame(const ::std::vector<uint8_t>& data) override;
     android::binder::Status onHDCPStatusChanged(::com::rdk::hal::hdmiinput::HDCPStatus hdcpStatus, ::com::rdk::hal::hdmiinput::HDCPProtocolVersion hdcpProtocolVersion) override;
+
+private:
+    mutex mConnectionStateMutex;
+    mutex mSignalStateMutex;
+    mutex mVideoFormatMutex;
+    mutex mVRRMutex;
+    mutex mAVIInfoMutex;
+    mutex mAudioInfoMutex;
+    mutex mSPDInfoMutex;
+    mutex mDRMInfoMutex;
+    mutex mVendorSpecificInfoMutex;
+    mutex mHDCPStatusMutex;
+
+    std::queue<bool> mConnectionStateQueue;
+    std::queue<hdmiinput::SignalState> mSignalStateQueue;
+    std::queue<hdmiinput::VIC> mVideoFormatQueue;
+    std::queue<std::tuple<bool, bool, bool, double>> mVRRQueue;
+    std::queue<std::vector<uint8_t>> mAVIInfoQueue;
+    std::queue<std::vector<uint8_t>> mAudioInfoQueue;
+    std::queue<std::vector<uint8_t>> mSPDInfoQueue;
+    std::queue<std::vector<uint8_t>> mDRMInfoQueue;
+    std::queue<std::vector<uint8_t>> mVendorSpecificInfoQueue;
+    std::queue<std::tuple<hdmiinput::HDCPStatus, hdmiinput::HDCPProtocolVersion>> mHDCPStatusQueue;
 };
 
 /* Event Listener Class */
@@ -688,6 +711,12 @@ public:
 
     android::binder::Status onStateChanged(::com::rdk::hal::hdmiinput::State oldState, ::com::rdk::hal::hdmiinput::State newState) override;
     android::binder::Status onEDIDChange(const ::std::vector<uint8_t>& edid) override;
+private:
+    mutex mStateChangeMutex;
+    mutex mEDIDChangeMutex;
+
+    std::queue<std::tuple<hdmiinput::State, hdmiinput::State>> mStateChangeQueue;
+    std::queue<std::vector<uint8_t>> mEDIDChangeQueue;
 };
 
 #endif // __VTS_HDMIINPUT_H__
