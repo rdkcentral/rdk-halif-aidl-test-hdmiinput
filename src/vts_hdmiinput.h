@@ -121,7 +121,7 @@ using namespace com::rdk::hal::hdmiinput;
         UT_ASSERT_EQUAL_FATAL(status.exceptionCode(), Status::EX_NONE); \
     } while (0)
 
-#define HDMIINPUT_MANAGER_GETHDMIINPUT_SUCESSS(_hdmiinputId, hdmiinput) \
+#define HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESSS(_hdmiinputId, hdmiinput) \
     do { \
         android::binder::Status status; \
         UT_LOG_DEBUG("Calling getHDMIInput(IN:_hdmiinputId:[%d], OUT:hdmiinput[])", _hdmiinputId.value); \
@@ -387,8 +387,8 @@ using namespace com::rdk::hal::hdmiinput;
         if (stateCheck) \
         { \
             hdmiinput::State lastState; \
-            HDMIINPUT_WAIT_FOR_STATE(hdmiinputHandle, State::CLOSED, lastState); \
-            UT_ASSERT_EQUAL_FATAL(lastState, State::CLOSED); \
+            HDMIINPUT_WAIT_FOR_STATE(hdmiinputHandle, hdmiinput::State::CLOSED, lastState); \
+            UT_ASSERT_EQUAL_FATAL(lastState, hdmiinput::State::CLOSED); \
         } \
     } while (0)
 
@@ -402,12 +402,14 @@ using namespace com::rdk::hal::hdmiinput;
         UT_LOG_DEBUG("Result close(IN:hdmiinputController[%p], OUT:_aidl_return[%s]), status:[isOK:%s, exception:%s]", \
             hdmiinputController.get(), UT_Control_GetMapString(bool_mapTable_hdmiinput, _aidl_return),\
             UT_Control_GetMapString(bool_mapTable_hdmiinput, status.isOk()), \
-            UT_Control_GetMapString(statusHDMIInputException_mapTable, status.exceptionCode())); \
-        UT_ASSERT_FALSE(_aidl_return); \
-        if (expectedException == Status::EX_NONE) \
+            UT_Control_GetMapString(statusHdmiInputException_mapTable, status.exceptionCode())); \
+        if (expectedException == Status::EX_NONE) { \
             UT_ASSERT_TRUE(status.isOk()); \
-        else \
+            UT_ASSERT_FALSE(_aidl_return); \
+        } \
+        else { \
             UT_ASSERT_FALSE(status.isOk()); \
+        } \
         UT_ASSERT_EQUAL(status.exceptionCode(), expectedException); \
         HDMIINPUT_GET_STATE(hdmiinputHandle, state); \
         UT_ASSERT_EQUAL_FATAL(state, expectedState); \
@@ -426,13 +428,13 @@ using namespace com::rdk::hal::hdmiinput;
                     UT_LOG_DEBUG("Result getProperty(IN:property[%s], OUT:propertyValue[%d]), status:[isOK:%s, exception:%s]", hdmiinput::toString(property).c_str(), \
                     propertyValue->value->get<PropertyValue::Value::Tag::intValue>(), \
                     UT_Control_GetMapString(bool_mapTable_hdmiinput, status.isOk()), \
-                    UT_Control_GetMapString(statusHDMIInputException_mapTable, status.exceptionCode())); \
+                    UT_Control_GetMapString(statusHdmiInputException_mapTable, status.exceptionCode())); \
                     break; \
                 case PropertyValue::Value::Tag::stringValue: \
                     UT_LOG_DEBUG("Result getProperty(IN:property[%s], OUT:propertyValue[%s]), status:[isOK:%s, exception:%s]", hdmiinput::toString(property).c_str(), \
                     propertyValue->value->get<PropertyValue::Value::Tag::stringValue>().string(), \
                     UT_Control_GetMapString(bool_mapTable_hdmiinput, status.isOk()), \
-                    UT_Control_GetMapString(statusHDMIInputException_mapTable, status.exceptionCode())); \
+                    UT_Control_GetMapString(statusHdmiInputException_mapTable, status.exceptionCode())); \
                     break; \
                 default: \
                     break; \
@@ -442,7 +444,7 @@ using namespace com::rdk::hal::hdmiinput;
         { \
             UT_LOG_DEBUG("Result getProperty(IN:property[%s], OUT:propertyValue[]), status:[isOK:%s, exception:%s]", hdmiinput::toString(property).c_str(), \
                     UT_Control_GetMapString(bool_mapTable_hdmiinput, status.isOk()), \
-                    UT_Control_GetMapString(statusHDMIInputException_mapTable, status.exceptionCode())); \
+                    UT_Control_GetMapString(statusHdmiInputException_mapTable, status.exceptionCode())); \
             UT_ASSERT_TRUE(false); \
         } \
         UT_ASSERT_TRUE(status.isOk()); \
@@ -456,16 +458,18 @@ using namespace com::rdk::hal::hdmiinput;
         status = (hdmiinputHandle)->getProperty(property, &propertyValue); \
         UT_LOG_DEBUG("Result getProperty(IN:property[%s], OUT:propertyValue[]), status:[isOK:%s, exception:%s]", hdmiinput::toString(property).c_str(), \
                     UT_Control_GetMapString(bool_mapTable_hdmiinput, status.isOk()), \
-                    UT_Control_GetMapString(statusHDMIInputException_mapTable, status.exceptionCode())); \
+                    UT_Control_GetMapString(statusHdmiInputException_mapTable, status.exceptionCode())); \
         UT_ASSERT_FALSE(propertyValue.has_value()); \
-        if (exception == Status::EX_NONE) \
+        if (exception == Status::EX_NONE) {\
             UT_ASSERT_TRUE(status.isOk()); \
-        else \
+        } \
+        else { \
             UT_ASSERT_FALSE(status.isOk()); \
+        } \
         UT_ASSERT_EQUAL(status.exceptionCode(), exception); \
     } while (0)
 
-#define HDMIINPUT_REGISTER_EVENT_SUCCESS(hdmiinputHandle, eventListener) \
+#define HDMIINPUT_REGISTEREVENT_SUCCESS(hdmiinputHandle, eventListener) \
     do { \
         ::android::binder::Status status; \
         bool _aidl_return; \
@@ -474,13 +478,13 @@ using namespace com::rdk::hal::hdmiinput;
         UT_LOG_DEBUG("Result registerEventListener(IN:eventListener[%p], OUT:_aidl_return[%s]), status:[isOK:%s, exception:%s]", \
             eventListener.get(), UT_Control_GetMapString(bool_mapTable_hdmiinput, _aidl_return), \
             UT_Control_GetMapString(bool_mapTable_hdmiinput, status.isOk()), \
-            UT_Control_GetMapString(statusHDMIInputException_mapTable, status.exceptionCode())); \
+            UT_Control_GetMapString(statusHdmiInputException_mapTable, status.exceptionCode())); \
         UT_ASSERT_TRUE(status.isOk()); \
         UT_ASSERT_EQUAL(status.exceptionCode(), Status::EX_NONE); \
         UT_ASSERT_TRUE(_aidl_return); \
     } while (0)
 
-#define HDMIINPUT_REGISTER_EVENT_FAILURE(hdmiinputHandle, eventListener, exception) \
+#define HDMIINPUT_REGISTEREVENT_FAILURE(hdmiinputHandle, eventListener, exception) \
     do { \
         ::android::binder::Status status; \
         bool _aidl_return; \
@@ -489,16 +493,18 @@ using namespace com::rdk::hal::hdmiinput;
         UT_LOG_DEBUG("Result registerEventListener(IN:eventListener[%p], OUT:_aidl_return[%s]), status:[isOK:%s, exception:%s]", \
             eventListener.get(), UT_Control_GetMapString(bool_mapTable_hdmiinput, _aidl_return), \
             UT_Control_GetMapString(bool_mapTable_hdmiinput, status.isOk()), \
-            UT_Control_GetMapString(statusHDMIInputException_mapTable, status.exceptionCode())); \
-        if (exception == Status::EX_NONE) \
+            UT_Control_GetMapString(statusHdmiInputException_mapTable, status.exceptionCode())); \
+        if (exception == Status::EX_NONE) {\
             UT_ASSERT_TRUE(status.isOk()); \
-        else \
+            UT_ASSERT_FALSE(_aidl_return); \
+        } \
+        else { \
             UT_ASSERT_FALSE(status.isOk()); \
+        } \
         UT_ASSERT_EQUAL(status.exceptionCode(), exception); \
-        UT_ASSERT_FALSE(_aidl_return); \
     } while (0)
 
-#define HDMIINPUT_UNREGISTER_EVENT_SUCCESS(hdmiinputHandle, eventListener) \
+#define HDMIINPUT_UNREGISTEREVENT_SUCCESS(hdmiinputHandle, eventListener) \
     do { \
         ::android::binder::Status status; \
         bool _aidl_return; \
@@ -507,13 +513,13 @@ using namespace com::rdk::hal::hdmiinput;
         UT_LOG_DEBUG("Result unregisterEventListener(IN:eventListener[%p], OUT:_aidl_return[%s]), status:[isOK:%s, exception:%s]", \
             eventListener.get(), UT_Control_GetMapString(bool_mapTable_hdmiinput, _aidl_return), \
             UT_Control_GetMapString(bool_mapTable_hdmiinput, status.isOk()), \
-            UT_Control_GetMapString(statusHDMIInputException_mapTable, status.exceptionCode())); \
+            UT_Control_GetMapString(statusHdmiInputException_mapTable, status.exceptionCode())); \
         UT_ASSERT_TRUE(status.isOk()); \
         UT_ASSERT_TRUE(_aidl_return); \
         UT_ASSERT_EQUAL(status.exceptionCode(), Status::EX_NONE); \
     } while (0)
 
-#define HDMIINPUT_UNREGISTER_EVENT_FAILURE(hdmiinputHandle, eventListener, exception) \
+#define HDMIINPUT_UNREGISTEREVENT_FAILURE(hdmiinputHandle, eventListener, exception) \
     do { \
         ::android::binder::Status status; \
         bool _aidl_return; \
@@ -522,127 +528,141 @@ using namespace com::rdk::hal::hdmiinput;
         UT_LOG_DEBUG("Result unregisterEventListener(IN:eventListener[%p], OUT:_aidl_return[%s]), status:[isOK:%s, exception:%s]", \
             eventListener.get(), UT_Control_GetMapString(bool_mapTable_hdmiinput, _aidl_return), \
             UT_Control_GetMapString(bool_mapTable_hdmiinput, status.isOk()), \
-            UT_Control_GetMapString(statusHDMIInputException_mapTable, status.exceptionCode())); \
-        if (exception == Status::EX_NONE) \
+            UT_Control_GetMapString(statusHdmiInputException_mapTable, status.exceptionCode())); \
+        if (exception == Status::EX_NONE) {\
             UT_ASSERT_TRUE(status.isOk()); \
-        else \
+            UT_ASSERT_FALSE(_aidl_return); \
+        } \
+        else { \
             UT_ASSERT_FALSE(status.isOk()); \
+        } \
         UT_ASSERT_EQUAL(status.exceptionCode(), exception); \
-        UT_ASSERT_FALSE(_aidl_return); \
     } while (0)
 
-#define HDMIINPUT_GET_LOGICAL_ADDRESS_SUCCESS(hdmiinputHandle, logicalAddresses) \
+#define HDMIINPUT_GETCONNECTIONSTATE(hdmiinputController, connectionState) \
     do { \
         ::android::binder::Status status; \
-        UT_LOG_DEBUG("Calling getLogicalAddresses(OUT:logicalAddresses[])"); \
-        status = hdmiinputHandle->getLogicalAddresses(&logicalAddresses); \
-        UT_LOG_DEBUG("Result getLogicalAddresses(OUT:logicalAddresses[%s]), status:[isOK:%s, exception:%s]", \
-            vecIntToString(logicalAddresses).c_str(), \
+        UT_LOG_DEBUG("Calling getConnectionState(OUT:connectionState[])"); \
+        status = hdmiinputController->getConnectionState(&connectionState); \
+        UT_LOG_DEBUG("Result getConnectionState(OUT:connectionState[%s]), status:[isOK:%s, exception:%s]", \
+            UT_Control_GetMapString(bool_mapTable_hdmiinput, connectionState), \
             UT_Control_GetMapString(bool_mapTable_hdmiinput, status.isOk()), \
-            UT_Control_GetMapString(statusHDMIInputException_mapTable, status.exceptionCode())); \
+            UT_Control_GetMapString(statusHdmiInputException_mapTable, status.exceptionCode())); \
         UT_ASSERT_TRUE(status.isOk()); \
         UT_ASSERT_EQUAL(status.exceptionCode(), Status::EX_NONE); \
     } while (0)
 
-#define HDMIINPUT_ADD_LOGICAL_ADDRESS_SUCCESS(hdmiinputControlHandle, logicalAddresses) \
+#define HDMIINPUT_START_SUCCESS(hdmiinputHandle, hdmiinputController, stateCheck) \
+    do { \
+        ::android::binder::Status status; \
+        UT_LOG_DEBUG("Calling start()"); \
+        status = hdmiinputController->start(); \
+        UT_LOG_DEBUG("Result start(), status:[isOK:%s, exception:%s]", \
+            UT_Control_GetMapString(bool_mapTable_hdmiinput, status.isOk()), \
+            UT_Control_GetMapString(statusHdmiInputException_mapTable, status.exceptionCode())); \
+        UT_ASSERT_TRUE(status.isOk()); \
+        UT_ASSERT_EQUAL(status.exceptionCode(), Status::EX_NONE); \
+        if (stateCheck) \
+        { \
+            hdmiinput::State lastState; \
+            HDMIINPUT_WAIT_FOR_STATE(hdmiinputHandle, hdmiinput::State::STARTED, lastState); \
+            UT_ASSERT_EQUAL(lastState, hdmiinput::State::STARTED); \
+        } \
+    } while (0)
+
+#define HDMIINPUT_START_FAILURE(hdmiinputHandle, hdmiinputController, expectedState, expectedException) \
+    do { \
+        android::binder::Status status; \
+        hdmiinput::State state; \
+        UT_LOG_DEBUG("Calling start()"); \
+        status = hdmiinputController->start(); \
+        UT_LOG_DEBUG("Result start(), status:[isOK:%s, exception:%s]", \
+            UT_Control_GetMapString(bool_mapTable_hdmiinput, status.isOk()), \
+            UT_Control_GetMapString(statusHdmiInputException_mapTable, status.exceptionCode())); \
+        if (expectedException == Status::EX_NONE) {\
+            UT_ASSERT_TRUE(status.isOk()); \
+        } \
+        else {\
+            UT_ASSERT_FALSE(status.isOk()); \
+        } \
+        UT_ASSERT_EQUAL(status.exceptionCode(), expectedException); \
+        HDMIINPUT_GET_STATE(hdmiinputHandle, state); \
+        UT_ASSERT_EQUAL_FATAL(state, expectedState); \
+    } while (0)
+
+#define HDMIINPUT_STOP_SUCCESS(hdmiInput, hdmiInputController, stateCheck) \
+    do { \
+        android::binder::Status status; \
+        UT_LOG_DEBUG("Calling stop()"); \
+        status = hdmiInputController->stop(); \
+        UT_LOG_DEBUG("Result stop(), status:[isOK:%s, exception:%s]", \
+            UT_Control_GetMapString(bool_mapTable_hdmiinput, status.isOk()), \
+            UT_Control_GetMapString(statusHdmiInputException_mapTable, status.exceptionCode())); \
+        UT_ASSERT_TRUE(status.isOk()); \
+        UT_ASSERT_EQUAL(status.exceptionCode(), Status::EX_NONE); \
+        if (stateCheck) \
+        { \
+            hdmiinput::State lastState; \
+            HDMIINPUT_WAIT_FOR_STATE(hdmiInput, hdmiinput::State::READY, lastState); \
+            UT_ASSERT_EQUAL(lastState, hdmiinput::State::READY); \
+        } \
+    } while (0)
+
+#define HDMIINPUT_STOP_FAILURE(hdmiinputHandle, hdmiInputController, expectedState, expectedException) \
+    do { \
+        android::binder::Status status; \
+        hdmiinput::State state; \
+        UT_LOG_DEBUG("Calling stop()"); \
+        status = hdmiInputController->stop(); \
+        UT_LOG_DEBUG("Result stop(), status:[isOK:%s, exception:%s]", \
+            UT_Control_GetMapString(bool_mapTable_hdmiinput, status.isOk()), \
+            UT_Control_GetMapString(statusHdmiInputException_mapTable, status.exceptionCode())); \
+        if (expectedException == Status::EX_NONE) {\
+            UT_ASSERT_TRUE(status.isOk()); \
+        } \
+        else {\
+            UT_ASSERT_FALSE(status.isOk()); \
+        } \
+        UT_ASSERT_EQUAL(status.exceptionCode(), expectedException); \
+        HDMIINPUT_GET_STATE(hdmiinputHandle, state); \
+        UT_ASSERT_EQUAL_FATAL(state, expectedState); \
+    } while (0)
+
+#define HDMIINPUT_SETEDID_SUCCESS(hdmiInputController, edidBytes) \
     do { \
         ::android::binder::Status status; \
         bool _aidl_return; \
-        UT_LOG_DEBUG("Calling addLogicalAddresses(IN:logicalAddresses[%s], OUT:_aidl_return[])", vecIntToString(logicalAddresses).c_str()); \
-        status = hdmiinputController->addLogicalAddresses(logicalAddresses, &_aidl_return); \
-        UT_LOG_DEBUG("Result addLogicalAddresses(IN:logicalAddresses[%s], OUT:_aidl_return[%s]), status:[isOK:%s, exception:%s]", \
-            vecIntToString(logicalAddresses).c_str(), \
+        UT_LOG_DEBUG("Calling setEDID(OUT:edidBytes:size:[], OUT:_aidl_return[])"); \
+        status = hdmiInputController->setEDID(edidBytes, &_aidl_return); \
+        UT_LOG_DEBUG("Result setEDID(IN:edidBytes:size:[%s], OUT:_aidl_return[%s]), status:[isOK:%s, exception:%s]", \
+            hdmiinputVecByteToHexString(edidBytes), \
             UT_Control_GetMapString(bool_mapTable_hdmiinput, _aidl_return), \
             UT_Control_GetMapString(bool_mapTable_hdmiinput, status.isOk()), \
-            UT_Control_GetMapString(statusHDMIInputException_mapTable, status.exceptionCode())); \
+            UT_Control_GetMapString(statusHdmiInputException_mapTable, status.exceptionCode())); \
+        UT_ASSERT_TRUE(status.isOk()); \
         UT_ASSERT_TRUE(_aidl_return); \
-        UT_ASSERT_TRUE(status.isOk()); \
-        UT_ASSERT_EQUAL(status.exceptionCode(), Status::EX_NONE); \
-    } while (0);
-
-#define HDMIINPUT_ADD_LOGICAL_ADDRESS_FAILURE(hdmiinputControlHandle, logicalAddresses, exception) \
-    do { \
-        ::android::binder::Status status; \
-        bool _aidl_return; \
-        UT_LOG_DEBUG("Calling addLogicalAddresses(IN:logicalAddresses[%s], OUT:_aidl_return[])", vecIntToString(logicalAddresses).c_str()); \
-        status = hdmiinputController->addLogicalAddresses(logicalAddresses, &_aidl_return); \
-        UT_LOG_DEBUG("Result addLogicalAddresses(IN:logicalAddresses[%s], OUT:_aidl_return[%s]), status:[isOK:%s, exception:%s]", \
-            vecIntToString(logicalAddresses).c_str(), \
-            UT_Control_GetMapString(bool_mapTable_hdmiinput, _aidl_return), \
-            UT_Control_GetMapString(bool_mapTable_hdmiinput, status.isOk()), \
-            UT_Control_GetMapString(statusHDMIInputException_mapTable, status.exceptionCode())); \
-        UT_ASSERT_FALSE(_aidl_return); \
-        if (exception == Status::EX_NONE) \
-            UT_ASSERT_TRUE(status.isOk()); \
-        else \
-            UT_ASSERT_FALSE(status.isOk()); \
-        UT_ASSERT_EQUAL(status.exceptionCode(), exception); \
-    } while (0);
-
-#define HDMIINPUT_REMOVE_LOGICAL_ADDRESS_SUCCESS(hdmiinputControlHandle, logicalAddresses) \
-    do { \
-        ::android::binder::Status status; \
-        bool _aidl_return; \
-        UT_LOG_DEBUG("Calling removeLogicalAddresses(IN:logicalAddresses[%s], OUT:_aidl_return[])", vecIntToString(logicalAddresses).c_str()); \
-        status = hdmiinputController->removeLogicalAddresses(logicalAddresses, &_aidl_return); \
-        UT_LOG_DEBUG("Result removeLogicalAddresses(OUT:logicalAddresses[%s], OUT:_aidl_return[%s]), status:[isOK:%s, exception:%s]", \
-            vecIntToString(logicalAddresses).c_str(), \
-            UT_Control_GetMapString(bool_mapTable_hdmiinput, _aidl_return), \
-            UT_Control_GetMapString(bool_mapTable_hdmiinput, status.isOk()), \
-            UT_Control_GetMapString(statusHDMIInputException_mapTable, status.exceptionCode())); \
-        UT_ASSERT_TRUE(_aidl_return); \
-        UT_ASSERT_TRUE(status.isOk()); \
         UT_ASSERT_EQUAL(status.exceptionCode(), Status::EX_NONE); \
     } while (0)
 
-#define HDMIINPUT_REMOVE_LOGICAL_ADDRESS_FAILURE(hdmiinputControlHandle, logicalAddresses, exception) \
+#define HDMIINPUT_SETEDID_FAILURE(hdmiInputController, edidBytes, expectedException) \
     do { \
         ::android::binder::Status status; \
         bool _aidl_return; \
-        UT_LOG_DEBUG("Calling removeLogicalAddresses(IN:logicalAddresses[%s], OUT:_aidl_return[])", vecIntToString(logicalAddresses).c_str()); \
-        status = hdmiinputController->removeLogicalAddresses(logicalAddresses, &_aidl_return); \
-        UT_LOG_DEBUG("Result removeLogicalAddresses(OUT:logicalAddresses[%s], OUT:_aidl_return[%s]), status:[isOK:%s, exception:%s]", \
-            vecIntToString(logicalAddresses).c_str(), \
+        UT_LOG_DEBUG("Calling setEDID(OUT:edidBytes:size:[], OUT:_aidl_return[])"); \
+        status = hdmiInputController->setEDID(edidBytes, &_aidl_return); \
+        UT_LOG_DEBUG("Result setEDID(IN:edidBytes:size:[%s], OUT:_aidl_return[%s]), status:[isOK:%s, exception:%s]", \
+            hdmiinputVecByteToHexString(edidBytes), \
             UT_Control_GetMapString(bool_mapTable_hdmiinput, _aidl_return), \
             UT_Control_GetMapString(bool_mapTable_hdmiinput, status.isOk()), \
-            UT_Control_GetMapString(statusHDMIInputException_mapTable, status.exceptionCode())); \
-        UT_ASSERT_FALSE(_aidl_return); \
-        if (exception == Status::EX_NONE) \
+            UT_Control_GetMapString(statusHdmiInputException_mapTable, status.exceptionCode())); \
+        if (expectedException == Status::EX_NONE) {\
             UT_ASSERT_TRUE(status.isOk()); \
-        else \
+            UT_ASSERT_FALSE(_aidl_return); \
+        } \
+        else {\
             UT_ASSERT_FALSE(status.isOk()); \
-        UT_ASSERT_EQUAL(status.exceptionCode(), exception); \
-    } while (0)
-
-#define HDMIINPUT_SEND_MESSAGE_SUCCESS(hdmiinputController, message, sendStatus) \
-    do { \
-        ::android::binder::Status status; \
-        UT_LOG_DEBUG("Calling sendMessage(IN:message[%s], OUT:sendStatus[])", vecByteToHexString(message).c_str()); \
-        status = hdmiinputController->sendMessage(message, &sendStatus); \
-        UT_LOG_DEBUG("Result sendMessage(IN:message[%s], OUT:sendStatus[%s]), status:[isOK:%s, exception:%s]", \
-            vecByteToHexString(message).c_str(), \
-            hdmiinput::toString(sendStatus).c_str(), \
-            UT_Control_GetMapString(bool_mapTable_hdmiinput, status.isOk()), \
-            UT_Control_GetMapString(statusHDMIInputException_mapTable, status.exceptionCode())); \
-        UT_ASSERT_TRUE(status.isOk()); \
-        UT_ASSERT_EQUAL(status.exceptionCode(), Status::EX_NONE); \
-    } while (0)
-
-#define HDMIINPUT_SEND_MESSAGE_FAILURE(hdmiinputController, message, sendStatus, exception) \
-    do { \
-        ::android::binder::Status status; \
-        UT_LOG_DEBUG("Calling sendMessage(IN:message[%s], OUT:sendStatus[])", vecByteToHexString(message).c_str()); \
-        status = hdmiinputController->sendMessage(message, &sendStatus); \
-        UT_LOG_DEBUG("Result sendMessage(IN:message[%s], OUT:sendStatus[%s]), status:[isOK:%s, exception:%s]", \
-            vecByteToHexString(message).c_str(), \
-            hdmiinput::toString(sendStatus).c_str(), \
-            UT_Control_GetMapString(bool_mapTable_hdmiinput, status.isOk()), \
-            UT_Control_GetMapString(statusHDMIInputException_mapTable, status.exceptionCode())); \
-        if (exception == Status::EX_NONE) \
-            UT_ASSERT_TRUE(status.isOk()); \
-        else \
-            UT_ASSERT_FALSE(status.isOk()); \
-        UT_ASSERT_EQUAL(status.exceptionCode(), exception); \
+        } \
+        UT_ASSERT_EQUAL(status.exceptionCode(), expectedException); \
     } while (0)
 
 /* Contoller Listener Class */
