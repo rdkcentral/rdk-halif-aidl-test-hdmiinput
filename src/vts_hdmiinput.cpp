@@ -76,6 +76,18 @@ android::binder::Status HDMIInputControllerListener::onConnectionStateChanged(bo
     return android::binder::Status::ok();
 }
 
+bool HDMIInputControllerListener::getNextConnectionState(bool& connectionState)
+{
+    std::lock_guard<std::mutex> lock(mConnectionStateMutex);
+    if (mConnectionStateQueue.empty())
+    {
+        return false;
+    }
+    connectionState = mConnectionStateQueue.front();
+    mConnectionStateQueue.pop();
+    return true;
+}
+
 android::binder::Status HDMIInputControllerListener::onSignalStateChanged(hdmiinput::SignalState signalState)
 {
     {
@@ -86,6 +98,18 @@ android::binder::Status HDMIInputControllerListener::onSignalStateChanged(hdmiin
     return android::binder::Status::ok();
 }
 
+bool HDMIInputControllerListener::getNextSignalState(hdmiinput::SignalState& signalState)
+{
+    std::lock_guard<std::mutex> lock(mSignalStateMutex);
+    if (mSignalStateQueue.empty())
+    {
+        return false;
+    }
+    signalState = mSignalStateQueue.front();
+    mSignalStateQueue.pop();
+    return true;
+}
+
 android::binder::Status HDMIInputControllerListener::onVideoFormatChanged(hdmiinput::VIC vic)
 {
     {
@@ -94,6 +118,18 @@ android::binder::Status HDMIInputControllerListener::onVideoFormatChanged(hdmiin
     }
     UT_LOG_INFO("HDMIInputControllerListener::onVideoFormatChanged called with VIC[%s]", hdmiinput::toString(vic).c_str());
     return android::binder::Status::ok();
+}
+
+bool HDMIInputControllerListener::getNextVideoFormat(hdmiinput::VIC& vic)
+{
+    std::lock_guard<std::mutex> lock(mVideoFormatMutex);
+    if (mVideoFormatQueue.empty())
+    {
+        return false;
+    }
+    vic = mVideoFormatQueue.front();
+    mVideoFormatQueue.pop();
+    return true;
 }
 
 android::binder::Status HDMIInputControllerListener::onVRRChanged(bool vrrActive, bool M_CONST, bool fastVActive, double frameRate)
@@ -110,6 +146,18 @@ android::binder::Status HDMIInputControllerListener::onVRRChanged(bool vrrActive
     return android::binder::Status::ok();
 }
 
+bool HDMIInputControllerListener::getNextVRRInfo(bool& vrrActive, bool& M_CONST, bool& fastVActive, double& frameRate)
+{
+    std::lock_guard<std::mutex> lock(mVRRMutex);
+    if (mVRRQueue.empty())
+    {
+        return false;
+    }
+    std::tie(vrrActive, M_CONST, fastVActive, frameRate) = mVRRQueue.front();
+    mVRRQueue.pop();
+    return true;
+}
+
 android::binder::Status HDMIInputControllerListener::onAVIInfoFrame(const ::std::vector<uint8_t>& data)
 {
     {
@@ -118,6 +166,18 @@ android::binder::Status HDMIInputControllerListener::onAVIInfoFrame(const ::std:
     }
     UT_LOG_INFO("HDMIInputControllerListener::onAVIInfoFrame called with size[%d] data[%s]", static_cast<int>(data.size()), hdmiinputVecByteToHexString(data).c_str());
     return android::binder::Status::ok();
+}
+
+bool HDMIInputControllerListener::getNextAVIInfoFrame(std::vector<uint8_t>& data)
+{
+    std::lock_guard<std::mutex> lock(mAVIInfoMutex);
+    if (mAVIInfoQueue.empty())
+    {
+        return false;
+    }
+    data = mAVIInfoQueue.front();
+    mAVIInfoQueue.pop();
+    return true;
 }
 
 android::binder::Status HDMIInputControllerListener::onAudioInfoFrame(const ::std::vector<uint8_t>& data)
@@ -130,6 +190,18 @@ android::binder::Status HDMIInputControllerListener::onAudioInfoFrame(const ::st
     return android::binder::Status::ok();
 }
 
+bool HDMIInputControllerListener::getNextAudioInfoFrame(std::vector<uint8_t>& data)
+{
+    std::lock_guard<std::mutex> lock(mAudioInfoMutex);
+    if (mAudioInfoQueue.empty())
+    {
+        return false;
+    }
+    data = mAudioInfoQueue.front();
+    mAudioInfoQueue.pop();
+    return true;
+}
+
 android::binder::Status HDMIInputControllerListener::onSPDInfoFrame(const ::std::vector<uint8_t>& data)
 {
     {
@@ -138,6 +210,18 @@ android::binder::Status HDMIInputControllerListener::onSPDInfoFrame(const ::std:
     }
     UT_LOG_INFO("HDMIInputControllerListener::onSPDInfoFrame called with size[%d] data[%s]", static_cast<int>(data.size()), hdmiinputVecByteToHexString(data).c_str());
     return android::binder::Status::ok();
+}
+
+bool HDMIInputControllerListener::getNextSPDInfoFrame(std::vector<uint8_t>& data)
+{
+    std::lock_guard<std::mutex> lock(mSPDInfoMutex);
+    if (mSPDInfoQueue.empty())
+    {
+        return false;
+    }
+    data = mSPDInfoQueue.front();
+    mSPDInfoQueue.pop();
+    return true;
 }
 
 android::binder::Status HDMIInputControllerListener::onDRMInfoFrame(const ::std::vector<uint8_t>& data)
@@ -150,6 +234,18 @@ android::binder::Status HDMIInputControllerListener::onDRMInfoFrame(const ::std:
     return android::binder::Status::ok();
 }
 
+bool HDMIInputControllerListener::getNextDRMInfoFrame(std::vector<uint8_t>& data)
+{
+    std::lock_guard<std::mutex> lock(mDRMInfoMutex);
+    if (mDRMInfoQueue.empty())
+    {
+        return false;
+    }
+    data = mDRMInfoQueue.front();
+    mDRMInfoQueue.pop();
+    return true;
+}
+
 android::binder::Status HDMIInputControllerListener::onVendorSpecificInfoFrame(const ::std::vector<uint8_t>& data)
 {
     {
@@ -158,6 +254,18 @@ android::binder::Status HDMIInputControllerListener::onVendorSpecificInfoFrame(c
     }
     UT_LOG_INFO("HDMIInputControllerListener::onVendorSpecificInfoFrame called with size[%d] data[%s]", static_cast<int>(data.size()), hdmiinputVecByteToHexString(data).c_str());
     return android::binder::Status::ok();
+}
+
+bool HDMIInputControllerListener::getNextVendorSpecificInfoFrame(std::vector<uint8_t>& data)
+{
+    std::lock_guard<std::mutex> lock(mVendorSpecificInfoMutex);
+    if (mVendorSpecificInfoQueue.empty())
+    {
+        return false;
+    }
+    data = mVendorSpecificInfoQueue.front();
+    mVendorSpecificInfoQueue.pop();
+    return true;
 }
 
 android::binder::Status HDMIInputControllerListener::onHDCPStatusChanged(hdmiinput::HDCPStatus hdcpStatus, hdmiinput::HDCPProtocolVersion hdcpProtocolVersion)
@@ -170,6 +278,18 @@ android::binder::Status HDMIInputControllerListener::onHDCPStatusChanged(hdmiinp
         hdmiinput::toString(hdcpStatus).c_str(),
         hdmiinput::toString(hdcpProtocolVersion).c_str());
     return android::binder::Status::ok();
+}
+
+bool HDMIInputControllerListener::getNextHDCPStatus(hdmiinput::HDCPStatus& hdcpStatus, hdmiinput::HDCPProtocolVersion& hdcpProtocolVersion)
+{
+    std::lock_guard<std::mutex> lock(mHDCPStatusMutex);
+    if (mHDCPStatusQueue.empty())
+    {
+        return false;
+    }
+    std::tie(hdcpStatus, hdcpProtocolVersion) = mHDCPStatusQueue.front();
+    mHDCPStatusQueue.pop();
+    return true;
 }
 
 /* Event Listener Class */
@@ -185,6 +305,18 @@ android::binder::Status HDMIInputEventListener::onStateChanged(hdmiinput::State 
     return android::binder::Status::ok();
 }
 
+bool HDMIInputEventListener::getNextStateChanges(pair<hdmiinput::State, hdmiinput::State>& stateChanges)
+{
+    std::lock_guard<std::mutex> lock(mStateChangeMutex);
+    if (mStateChangeQueue.empty())
+    {
+        return false;
+    }
+    stateChanges = mStateChangeQueue.front();
+    mStateChangeQueue.pop();
+    return true;
+}
+
 android::binder::Status HDMIInputEventListener::onEDIDChange(const std::vector<uint8_t>& edid)
 {
     {
@@ -193,6 +325,18 @@ android::binder::Status HDMIInputEventListener::onEDIDChange(const std::vector<u
     }
     UT_LOG_INFO("HDMIInputEventListener::onEDIDChange called with edid size[%d] data[%s]", static_cast<int>(edid.size()), hdmiinputVecByteToHexString(edid).c_str());
     return android::binder::Status::ok();
+}
+
+bool HDMIInputEventListener::getNextEDIDChange(std::vector<uint8_t>& edid)
+{
+    std::lock_guard<std::mutex> lock(mEDIDChangeMutex);
+    if (mEDIDChangeQueue.empty())
+    {
+        return false;
+    }
+    edid = mEDIDChangeQueue.front();
+    mEDIDChangeQueue.pop();
+    return true;
 }
 
 /** @} */ // End of HDMI_INPUT_HALTEST_HEADER

@@ -627,10 +627,10 @@ using namespace com::rdk::hal::hdmiinput;
     do { \
         ::android::binder::Status status; \
         bool _aidl_return; \
-        UT_LOG_DEBUG("Calling setEDID(OUT:edidBytes:size:[], OUT:_aidl_return[])"); \
+        UT_LOG_DEBUG("Calling setEDID(IN:edidBytes:size:[%zu], OUT:_aidl_return[])", edidBytes.size()); \
         status = hdmiInputController->setEDID(edidBytes, &_aidl_return); \
-        UT_LOG_DEBUG("Result setEDID(IN:edidBytes:size:[%s], OUT:_aidl_return[%s]), status:[isOK:%s, exception:%s]", \
-            hdmiinputVecByteToHexString(edidBytes).c_str(), \
+        UT_LOG_DEBUG("Result setEDID(IN:edidBytes:size:[%zu], OUT:_aidl_return[%s]), status:[isOK:%s, exception:%s]", \
+            edidBytes.size(), \
             UT_Control_GetMapString(bool_mapTable_hdmiinput, _aidl_return), \
             UT_Control_GetMapString(bool_mapTable_hdmiinput, status.isOk()), \
             UT_Control_GetMapString(statusHdmiInputException_mapTable, status.exceptionCode())); \
@@ -643,10 +643,10 @@ using namespace com::rdk::hal::hdmiinput;
     do { \
         ::android::binder::Status status; \
         bool _aidl_return; \
-        UT_LOG_DEBUG("Calling setEDID(OUT:edidBytes:size:[], OUT:_aidl_return[])"); \
+        UT_LOG_DEBUG("Calling setEDID(IN:edidBytes:size:[%zu], OUT:_aidl_return[])", edidBytes.size()); \
         status = hdmiInputController->setEDID(edidBytes, &_aidl_return); \
-        UT_LOG_DEBUG("Result setEDID(IN:edidBytes:size:[%s], OUT:_aidl_return[%s]), status:[isOK:%s, exception:%s]", \
-            hdmiinputVecByteToHexString(edidBytes), \
+        UT_LOG_DEBUG("Result setEDID(IN:edidBytes:size:[%zu], OUT:_aidl_return[%s]), status:[isOK:%s, exception:%s]", \
+            edidBytes.size(), \
             UT_Control_GetMapString(bool_mapTable_hdmiinput, _aidl_return), \
             UT_Control_GetMapString(bool_mapTable_hdmiinput, status.isOk()), \
             UT_Control_GetMapString(statusHdmiInputException_mapTable, status.exceptionCode())); \
@@ -678,6 +678,17 @@ public:
     android::binder::Status onVendorSpecificInfoFrame(const ::std::vector<uint8_t>& data) override;
     android::binder::Status onHDCPStatusChanged(::com::rdk::hal::hdmiinput::HDCPStatus hdcpStatus, ::com::rdk::hal::hdmiinput::HDCPProtocolVersion hdcpProtocolVersion) override;
 
+public:
+    bool getNextConnectionState(bool& connectionState);
+    bool getNextSignalState(hdmiinput::SignalState& signalState);
+    bool getNextVideoFormat(hdmiinput::VIC& vic);
+    bool getNextVRRInfo(bool& vrrActive, bool& M_CONST, bool& fastVActive, double& frameRate);
+    bool getNextAVIInfoFrame(std::vector<uint8_t>& data);
+    bool getNextAudioInfoFrame(std::vector<uint8_t>& data);
+    bool getNextSPDInfoFrame(std::vector<uint8_t>& data);
+    bool getNextDRMInfoFrame(std::vector<uint8_t>& data);
+    bool getNextVendorSpecificInfoFrame(std::vector<uint8_t>& data);
+    bool getNextHDCPStatus(hdmiinput::HDCPStatus& hdcpStatus, hdmiinput::HDCPProtocolVersion& hdcpProtocolVersion);
 private:
     mutex mConnectionStateMutex;
     mutex mSignalStateMutex;
@@ -711,13 +722,20 @@ public:
 
     android::binder::Status onStateChanged(::com::rdk::hal::hdmiinput::State oldState, ::com::rdk::hal::hdmiinput::State newState) override;
     android::binder::Status onEDIDChange(const ::std::vector<uint8_t>& edid) override;
+
+public:
+    bool getNextStateChanges(pair<hdmiinput::State, hdmiinput::State>& stateChanges);
+    bool getNextEDIDChange(std::vector<uint8_t>& edid);
+
 private:
     mutex mStateChangeMutex;
     mutex mEDIDChangeMutex;
 
-    std::queue<std::tuple<hdmiinput::State, hdmiinput::State>> mStateChangeQueue;
+    std::queue<std::pair<hdmiinput::State, hdmiinput::State>> mStateChangeQueue;
     std::queue<std::vector<uint8_t>> mEDIDChangeQueue;
 };
+
+extern android::sp<::com::rdk::hal::hdmiinput::IHDMIInputManager> gHdmiInputManager;
 
 #endif // __VTS_HDMIINPUT_H__
 
