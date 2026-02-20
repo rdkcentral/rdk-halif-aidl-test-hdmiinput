@@ -165,7 +165,7 @@ using namespace com::rdk::hal::hdmiinput;
      do { \
          android::binder::Status status; \
          UT_LOG_DEBUG("Calling getCapabilities(OUT:caps[])"); \
-         status = (hdmiinputHandle)->getCapabilities(&caps); \
+         status = (hdmiinputHandle)->getCapabilities(caps); \
          UT_LOG_DEBUG("Result getCapabilities(OUT:caps), status:[isOK:%s, exception:%s]", \
             UT_Control_GetMapString(bool_mapTable_hdmiinput, status.isOk()), \
             UT_Control_GetMapString(statusHdmiInputException_mapTable, status.exceptionCode())); \

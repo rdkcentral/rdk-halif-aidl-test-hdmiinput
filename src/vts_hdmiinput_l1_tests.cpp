@@ -269,7 +269,7 @@ UT_ADD_TEST(VTS_L1_HDMIINPUT, getCapabilities_pos)
 {
     for (auto &port : gHdmiInput_hfp.ports)
     {
-        hdmiinput::Capabilities caps;
+        hdmiinput::Capabilities *capabilities = new hdmiinput::Capabilities();
         android::sp<hdmiinput::IHDMIInput> hdmiInput;
         hdmiinput::IHDMIInput::Id hdmiInputIds;
 
@@ -277,39 +277,39 @@ UT_ADD_TEST(VTS_L1_HDMIINPUT, getCapabilities_pos)
 
         HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESSS(hdmiInputIds, hdmiInput);
 
-        HDMIINPUT_GET_CAPABILITIES(hdmiInput, caps);
+        HDMIINPUT_GET_CAPABILITIES(hdmiInput, capabilities);
 
-        UT_ASSERT_EQUAL(caps.supports3D, port.supports3D);
-        UT_ASSERT_EQUAL(caps.supportsFRL, port.supportsFRL);
-        UT_ASSERT_EQUAL(caps.supportsVRR, port.supportsVRR);
-        UT_ASSERT_EQUAL(caps.supportsFreeSync, port.supportsFreeSync);
-        UT_ASSERT_EQUAL(caps.supportsQMS, port.supportsQMS);
-        UT_ASSERT_EQUAL(caps.supportsALLM, port.supportsALLM);
-        UT_ASSERT_EQUAL(caps.supportsQFT, port.supportsQFT);
-        UT_ASSERT_EQUAL(caps.supportsARC, port.supportsARC);
-        UT_ASSERT_EQUAL(caps.supportsEARC, port.supportsEARC);
+        UT_ASSERT_EQUAL(capabilities->supports3D, port.supports3D);
+        UT_ASSERT_EQUAL(capabilities->supportsFRL, port.supportsFRL);
+        UT_ASSERT_EQUAL(capabilities->supportsVRR, port.supportsVRR);
+        UT_ASSERT_EQUAL(capabilities->supportsFreeSync, port.supportsFreeSync);
+        UT_ASSERT_EQUAL(capabilities->supportsQMS, port.supportsQMS);
+        UT_ASSERT_EQUAL(capabilities->supportsALLM, port.supportsALLM);
+        UT_ASSERT_EQUAL(capabilities->supportsQFT, port.supportsQFT);
+        UT_ASSERT_EQUAL(capabilities->supportsARC, port.supportsARC);
+        UT_ASSERT_EQUAL(capabilities->supportsEARC, port.supportsEARC);
 
         // Compare supportedVersions
-        UT_ASSERT_EQUAL(caps.supportedVersions.size(), port.supportedVersions.size());
-        for (size_t i = 0; i < caps.supportedVersions.size(); ++i)
+        UT_ASSERT_EQUAL(capabilities->supportedVersions.size(), port.supportedVersions.size());
+        for (size_t i = 0; i < capabilities->supportedVersions.size(); ++i)
         {
-            bool found = std::find(port.supportedVersions.begin(), port.supportedVersions.end(), caps.supportedVersions[i]) != port.supportedVersions.end();
+            bool found = std::find(port.supportedVersions.begin(), port.supportedVersions.end(), capabilities->supportedVersions[i]) != port.supportedVersions.end();
             UT_ASSERT_TRUE(found);
         }
 
         // Compare supportedVICs
-        UT_ASSERT_EQUAL(caps.supportedVICs.size(), port.supportedVICs.size());
-        for (size_t i = 0; i < caps.supportedVICs.size(); ++i)
+        UT_ASSERT_EQUAL(capabilities->supportedVICs.size(), port.supportedVICs.size());
+        for (size_t i = 0; i < capabilities->supportedVICs.size(); ++i)
         {
-            bool found = std::find(port.supportedVICs.begin(), port.supportedVICs.end(), caps.supportedVICs[i]) != port.supportedVICs.end();
+            bool found = std::find(port.supportedVICs.begin(), port.supportedVICs.end(), capabilities->supportedVICs[i]) != port.supportedVICs.end();
             UT_ASSERT_TRUE(found);
         }
 
         // Compare supportedHDCPProtocolVersions
-        UT_ASSERT_EQUAL(caps.supportedHDCPProtocolVersions.size(), port.supportedHDCPProtocolVersions.size());
-        for (size_t i = 0; i < caps.supportedHDCPProtocolVersions.size(); ++i)
+        UT_ASSERT_EQUAL(capabilities->supportedHDCPProtocolVersions.size(), port.supportedHDCPProtocolVersions.size());
+        for (size_t i = 0; i < capabilities->supportedHDCPProtocolVersions.size(); ++i)
         {
-            bool found = std::find(port.supportedHDCPProtocolVersions.begin(), port.supportedHDCPProtocolVersions.end(), caps.supportedHDCPProtocolVersions[i]) != port.supportedHDCPProtocolVersions.end();
+            bool found = std::find(port.supportedHDCPProtocolVersions.begin(), port.supportedHDCPProtocolVersions.end(), capabilities->supportedHDCPProtocolVersions[i]) != port.supportedHDCPProtocolVersions.end();
             UT_ASSERT_TRUE(found);
         }
     }
