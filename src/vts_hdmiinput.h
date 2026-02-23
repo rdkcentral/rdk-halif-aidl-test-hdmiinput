@@ -679,7 +679,9 @@ public:
     android::binder::Status onHDCPStatusChanged(::com::rdk::hal::hdmiinput::HDCPStatus hdcpStatus, ::com::rdk::hal::hdmiinput::HDCPProtocolVersion hdcpProtocolVersion) override;
 
 public:
-    bool getNextConnectionState(bool& connectionState);
+    bool getNextConnectionState(bool& connectionState, chrono::milliseconds timeout = chrono::milliseconds(0));
+    void clearConnectionStateQueue();
+    uint32_t getConnectionStateQueueSize();
     bool getNextSignalState(hdmiinput::SignalState& signalState);
     bool getNextVideoFormat(hdmiinput::VIC& vic);
     bool getNextVRRInfo(bool& vrrActive, bool& M_CONST, bool& fastVActive, double& frameRate);
@@ -690,6 +692,7 @@ public:
     bool getNextVendorSpecificInfoFrame(std::vector<uint8_t>& data);
     bool getNextHDCPStatus(hdmiinput::HDCPStatus& hdcpStatus, hdmiinput::HDCPProtocolVersion& hdcpProtocolVersion);
 private:
+    condition_variable mConnectionStateCV;
     mutex mConnectionStateMutex;
     mutex mSignalStateMutex;
     mutex mVideoFormatMutex;

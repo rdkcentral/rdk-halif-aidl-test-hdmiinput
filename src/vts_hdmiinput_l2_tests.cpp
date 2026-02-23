@@ -233,7 +233,7 @@ UT_ADD_TEST(VTS_L2_HDMIINPUT, DefaultCallbacks)
         HDMIINPUT_OPEN_SUCCESS(hdmiInput, controlListener, controller, true);
 
         // verify onConnectionStateChanged(false)
-        UT_ASSERT_TRUE(controlListener->getNextConnectionState(connectionState));
+        UT_ASSERT_TRUE(controlListener->getNextConnectionState(connectionState, chrono::milliseconds(500)));
         UT_ASSERT_FALSE(connectionState);
 
         // verify getConnectionState also returns false
@@ -335,7 +335,7 @@ UT_ADD_TEST(VTS_L2_HDMIINPUT, SetandGetEDID)
 
         HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESSS(id, hdmiInput);
 
-        HDMIINPUT_GET_CAPABILITIES(hdmiInput, caps);
+        HDMIINPUT_GET_CAPABILITIES(hdmiInput, &caps);
 
         UT_ASSERT_FALSE(caps.supportedVersions.empty());
 

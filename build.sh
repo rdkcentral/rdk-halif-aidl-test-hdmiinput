@@ -256,8 +256,8 @@ install_test()
 
     cp -r ${PROFILES_DIR} ${INSTALL_PATH}
     cp -r "${VCOMPONENT_DIR}/vcomponent_configurations" ${INSTALL_PATH}
-    #cp -r "${VCOMPONENT_DIR}/hdmihdmiin_post_command.sh" ${INSTALL_PATH}
-    #cp -r "${TOP}/test_configuration" ${INSTALL_PATH}
+    cp -r "${VCOMPONENT_DIR}/hdmiinput_post_command.sh" ${INSTALL_PATH}
+    cp -r "${TOP}/test_configuration" ${INSTALL_PATH}
 
     cd ${INSTALL_PATH}
     tar -czf ${OUT_TAR_FILE} *

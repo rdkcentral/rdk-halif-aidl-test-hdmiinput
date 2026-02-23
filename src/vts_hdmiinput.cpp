@@ -76,16 +76,28 @@ android::binder::Status HDMIInputControllerListener::onConnectionStateChanged(bo
     return android::binder::Status::ok();
 }
 
-bool HDMIInputControllerListener::getNextConnectionState(bool& connectionState)
+bool HDMIInputControllerListener::getNextConnectionState(bool& connectionState, chrono::milliseconds timeout)
 {
-    std::lock_guard<std::mutex> lock(mConnectionStateMutex);
-    if (mConnectionStateQueue.empty())
-    {
-        return false;
+    std::unique_lock<std::mutex> lock(mConnectionStateMutex);
+    if (!mConnectionStateCV.wait_for(lock, timeout, [this]{ return !mConnectionStateQueue.empty(); })) {
+        return false; // Timed out
     }
     connectionState = mConnectionStateQueue.front();
     mConnectionStateQueue.pop();
     return true;
+}
+
+void HDMIInputControllerListener::clearConnectionStateQueue()
+{
+    std::lock_guard<std::mutex> lock(mConnectionStateMutex);
+    std::queue<bool> emptyQueue;
+    std::swap(mConnectionStateQueue, emptyQueue);
+}
+
+uint32_t HDMIInputControllerListener::getConnectionStateQueueSize()
+{
+    std::lock_guard<std::mutex> lock(mConnectionStateMutex);
+    return static_cast<uint32_t>(mConnectionStateQueue.size());
 }
 
 android::binder::Status HDMIInputControllerListener::onSignalStateChanged(hdmiinput::SignalState signalState)

@@ -58,6 +58,7 @@
  */
 #include "vts_hdmiinput.h"
 #include "vts_hdmiinput_parse_hfp.h"
+#include "vts_hdmiinput_parse_testconfig.h"
 
 /* Test class registration with UT_Core */
 UT_ADD_TEST_TO_GROUP(VTS_L3_HDMIINPUT, UT_TESTS_L3)
@@ -69,7 +70,7 @@ public:
 
     ~VTS_L3_HDMIINPUT() override = default;
 
-    vector<tuple<IHDMIInput::Id, sp<IHDMIInput>, sp<IHDMIInputControllerListener>, sp<HDMIInputEventListener>, sp<hdmiinput::IHDMIInputController>, hdmiinput::Capabilities *>> mHDMIInputList;
+    vector<tuple<IHDMIInput::Id, sp<IHDMIInput>, sp<HDMIInputControllerListener>, sp<HDMIInputEventListener>, sp<hdmiinput::IHDMIInputController>, hdmiinput::Capabilities *>> mHDMIInputList;
 
     void SetUp() override
     {
@@ -85,7 +86,7 @@ public:
             android::sp<hdmiinput::IHDMIInput> hdmiInput;
             HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESSS(id, hdmiInput);
 
-            sp<IHDMIInputControllerListener> controllerListener = new HDMIInputControllerListener();
+            sp<HDMIInputControllerListener> controllerListener = new HDMIInputControllerListener();
             sp<HDMIInputEventListener> eventListener = new HDMIInputEventListener();
             hdmiinput::Capabilities *capabilities = new hdmiinput::Capabilities();
             android::sp<hdmiinput::IHDMIInputController> controller;
@@ -143,8 +144,37 @@ public:
  * Refer to UT specification documentation [hdmiinput_High-Level_TestSpecification.md](../docs/pages/hdmiinput_High-Level_TestSpecification.md)
  *
  */
-UT_ADD_TEST(VTS_L3_HDMIINPUT, StateTransitions)
+UT_ADD_TEST(VTS_L3_HDMIINPUT, ConnectionTest)
 {
+    const char *testName = "ConnectionTest";
+    UT_status_t status = UT_STATUS_OK;
+    hdmiinputConnectionStateConfig_t connectionStateConfig;
+
+    /* Parse the test configuration */
+    status = vts_hdmiinput_parse_test_config(VTS_HDMIINPUT_TEST_CONFIG_PATH, "hdmiinput", "L3", testName, &connectionStateConfig);
+
+    UT_ASSERT_EQUAL_FATAL(status, UT_STATUS_OK);
+
+    for (const auto& [_portId, hdmiInput, controlListener, eventListener, controller, capabilities] : mHDMIInputList)
+    {
+        bool connectionState;
+
+        if (_portId.value != connectionStateConfig.portId)
+        {
+            continue;
+        }
+
+        UT_ASSERT_TRUE(controlListener->getNextConnectionState(connectionState, chrono::milliseconds(connectionStateConfig.maxWaitTimeMs)));
+
+        UT_ASSERT_EQUAL(connectionState, connectionStateConfig.stateBeforeOpen);
+
+        for (const auto& expectedState : connectionStateConfig.connectionStates)
+        {
+            UT_ASSERT_TRUE(controlListener->getNextConnectionState(connectionState, chrono::milliseconds(connectionStateConfig.maxWaitTimeMs)));
+
+            UT_ASSERT_EQUAL(connectionState, expectedState);
+        }
+    }
 }
 
 /** @} */ // End of HDMI_INPUT_HALTEST L3 File
