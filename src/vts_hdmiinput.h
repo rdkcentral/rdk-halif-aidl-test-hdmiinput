@@ -681,18 +681,31 @@ public:
 public:
     bool getNextConnectionState(bool& connectionState, chrono::milliseconds timeout = chrono::milliseconds(0));
     void clearConnectionStateQueue();
-    uint32_t getConnectionStateQueueSize();
-    bool getNextSignalState(hdmiinput::SignalState& signalState);
-    bool getNextVideoFormat(hdmiinput::VIC& vic);
-    bool getNextVRRInfo(bool& vrrActive, bool& M_CONST, bool& fastVActive, double& frameRate);
-    bool getNextAVIInfoFrame(std::vector<uint8_t>& data);
-    bool getNextAudioInfoFrame(std::vector<uint8_t>& data);
-    bool getNextSPDInfoFrame(std::vector<uint8_t>& data);
-    bool getNextDRMInfoFrame(std::vector<uint8_t>& data);
-    bool getNextVendorSpecificInfoFrame(std::vector<uint8_t>& data);
-    bool getNextHDCPStatus(hdmiinput::HDCPStatus& hdcpStatus, hdmiinput::HDCPProtocolVersion& hdcpProtocolVersion);
+    int32_t getConnectionStateQueueSize(){
+        lock_guard<mutex> lock(mConnectionStateMutex);
+        return mConnectionStateQueue.size();
+    }
+    bool getNextSignalState(hdmiinput::SignalState& signalState, chrono::milliseconds timeout = chrono::milliseconds(0));
+    bool getNextVideoFormat(hdmiinput::VIC& vic, chrono::milliseconds timeout = chrono::milliseconds(0));
+    bool getNextVRRInfo(bool& vrrActive, bool& M_CONST, bool& fastVActive, double& frameRate, chrono::milliseconds timeout = chrono::milliseconds(0));
+    bool getNextAVIInfoFrame(std::vector<uint8_t>& data, chrono::milliseconds timeout = chrono::milliseconds(0));
+    bool getNextAudioInfoFrame(std::vector<uint8_t>& data, chrono::milliseconds timeout = chrono::milliseconds(0));
+    bool getNextSPDInfoFrame(std::vector<uint8_t>& data, chrono::milliseconds timeout = chrono::milliseconds(0));
+    bool getNextDRMInfoFrame(std::vector<uint8_t>& data, chrono::milliseconds timeout = chrono::milliseconds(0));
+    bool getNextVendorSpecificInfoFrame(std::vector<uint8_t>& data, chrono::milliseconds timeout = chrono::milliseconds(0));
+    bool getNextHDCPStatus(hdmiinput::HDCPStatus& hdcpStatus, hdmiinput::HDCPProtocolVersion& hdcpProtocolVersion, chrono::milliseconds timeout = chrono::milliseconds(0));
 private:
     condition_variable mConnectionStateCV;
+    condition_variable mSignalStateCV;
+    condition_variable mVideoFormatCV;
+    condition_variable mVRRCV;
+    condition_variable mAVIInfoCV;
+    condition_variable mAudioInfoCV;
+    condition_variable mSPDInfoCV;
+    condition_variable mDRMInfoCV;
+    condition_variable mVendorSpecificInfoCV;
+    condition_variable mHDCPStatusCV;
+
     mutex mConnectionStateMutex;
     mutex mSignalStateMutex;
     mutex mVideoFormatMutex;

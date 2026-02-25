@@ -118,6 +118,17 @@ const ut_control_keyStringMapping_t freeSync_mapTable[] =
     {NULL, -1}
 };
 
+/* SignalState Enum Mapping Table */
+const ut_control_keyStringMapping_t signalState_mapTable[] =
+{
+    {"UNKNOWN", (int32_t)hdmiinput::SignalState::UNKNOWN},
+    {"NO_SIGNAL", (int32_t)hdmiinput::SignalState::NO_SIGNAL},
+    {"UNSTABLE", (int32_t)hdmiinput::SignalState::UNSTABLE},
+    {"NOT_SUPPORTED", (int32_t)hdmiinput::SignalState::NOT_SUPPORTED},
+    {"LOCKED", (int32_t)hdmiinput::SignalState::LOCKED},
+    {NULL, -1}
+};
+
 /* VIC Enum Mapping Table */
 const ut_control_keyStringMapping_t vic_mapTable[] =
 {

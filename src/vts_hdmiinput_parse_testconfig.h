@@ -26,6 +26,9 @@
 #ifndef __VTS_HDMIINPUT_PARSE_TESTCONFIG_H__
 #define __VTS_HDMIINPUT_PARSE_TESTCONFIG_H__
 
+#include <string>
+#include <vector>
+
 #include <ut.h>
 #include <ut_log.h>
 #include "ut_kvp_profile.h"
@@ -34,13 +37,29 @@ using namespace std;
 
 #define VTS_HDMIINPUT_TEST_CONFIG_PATH "./test_configuration/vts_l3_HdmiInput.yaml"
 
-typedef struct hdmiinputConnectionStateConfig
+typedef struct hdmiinputConnectionStateOpenConfig
 {
     int32_t portId;
-    int32_t stateBeforeOpen;
-    vector<bool> connectionStates;
+    bool connectionStateBeforeOpen;
+    vector<bool> connectionStatesAfterOpen;
+
+    hdmiinput::SignalState signalStateBeforeOpen;
+    std::vector<hdmiinput::SignalState> signalStatesAfterOpen;
+
     uint32_t maxWaitTimeMs;
-} hdmiinputConnectionStateConfig_t;
+} hdmiinputConnectionStateOpenConfig_t;
+
+typedef struct hdmiinputConnectionStateStartConfig
+{
+    int32_t portId;
+    bool connectionStateBeforeOpen;
+    vector<bool> connectionStatesAfterStart;
+
+    hdmiinput::SignalState signalStateBeforeOpen;
+    std::vector<hdmiinput::SignalState> signalStatesAfterStart;
+
+    uint32_t maxWaitTimeMs;
+} hdmiinputConnectionStateStartConfig_t;
 
 UT_status_t vts_hdmiinput_parse_test_config(char *configurationFile, const char *module, const char *testGroup,
                                             const char *testName, void *testConfig);

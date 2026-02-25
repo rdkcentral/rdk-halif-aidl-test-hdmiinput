@@ -23,6 +23,7 @@
 * Parse test configuration file
 */
 
+#include "vts_hdmiinput_helper_functions.h"
 #include "vts_hdmiinput_parse_testconfig.h"
 
 static void* hdmiinputkvp_create_instance(char *fileName)
@@ -55,8 +56,8 @@ static void hdmiinputkvp_destroy_instance(void *instance)
     ut_kvp_destroyInstance((ut_kvp_instance_t*)instance);
 }
 
-static void vts_hdmiinput_parse_connectionTest(ut_kvp_instance_t* kvpTestInstance, const char* testList,
-                                               hdmiinputConnectionStateConfig_t* connectionStateConfig)
+static void vts_hdmiinput_parse_connectionTestOpen(ut_kvp_instance_t* kvpTestInstance, const char* testList,
+                                                   hdmiinputConnectionStateOpenConfig_t* connectionStateConfig)
 {
     char key[2 * UT_KVP_MAX_ELEMENT_SIZE];
     char subkey[2 *UT_KVP_MAX_ELEMENT_SIZE];
@@ -66,19 +67,82 @@ static void vts_hdmiinput_parse_connectionTest(ut_kvp_instance_t* kvpTestInstanc
     snprintf(key, sizeof(key), "%s.portId", testList);
     connectionStateConfig->portId = ut_kvp_getUInt32Field(kvpTestInstance, key);
 
-    // stateBeforeOpen
+    // Connection state before Open
     snprintf(key, sizeof(key), "%s.connection_state_before_open", testList);
-    connectionStateConfig->stateBeforeOpen = ut_kvp_getBoolField(kvpTestInstance, key);
+    connectionStateConfig->connectionStateBeforeOpen = ut_kvp_getBoolField(kvpTestInstance, key);
 
     // connectionStates
     snprintf(key, sizeof(key), "%s.connection_state_after_open", testList);
     int numConnectionStates = ut_kvp_getListCount(kvpTestInstance, key);
-    connectionStateConfig->connectionStates.clear();
+    connectionStateConfig->connectionStatesAfterOpen.clear();
     for (int i = 0; i < numConnectionStates; ++i)
     {
         snprintf(subkey, sizeof(subkey), "%s.connection_state_after_open.%d", testList, i);
         bool state = ut_kvp_getBoolField(kvpTestInstance, subkey);
-        connectionStateConfig->connectionStates.push_back(state);
+        connectionStateConfig->connectionStatesAfterOpen.push_back(state);
+    }
+
+    // signalStateBeforeOpen
+    snprintf(key, sizeof(key), "%s.signal_state_before_open", testList);
+    ut_kvp_getStringField(kvpTestInstance, key, subValue, sizeof(subValue));
+    connectionStateConfig->signalStateBeforeOpen = (hdmiinput::SignalState)UT_Control_GetMapValue(signalState_mapTable, subValue, (int32_t)hdmiinput::SignalState::UNKNOWN);
+
+    // signalStates
+    snprintf(key, sizeof(key), "%s.signal_state_after_open", testList);
+    int numSignalStatesAfterOpen = ut_kvp_getListCount(kvpTestInstance, key);
+    connectionStateConfig->signalStatesAfterOpen.clear();
+    for (int i = 0; i < numSignalStatesAfterOpen; ++i)
+    {
+        snprintf(subkey, sizeof(subkey), "%s.signal_state_after_open.%d", testList, i);
+        ut_kvp_getStringField(kvpTestInstance, subkey, subValue, sizeof(subValue));
+        connectionStateConfig->signalStatesAfterOpen.push_back((hdmiinput::SignalState)UT_Control_GetMapValue(signalState_mapTable, subValue, (int32_t)hdmiinput::SignalState::UNKNOWN));
+    }
+
+    // maxWaitTimeMs
+    snprintf(key, sizeof(key), "%s.max_wait_time_ms", testList);
+    connectionStateConfig->maxWaitTimeMs = ut_kvp_getUInt32Field(kvpTestInstance, key);
+}
+
+static void vts_hdmiinput_parse_connectionTestStart(ut_kvp_instance_t* kvpTestInstance, const char* testList,
+                                                    hdmiinputConnectionStateStartConfig_t* connectionStateConfig)
+{
+    char key[2 * UT_KVP_MAX_ELEMENT_SIZE];
+    char subkey[2 *UT_KVP_MAX_ELEMENT_SIZE];
+    char subValue[UT_KVP_MAX_ELEMENT_SIZE];
+
+    // portId
+    snprintf(key, sizeof(key), "%s.portId", testList);
+    connectionStateConfig->portId = ut_kvp_getUInt32Field(kvpTestInstance, key);
+
+    // Connection state before Open
+    snprintf(key, sizeof(key), "%s.connection_state_before_open", testList);
+    connectionStateConfig->connectionStateBeforeOpen = ut_kvp_getBoolField(kvpTestInstance, key);
+
+    // connectionStatesAfterStart
+    snprintf(key, sizeof(key), "%s.connection_state_after_start", testList);
+    int numConnectionStatesAfterStart = ut_kvp_getListCount(kvpTestInstance, key);
+    connectionStateConfig->connectionStatesAfterStart.clear();
+    for (int i = 0; i < numConnectionStatesAfterStart; ++i)
+    {
+        snprintf(subkey, sizeof(subkey), "%s.connection_state_after_start.%d", testList, i);
+        bool state = ut_kvp_getBoolField(kvpTestInstance, subkey);
+        connectionStateConfig->connectionStatesAfterStart.push_back(state);
+    }
+
+    // signalStateBeforeOpen
+    snprintf(key, sizeof(key), "%s.signal_state_before_open", testList);
+    ut_kvp_getStringField(kvpTestInstance, key, subValue, sizeof(subValue));
+    connectionStateConfig->signalStateBeforeOpen = (hdmiinput::SignalState)UT_Control_GetMapValue(signalState_mapTable, subValue, (int32_t)hdmiinput::SignalState::UNKNOWN);
+
+    // signalStates
+    snprintf(key, sizeof(key), "%s.signal_state_after_start", testList);
+    int numSignalStatesAfterStart = ut_kvp_getListCount(kvpTestInstance, key);
+    connectionStateConfig->signalStatesAfterStart.clear();
+    for (int i = 0; i < numSignalStatesAfterStart; ++i)
+    {
+        snprintf(subkey, sizeof(subkey), "%s.signal_state_after_start.%d", testList, i);
+        ut_kvp_getStringField(kvpTestInstance, subkey, subValue, sizeof(subValue));
+        connectionStateConfig->signalStatesAfterStart.push_back((hdmiinput::SignalState)UT_Control_GetMapValue(signalState_mapTable, subValue, (int32_t)hdmiinput::SignalState::UNKNOWN));
     }
 
     // maxWaitTimeMs
@@ -94,9 +158,13 @@ UT_status_t vts_hdmiinput_parse_test_config(char *configurationFile, const char 
 
     const std::string testList = string(module) + "." + string(testGroup) + "." + string(testName);
 
-    if(!strcmp(testName, "ConnectionTest"))
+    if(!strcmp(testName, "ConnectionSignalStateTestOpen"))
     {
-        vts_hdmiinput_parse_connectionTest(kvpTestInstance, testList.c_str(), (hdmiinputConnectionStateConfig_t*)testConfig);
+        vts_hdmiinput_parse_connectionTestOpen(kvpTestInstance, testList.c_str(), (hdmiinputConnectionStateOpenConfig_t*)testConfig);
+    }
+    else if(!strcmp(testName, "ConnectionSignalStateTestStart"))
+    {
+        vts_hdmiinput_parse_connectionTestStart(kvpTestInstance, testList.c_str(), (hdmiinputConnectionStateStartConfig_t*)testConfig);
     }
     else
     {

@@ -110,6 +110,7 @@ extern const ut_control_keyStringMapping_t hdcpProtocolVersion_mapTable[];
 extern const ut_control_keyStringMapping_t vic_mapTable[];
 extern const ut_control_keyStringMapping_t hdmiVersion_mapTable[];
 extern const ut_control_keyStringMapping_t freeSync_mapTable[];
+extern const ut_control_keyStringMapping_t signalState_mapTable[];
 
 std::string hdmiinputVecIntToString(std::vector<int32_t>& addrs);
 std::string hdmiinputVecByteToHexString(const std::vector<uint8_t>& data);

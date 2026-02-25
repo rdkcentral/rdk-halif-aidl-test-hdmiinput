@@ -22,9 +22,10 @@
 
 hdmiinput:
   L3:
-    ConnectionTest:
+    ConnectionSignalStateTestOpen:
       portId: 0
       connection_state_before_open: true # true - connected, false - disconnected
+      signal_state_before_open: LOCKED
       connection_state_after_open:
         - false
         - true
@@ -32,4 +33,31 @@ hdmiinput:
         - true
         - false
         - true
+      signal_state_after_open:
+        - NO_SIGNAL
+        - LOCKED
+        - NO_SIGNAL
+        - LOCKED
+        - NO_SIGNAL
+        - LOCKED
+      max_wait_time_ms: 10000
+
+    ConnectionSignalStateTestStart:
+      portId: 0
+      connection_state_before_open: true # true - connected, false - disconnected
+      signal_state_before_open: LOCKED
+      connection_state_after_start:
+        - false
+        - true
+        - false
+        - true
+        - false
+        - true
+      signal_state_after_start:
+        - NO_SIGNAL
+        - LOCKED
+        - NO_SIGNAL
+        - LOCKED
+        - NO_SIGNAL
+        - LOCKED
       max_wait_time_ms: 10000

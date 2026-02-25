@@ -60,6 +60,9 @@
 #include "vts_hdmiinput_parse_hfp.h"
 #include "vts_hdmiinput_parse_testconfig.h"
 
+static const char *moduleName = "hdmiinput";
+static const char *testGroupName = "L3";
+
 /* Test class registration with UT_Core */
 UT_ADD_TEST_TO_GROUP(VTS_L3_HDMIINPUT, UT_TESTS_L3)
 
@@ -121,12 +124,11 @@ public:
 };
 
 /**
- * @brief Validate HDMI INPUT interface state transitions and event notifications.
+ * @brief Validate HDMI INPUT connection state transitions using configuration-driven test.
  *
- * This test verifies the state machine behavior of the HDMI INPUT interface by exercising all major state transitions:
- * CLOSED → OPENING → READY → STARTING → STARTED → STOPPING → READY → CLOSING → CLOSED.
- * It ensures that each transition occurs as expected and that the event listener receives
- * the correct onStateChanged notifications for each step.
+ * This test parses a configuration file to select the HDMI input port and expected connection states.
+ * For the specified port, it verifies the sequence of connection state changes reported by the controller listener,
+ * including the initial state before open and all subsequent expected states.
  *
  * **Test Group ID:** Basic: 03@n
  * **Test Case ID:** 001@n
@@ -144,20 +146,21 @@ public:
  * Refer to UT specification documentation [hdmiinput_High-Level_TestSpecification.md](../docs/pages/hdmiinput_High-Level_TestSpecification.md)
  *
  */
-UT_ADD_TEST(VTS_L3_HDMIINPUT, ConnectionTest)
+UT_ADD_TEST(VTS_L3_HDMIINPUT, ConnectionSignalStateTestOpen)
 {
-    const char *testName = "ConnectionTest";
+    const char *testName = "ConnectionSignalStateTestOpen";
     UT_status_t status = UT_STATUS_OK;
-    hdmiinputConnectionStateConfig_t connectionStateConfig;
+    hdmiinputConnectionStateOpenConfig_t connectionStateConfig;
 
     /* Parse the test configuration */
-    status = vts_hdmiinput_parse_test_config(VTS_HDMIINPUT_TEST_CONFIG_PATH, "hdmiinput", "L3", testName, &connectionStateConfig);
+    status = vts_hdmiinput_parse_test_config(VTS_HDMIINPUT_TEST_CONFIG_PATH, moduleName, testGroupName, testName, &connectionStateConfig);
 
     UT_ASSERT_EQUAL_FATAL(status, UT_STATUS_OK);
 
     for (const auto& [_portId, hdmiInput, controlListener, eventListener, controller, capabilities] : mHDMIInputList)
     {
         bool connectionState;
+        hdmiinput::SignalState signalState, lastState;
 
         if (_portId.value != connectionStateConfig.portId)
         {
@@ -165,15 +168,107 @@ UT_ADD_TEST(VTS_L3_HDMIINPUT, ConnectionTest)
         }
 
         UT_ASSERT_TRUE(controlListener->getNextConnectionState(connectionState, chrono::milliseconds(connectionStateConfig.maxWaitTimeMs)));
+        UT_ASSERT_EQUAL(connectionState, connectionStateConfig.connectionStateBeforeOpen);
 
-        UT_ASSERT_EQUAL(connectionState, connectionStateConfig.stateBeforeOpen);
+        // verify getConnectionState
+        HDMIINPUT_GETCONNECTIONSTATE(controller, connectionState);
+        UT_ASSERT_EQUAL(connectionState, connectionStateConfig.connectionStateBeforeOpen);
 
-        for (const auto& expectedState : connectionStateConfig.connectionStates)
+        const auto timeout = chrono::milliseconds(connectionStateConfig.maxWaitTimeMs);
+
+        for (size_t i = 0; i < connectionStateConfig.connectionStatesAfterOpen.size(); ++i)
         {
-            UT_ASSERT_TRUE(controlListener->getNextConnectionState(connectionState, chrono::milliseconds(connectionStateConfig.maxWaitTimeMs)));
+            auto expectedConnectionState =
+                connectionStateConfig.connectionStatesAfterOpen[i];
 
-            UT_ASSERT_EQUAL(connectionState, expectedState);
+            auto expectedSignalState =
+                connectionStateConfig.signalStatesAfterOpen[i];
+
+            UT_ASSERT_TRUE(controlListener->getNextConnectionState(connectionState, timeout));
+            UT_ASSERT_EQUAL(connectionState, expectedConnectionState);
+
+            UT_ASSERT_TRUE(controlListener->getNextSignalState(signalState, timeout));
+            UT_ASSERT_EQUAL(signalState, expectedSignalState);
+
+            lastState = signalState;
         }
+    }
+}
+
+/**
+ * @brief Validate HDMI INPUT connection state transitions using configuration-driven test.
+ *
+ * This test parses a configuration file to select the HDMI input port and expected connection states.
+ * For the specified port, it verifies the sequence of connection state changes reported by the controller listener,
+ * including the initial state before open and all subsequent expected states.
+ *
+ * **Test Group ID:** Basic: 03@n
+ * **Test Case ID:** 001@n
+ * **Priority:** High@n
+ *
+ * **Pre-Conditions:**@n
+ * none@n
+ *
+ * **Dependencies:**
+ * - A valid gHDMIInputHandle must be available
+ *
+ * **User Interaction:** None@n
+ *
+ * **Test Procedure:**@n
+ * Refer to UT specification documentation [hdmiinput_High-Level_TestSpecification.md](../docs/pages/hdmiinput_High-Level_TestSpecification.md)
+ *
+ */
+UT_ADD_TEST(VTS_L3_HDMIINPUT, ConnectionSignalStateTestStart)
+{
+    const char *testName = "ConnectionSignalStateTestStart";
+    UT_status_t status = UT_STATUS_OK;
+    hdmiinputConnectionStateStartConfig_t connectionStateConfig;
+
+    /* Parse the test configuration */
+    status = vts_hdmiinput_parse_test_config(VTS_HDMIINPUT_TEST_CONFIG_PATH, moduleName, testGroupName, testName, &connectionStateConfig);
+
+    UT_ASSERT_EQUAL_FATAL(status, UT_STATUS_OK);
+
+    for (const auto& [_portId, hdmiInput, controlListener, eventListener, controller, capabilities] : mHDMIInputList)
+    {
+        bool connectionState;
+        hdmiinput::SignalState signalState;
+
+        if (_portId.value != connectionStateConfig.portId)
+        {
+            continue;
+        }
+
+        UT_ASSERT_TRUE(controlListener->getNextConnectionState(connectionState, chrono::milliseconds(connectionStateConfig.maxWaitTimeMs)));
+        UT_ASSERT_EQUAL(connectionState, connectionStateConfig.connectionStateBeforeOpen);
+
+        // verify getConnectionState
+        HDMIINPUT_GETCONNECTIONSTATE(controller, connectionState);
+        UT_ASSERT_EQUAL(connectionState, connectionStateConfig.connectionStateBeforeOpen);
+
+        const auto timeout = chrono::milliseconds(connectionStateConfig.maxWaitTimeMs);
+
+        HDMIINPUT_START_SUCCESS(hdmiInput, controller, true);
+
+        UT_ASSERT_TRUE(controlListener->getNextSignalState(signalState, chrono::milliseconds(connectionStateConfig.maxWaitTimeMs)));
+        UT_ASSERT_EQUAL(signalState, connectionStateConfig.signalStateBeforeOpen);
+
+        for (size_t i = 0; i < connectionStateConfig.connectionStatesAfterStart.size(); ++i)
+        {
+            auto expectedConnectionState =
+                connectionStateConfig.connectionStatesAfterStart[i];
+
+            auto expectedSignalState =
+                connectionStateConfig.signalStatesAfterStart[i];
+
+            UT_ASSERT_TRUE(controlListener->getNextConnectionState(connectionState, timeout));
+            UT_ASSERT_EQUAL(connectionState, expectedConnectionState);
+
+            UT_ASSERT_TRUE(controlListener->getNextSignalState(signalState, timeout));
+            UT_ASSERT_EQUAL(signalState, expectedSignalState);
+        }
+
+        HDMIINPUT_STOP_SUCCESS(hdmiInput, controller, true);
     }
 }
 
