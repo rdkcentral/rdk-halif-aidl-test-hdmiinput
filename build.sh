@@ -50,7 +50,7 @@ declare -r RDK_HAL_DIR=${TOP}/rdk-halif-aidl
 declare -r PROFILES_DIR=${TOP}/profiles
 declare -r VCOMPONENT_DIR=${TOP}/vcomponent
 
-OUT_TAR_FILE=vts-HdmiCec.tar.gz
+OUT_TAR_FILE=vts-HdmiInput.tar.gz
 
 DEF_LINUX_BINDER="`realpath ${TOP}/../`/linux_binder_idl"
 # AIDL_BIN: path of aidl compiler
@@ -119,7 +119,7 @@ generate_hal_interfaces()
     # Clone the repository if not already present
     if [ ! -d "$RDK_HAL_DIR" ]; then
         echo "Checking out version: " $RDK_HALIF_AIDL_VERSION
-        git clone -b $RDK_HALIF_AIDL_VERSION 'http://git@github.com/rdkcentral/rdk-halif-aidl.git' $RDK_HAL_DIR
+        git clone -b $RDK_HALIF_AIDL_VERSION 'https://git@github.com/rdkcentral/rdk-halif-aidl.git' $RDK_HAL_DIR
         if [ $? -ne 0 ]; then
             echo -e "${BOLD}╔══════════════════════════════════════════════╗${RESET}"
             echo -e "${BOLD}* ${RED}Failed to clone HAL interfaces.${RESET}"
@@ -258,6 +258,10 @@ install_test()
     cp -r "${VCOMPONENT_DIR}/vcomponent_configurations" ${INSTALL_PATH}
     cp -r "${VCOMPONENT_DIR}/hdmiinput_post_command.sh" ${INSTALL_PATH}
     cp -r "${TOP}/test_configuration" ${INSTALL_PATH}
+
+    #TODO: Remove this when the test framework supports providing additional files for test execution
+    cp -r ${TOP}/test*.sh ${INSTALL_PATH}
+    cp -r ${TOP}/test*.yaml ${INSTALL_PATH}
 
     cd ${INSTALL_PATH}
     tar -czf ${OUT_TAR_FILE} *

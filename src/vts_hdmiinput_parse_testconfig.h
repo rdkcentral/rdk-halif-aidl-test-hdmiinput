@@ -37,30 +37,46 @@ using namespace std;
 
 #define VTS_HDMIINPUT_TEST_CONFIG_PATH "./test_configuration/vts_l3_HdmiInput.yaml"
 
-typedef struct hdmiinputConnectionStateOpenConfig
+typedef struct hdmiinputConnectionConfig
 {
     int32_t portId;
+    hdmiinput::HDCPProtocolVersion sourceHdcpProtocolVersion;
     bool connectionStateBeforeOpen;
-    vector<bool> connectionStatesAfterOpen;
-
     hdmiinput::SignalState signalStateBeforeOpen;
-    std::vector<hdmiinput::SignalState> signalStatesAfterOpen;
-
+    std::vector<bool> connectionStates;
+    std::vector<hdmiinput::SignalState> signalStates;
     uint32_t maxWaitTimeMs;
-} hdmiinputConnectionStateOpenConfig_t;
+} hdmiinputConnectionConfig_t;
 
-typedef struct hdmiinputConnectionStateStartConfig
+typedef struct hdmiinputInfoFramesTestConfig
 {
     int32_t portId;
-    bool connectionStateBeforeOpen;
-    vector<bool> connectionStatesAfterStart;
-
-    hdmiinput::SignalState signalStateBeforeOpen;
-    std::vector<hdmiinput::SignalState> signalStatesAfterStart;
-
+    std::vector<std::string> infoFrameType;
+    std::vector<uint8_t> aviInfoData;
+    std::vector<uint8_t> audioInfoData;
+    std::vector<uint8_t> vsiInfoData;
+    std::vector<uint8_t> spdInfoData;
+    hdmiinput::VIC vic;
+    bool vrrActive;
+    bool mConst;
+    bool fastVActive;
+    double frameRate;
     uint32_t maxWaitTimeMs;
-} hdmiinputConnectionStateStartConfig_t;
+} hdmiinputInfoFramesTestConfig_t;
 
-UT_status_t vts_hdmiinput_parse_test_config(char *configurationFile, const char *module, const char *testGroup,
-                                            const char *testName, void *testConfig);
+typedef struct hdmiinputEdidTestConfig
+{
+    int32_t portId;
+    std::vector<uint8_t> edidData;
+} hdmiinputEdidTestConfig_t;
+
+UT_status_t vts_hdmiinput_parse_connectionTest(char *configurationFile, const char *module, const char *testGroup,
+                                               const char *testName, std::vector<hdmiinputConnectionConfig_t>& connectionStateConfigs);
+
+UT_status_t vts_hdmiinput_parse_infoFramesTestConfig(char *configurationFile, const char *module, const char *testGroup,
+                                                      const char *testName, std::vector<hdmiinputInfoFramesTestConfig_t>& infoFramesTestConfig);
+
+UT_status_t vts_hdmiinput_parse_edidTestConfig(char *configurationFile, const char *module, const char *testGroup,
+                                               const char *testName, std::vector<hdmiinputEdidTestConfig_t>& edidTestConfig);
+
 #endif // __VTS_HDMIINPUT_PARSE_TESTCONFIG_H__

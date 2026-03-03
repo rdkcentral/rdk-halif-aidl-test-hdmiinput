@@ -87,7 +87,7 @@ public:
  * The test iterates through the IDs and asserts that each ID is either one of the expected valid IDs or is marked as
  * UNDEFINED if extra entries exist.
  *
- * **Test Group ID:** Basic: 01@n
+ * **Test Group ID:**: 01@n
  * **Test Case ID:** 001@n
  * **Priority:** High@n
  *
@@ -133,7 +133,7 @@ UT_ADD_TEST(VTS_L1_HDMIINPUT, getHDMIInputIds_pos)
  * and then calls the getHDMIInput API to verify that a valid HDMI Input object is returned.
  * The test confirms that the API call returns a successful status and a non-null object for each port.
  *
- * **Test Group ID:** Basic: 01@n
+ * **Test Group ID:**: 01@n
  * **Test Case ID:** 002@n
  * **Priority:** High@n
  *
@@ -161,7 +161,7 @@ UT_ADD_TEST(VTS_L1_HDMIINPUT, getHDMIInput_pos)
     {
         android::sp<hdmiinput::IHDMIInput> hdmiInput;
 
-        HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESSS(id, hdmiInput);
+        HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESS(id, hdmiInput);
     }
 }
 
@@ -173,7 +173,7 @@ UT_ADD_TEST(VTS_L1_HDMIINPUT, getHDMIInput_pos)
  * one more than the maximum, and the UNDEFINED value). The test expects the API to fail gracefully and not return
  * a valid HDMI input object for these invalid IDs.
  *
- * **Test Group ID:** Negative: 01@n
+ * **Test Group ID:**: 01@n
  * **Test Case ID:** 003@n
  * **Priority:** High@n
  *
@@ -219,7 +219,7 @@ UT_ADD_TEST(VTS_L1_HDMIINPUT, getHDMIInput_neg)
  * This test case verifies that the getCapabilities API correctly returns HDMI input capabilities,
  * ensuring that the returned data matches the expected values from the YAML configuration.
  *
- * **Test Group ID:** Basic: 01
+ * **Test Group ID:**: 01
  * **Test Case ID:** 004
  * **Priority:** High
  *
@@ -240,6 +240,7 @@ UT_ADD_TEST(VTS_L1_HDMIINPUT, getPlatformCapabilities_pos)
     HDMIINPUT_MANAGER_GETCAPABILITIES(caps);
 
     UT_ASSERT_EQUAL(caps.maximumConcurrentStartedPorts, gHdmiInput_hfp.platformCapabilities.maximumConcurrentStartedPorts);
+    UT_ASSERT_TRUE(gHdmiInput_hfp.platformCapabilities.maximumConcurrentStartedPorts <= (int32_t)gHdmiInput_hfp.ports.size());
     UT_ASSERT_EQUAL(caps.freeSync, gHdmiInput_hfp.platformCapabilities.freeSync);
 
 }
@@ -251,7 +252,7 @@ UT_ADD_TEST(VTS_L1_HDMIINPUT, getPlatformCapabilities_pos)
  * For every port defined in gHdmiInput_hfp, the test fetches the HDMI input object and its capabilities,
  * then validates all capability fields (booleans and supported lists) against the expected values from gHdmiInput_hfp.
  *
- * **Test Group ID:** Basic: 01
+ * **Test Group ID:**: 01
  * **Test Case ID:** 005
  * **Priority:** High
  *
@@ -275,7 +276,7 @@ UT_ADD_TEST(VTS_L1_HDMIINPUT, getCapabilities_pos)
 
         hdmiInputIds.value = port.id;
 
-        HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESSS(hdmiInputIds, hdmiInput);
+        HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESS(hdmiInputIds, hdmiInput);
 
         HDMIINPUT_GET_CAPABILITIES(hdmiInput, capabilities);
 
@@ -322,7 +323,7 @@ UT_ADD_TEST(VTS_L1_HDMIINPUT, getCapabilities_pos)
  * and calls getProperty for RESOURCE_ID and METRIC_PACKET_ERRORS properties.
  * It asserts that RESOURCE_ID matches the port ID and that METRIC_PACKET_ERRORS is present and initially zero (unless not implemented).
  *
- * **Test Group ID:** Basic: 01@n
+ * **Test Group ID:**: 01@n
  * **Test Case ID:** 006@n
  * **Priority:** High@n
  *
@@ -334,7 +335,7 @@ UT_ADD_TEST(VTS_L1_HDMIINPUT, getCapabilities_pos)
  * | Variation / Step | Description | Test Data | Expected Result | Notes |
  * | :----: | --------- | ---------- |-------------- | ----- |
  * | 01 | Retrieve all HDMI input IDs using HDMIINPUT_MANAGER_GETHDMIINPUTIDS. | Output: hdmiInputIds vector | List of HDMI input IDs is obtained. | Should be successful |
- * | 02 | For each HDMI input ID, retrieve the HDMI Input object using HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESSS. | Input: id | HDMI Input object is returned. | Should Pass |
+ * | 02 | For each HDMI input ID, retrieve the HDMI Input object using HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESS. | Input: id | HDMI Input object is returned. | Should Pass |
  * | 03 | Call getProperty for RESOURCE_ID and METRIC_PACKET_ERRORS. | Input: hdmiInput, property | Properties are returned. | Should Pass |
  * | 04 | Assert RESOURCE_ID matches port ID and METRIC_PACKET_ERRORS is present and initially zero (unless not implemented). | Output: resourceID, metricPktErrors | All assertions pass. | Should Pass |
  */
@@ -352,7 +353,7 @@ UT_ADD_TEST(VTS_L1_HDMIINPUT, getProperty_pos)
         std::optional<PropertyValue> metricPktErrors;
         int32_t value = 0;
 
-        HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESSS(id, hdmiInput);
+        HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESS(id, hdmiInput);
 
         HDMIINPUT_GETPROPERTY_SUCCESS(hdmiInput, hdmiinput::Property::RESOURCE_ID, resourceID);
         HDMIINPUT_GETPROPERTY_SUCCESS(hdmiInput, hdmiinput::Property::METRIC_PACKET_ERRORS, metricPktErrors);
@@ -376,7 +377,7 @@ UT_ADD_TEST(VTS_L1_HDMIINPUT, getProperty_pos)
  * and then calls the getHDMIInput API to verify that a valid HDMI Input object is returned.
  * The test confirms that the API call returns a successful status and a non-null object for each port.
  *
- * **Test Group ID:** Basic: 01@n
+ * **Test Group ID:**: 01@n
  * **Test Case ID:** 007@n
  * **Priority:** High@n
  *
@@ -407,7 +408,7 @@ UT_ADD_TEST(VTS_L1_HDMIINPUT, getProperty_neg)
         int32_t firstValue = static_cast<int32_t>(Property::RESOURCE_ID);
         Property invalidProperty = static_cast<Property>(firstValue - 1);
 
-        HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESSS(id, hdmiInput);
+        HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESS(id, hdmiInput);
 
         // Query invalid property
         HDMIINPUT_GETPROPERTY_FAILURE(hdmiInput, invalidProperty, propertyValue, Status::EX_NONE);
@@ -421,7 +422,7 @@ UT_ADD_TEST(VTS_L1_HDMIINPUT, getProperty_neg)
  * It iterates over all available HDMI input IDs, retrieves the corresponding HDMI Input object, and calls getState.
  * The test asserts that the returned state is CLOSED for each HDMI input port, confirming correct default behavior.
  *
- * **Test Group ID:** Basic: 01@n
+ * **Test Group ID:**: 01@n
  * **Test Case ID:** 008@n
  * **Priority:** High@n
  *
@@ -433,7 +434,7 @@ UT_ADD_TEST(VTS_L1_HDMIINPUT, getProperty_neg)
  * | Variation / Step | Description | Test Data | Expected Result | Notes |
  * | :----: | --------- | ---------- |-------------- | ----- |
  * | 01 | Retrieve all HDMI input IDs using HDMIINPUT_MANAGER_GETHDMIINPUTIDS. | Output: hdmiInputIds vector | List of HDMI input IDs is obtained. | Should be successful |
- * | 02 | For each HDMI input ID, retrieve the HDMI Input object using HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESSS. | Input: id | HDMI Input object is returned. | Should Pass |
+ * | 02 | For each HDMI input ID, retrieve the HDMI Input object using HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESS. | Input: id | HDMI Input object is returned. | Should Pass |
  * | 03 | Call HDMIINPUT_GET_STATE on the HDMI Input object and capture the state. | Input: hdmiInput | State is returned. | Should Pass |
  * | 04 | Assert that the returned state is hdmiinput::State::CLOSED. | Output: state | State equals CLOSED. | Should Pass |
  */
@@ -449,7 +450,7 @@ UT_ADD_TEST(VTS_L1_HDMIINPUT, getState_pos)
     {
         android::sp<hdmiinput::IHDMIInput> hdmiInput;
 
-        HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESSS(id, hdmiInput);
+        HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESS(id, hdmiInput);
 
         HDMIINPUT_GET_STATE(hdmiInput, state);
 
@@ -464,7 +465,7 @@ UT_ADD_TEST(VTS_L1_HDMIINPUT, getState_pos)
  * For each port, it determines the highest supported HDMIVersion, fetches the expected EDID bytes for that version from the YAML profile,
  * and asserts that the returned EDID data matches the expected bytes in size and content.
  *
- * **Test Group ID:** Basic: 01@n
+ * **Test Group ID:**: 01@n
  * **Test Case ID:** 009@n
  * **Priority:** High@n
  *
@@ -476,7 +477,7 @@ UT_ADD_TEST(VTS_L1_HDMIINPUT, getState_pos)
  * | Variation / Step | Description | Test Data | Expected Result | Notes |
  * | :----: | --------- | ---------- |-------------- | ----- |
  * | 01 | Retrieve all HDMI input IDs using HDMIINPUT_MANAGER_GETHDMIINPUTIDS. | Output: hdmiInputIds vector | List of HDMI input IDs is obtained. | Should be successful |
- * | 02 | For each HDMI input ID, retrieve the HDMI Input object using HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESSS. | Input: id | HDMI Input object is returned. | Should Pass |
+ * | 02 | For each HDMI input ID, retrieve the HDMI Input object using HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESS. | Input: id | HDMI Input object is returned. | Should Pass |
  * | 03 | Call HDMIINPUT_GETEDID_SUCCESS on the HDMI Input object and capture the EDID data. | Input: hdmiInput | EDID data is returned. | Should Pass |
  * | 04 | Determine the highest supported HDMIVersion for the port and fetch the expected EDID bytes from the YAML profile. | Output: expectedEDID | Expected EDID bytes are obtained. | Should Pass |
  * | 05 | Assert that the returned EDID data matches the expected EDID bytes in size and content. | Output: edidData, expectedEDID | All assertions pass if data matches. | Should Pass |
@@ -484,7 +485,6 @@ UT_ADD_TEST(VTS_L1_HDMIINPUT, getState_pos)
 UT_ADD_TEST(VTS_L1_HDMIINPUT, getEDID_pos)
 {
     std::vector<hdmiinput::IHDMIInput::Id> hdmiInputIds;
-    hdmiinput::State state;
 
     /* Get the HDMI INPUT IDs */
     HDMIINPUT_MANAGER_GETHDMIINPUTIDS(hdmiInputIds);
@@ -494,7 +494,7 @@ UT_ADD_TEST(VTS_L1_HDMIINPUT, getEDID_pos)
         android::sp<hdmiinput::IHDMIInput> hdmiInput;
         std::vector<uint8_t> edidData;
 
-        HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESSS(id, hdmiInput);
+        HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESS(id, hdmiInput);
         HDMIINPUT_GETEDID_SUCCESS(hdmiInput, edidData);
 
         // Find the highest HDMIVersion for this port
@@ -528,7 +528,7 @@ UT_ADD_TEST(VTS_L1_HDMIINPUT, getEDID_pos)
  * This test iterates over all available HDMI input IDs and, for each port, over all supported HDMI versions.
  * For each version, it calls getDefaultEDID and asserts that the returned EDID matches the expected bytes from the YAML profile.
  *
- * **Test Group ID:** Basic: 01@n
+ * **Test Group ID:**: 01@n
  * **Test Case ID:** 010@n
  * **Priority:** High@n
  *
@@ -540,7 +540,7 @@ UT_ADD_TEST(VTS_L1_HDMIINPUT, getEDID_pos)
  * | Variation / Step | Description | Test Data | Expected Result | Notes |
  * | :----: | --------- | ---------- |-------------- | ----- |
  * | 01 | Retrieve all HDMI input IDs using HDMIINPUT_MANAGER_GETHDMIINPUTIDS. | Output: hdmiInputIds vector | List of HDMI input IDs is obtained. | Should be successful |
- * | 02 | For each HDMI input ID, retrieve the HDMI Input object using HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESSS. | Input: id | HDMI Input object is returned. | Should Pass |
+ * | 02 | For each HDMI input ID, retrieve the HDMI Input object using HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESS. | Input: id | HDMI Input object is returned. | Should Pass |
  * | 03 | For each supported HDMIVersion, call getDefaultEDID and capture the EDID data. | Input: version | EDID data is returned. | Should Pass |
  * | 04 | Assert that the returned EDID data matches the expected EDID bytes in size and content for that version. | Output: edidData, expectedEDID | All assertions pass if data matches. | Should Pass |
  */
@@ -553,7 +553,7 @@ UT_ADD_TEST(VTS_L1_HDMIINPUT, getDefaultEDID_pos)
     for (const auto& id : hdmiInputIds)
     {
         android::sp<hdmiinput::IHDMIInput> hdmiInput;
-        HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESSS(id, hdmiInput);
+        HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESS(id, hdmiInput);
 
         const auto& port = gHdmiInput_hfp.ports[id.value];
         for (const auto& version : port.supportedVersions)
@@ -584,7 +584,7 @@ UT_ADD_TEST(VTS_L1_HDMIINPUT, getDefaultEDID_pos)
  * 2. Sending an invalid version (e.g., an out-of-range enum value).
  * 3. Ensures the API fails gracefully and does not return EDID data.
  *
- * **Test Group ID:** Negative: 01@n
+ * **Test Group ID:**: 01@n
  * **Test Case ID:** 011@n
  * **Priority:** High@n
  *
@@ -606,7 +606,7 @@ UT_ADD_TEST(VTS_L1_HDMIINPUT, getDefaultEDID_neg)
     for (const auto& id : hdmiInputIds)
     {
         android::sp<hdmiinput::IHDMIInput> hdmiInput;
-        HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESSS(id, hdmiInput);
+        HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESS(id, hdmiInput);
 
         const auto& port = gHdmiInput_hfp.ports[id.value];
 
@@ -643,7 +643,7 @@ UT_ADD_TEST(VTS_L1_HDMIINPUT, getDefaultEDID_neg)
  * This test iterates over all available HDMI input IDs, retrieves the corresponding HDMI Input object, and calls getHDCPCurrentVersion.
  * It asserts that the returned value is HDCPProtocolVersion::UNDEFINED
  *
- * **Test Group ID:** Basic: 01@n
+ * **Test Group ID:**: 01@n
  * **Test Case ID:** 012@n
  * **Priority:** High@n
  *
@@ -655,7 +655,7 @@ UT_ADD_TEST(VTS_L1_HDMIINPUT, getDefaultEDID_neg)
  * | Variation / Step | Description | Test Data | Expected Result | Notes |
  * | :----: | --------- | ---------- |-------------- | ----- |
  * | 01 | Retrieve all HDMI input IDs using HDMIINPUT_MANAGER_GETHDMIINPUTIDS. | Output: hdmiInputIds vector | List of HDMI input IDs is obtained. | Should be successful |
- * | 02 | For each HDMI input ID, retrieve the HDMI Input object using HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESSS. | Input: id | HDMI Input object is returned. | Should Pass |
+ * | 02 | For each HDMI input ID, retrieve the HDMI Input object using HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESS. | Input: id | HDMI Input object is returned. | Should Pass |
  * | 03 | Call getHDCPCurrentVersion and check the returned value. | Output: version | Value is HDCPProtocolVersion::UNDEFINED. | Should Pass |
  */
 UT_ADD_TEST(VTS_L1_HDMIINPUT, getHDCPCurrentVersion_pos)
@@ -668,12 +668,11 @@ UT_ADD_TEST(VTS_L1_HDMIINPUT, getHDCPCurrentVersion_pos)
         android::sp<hdmiinput::IHDMIInput> hdmiInput;
         hdmiinput::HDCPProtocolVersion currentVersion;
 
-        HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESSS(id, hdmiInput);
+        HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESS(id, hdmiInput);
 
         HDMIINPUT_GETHDCPCURRENTVERSION(hdmiInput, currentVersion);
 
         // It should be either one of the supported versions or UNDEFINED
-        const auto& port = gHdmiInput_hfp.ports[id.value];
         UT_ASSERT_EQUAL(currentVersion, HDCPProtocolVersion::UNDEFINED);
     }
 }
@@ -684,7 +683,7 @@ UT_ADD_TEST(VTS_L1_HDMIINPUT, getHDCPCurrentVersion_pos)
  * This test iterates over all available HDMI input IDs, retrieves the corresponding HDMI Input object, and calls getHDCPStatus.
  * It asserts that the returned value is HDCPStatus::UNKNOWN if HDCP is not in use.
  *
- * **Test Group ID:** Basic: 01@n
+ * **Test Group ID:**: 01@n
  * **Test Case ID:** 013@n
  * **Priority:** High@n
  *
@@ -696,7 +695,7 @@ UT_ADD_TEST(VTS_L1_HDMIINPUT, getHDCPCurrentVersion_pos)
  * | Variation / Step | Description | Test Data | Expected Result | Notes |
  * | :----: | --------- | ---------- |-------------- | ----- |
  * | 01 | Retrieve all HDMI input IDs using HDMIINPUT_MANAGER_GETHDMIINPUTIDS. | Output: hdmiInputIds vector | List of HDMI input IDs is obtained. | Should be successful |
- * | 02 | For each HDMI input ID, retrieve the HDMI Input object using HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESSS. | Input: id | HDMI Input object is returned. | Should Pass |
+ * | 02 | For each HDMI input ID, retrieve the HDMI Input object using HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESS. | Input: id | HDMI Input object is returned. | Should Pass |
  * | 03 | Call getHDCPStatus and check the returned value. | Output: status | Value is HDCPStatus::UNKNOWN if HDCP is not in use. | Should Pass |
  */
 UT_ADD_TEST(VTS_L1_HDMIINPUT, getHDCPStatus_pos)
@@ -709,7 +708,7 @@ UT_ADD_TEST(VTS_L1_HDMIINPUT, getHDCPStatus_pos)
         android::sp<hdmiinput::IHDMIInput> hdmiInput;
         hdmiinput::HDCPStatus hdcpStatus;
 
-        HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESSS(id, hdmiInput);
+        HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESS(id, hdmiInput);
 
         // Call getHDCPStatus
         HDMIINPUT_GETHDCPSTATUS(hdmiInput, hdcpStatus);
@@ -727,7 +726,7 @@ UT_ADD_TEST(VTS_L1_HDMIINPUT, getHDCPStatus_pos)
  * and calls getSPDInfoFrame. It asserts that the returned array is empty if no InfoFrame has been
  * received since last device connection or start.
  *
- * **Test Group ID:** Basic: 01@n
+ * **Test Group ID:**: 01@n
  * **Test Case ID:** 014@n
  * **Priority:** High@n
  *
@@ -739,7 +738,7 @@ UT_ADD_TEST(VTS_L1_HDMIINPUT, getHDCPStatus_pos)
  * | Variation / Step | Description | Test Data | Expected Result | Notes |
  * | :----: | --------- | ---------- |-------------- | ----- |
  * | 01 | Retrieve all HDMI input IDs using HDMIINPUT_MANAGER_GETHDMIINPUTIDS. | Output: hdmiInputIds vector | List of HDMI input IDs is obtained. | Should be successful |
- * | 02 | For each HDMI input ID, retrieve the HDMI Input object using HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESSS. | Input: id | HDMI Input object is returned. | Should Pass |
+ * | 02 | For each HDMI input ID, retrieve the HDMI Input object using HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESS. | Input: id | HDMI Input object is returned. | Should Pass |
  * | 03 | Call getSPDInfoFrame and check the returned value. | Output: infoFrameData | Value is empty array if no InfoFrame received. | Should Pass |
  */
 UT_ADD_TEST(VTS_L1_HDMIINPUT, getSPDInfoFrame_pos)
@@ -750,7 +749,7 @@ UT_ADD_TEST(VTS_L1_HDMIINPUT, getSPDInfoFrame_pos)
     for (const auto& id : hdmiInputIds)
     {
         android::sp<hdmiinput::IHDMIInput> hdmiInput;
-        HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESSS(id, hdmiInput);
+        HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESS(id, hdmiInput);
 
         std::vector<uint8_t> infoFrameData;
         HDMIINPUT_GETSPDINFOFRAME(hdmiInput, infoFrameData);
@@ -767,19 +766,19 @@ UT_ADD_TEST(VTS_L1_HDMIINPUT, getSPDInfoFrame_pos)
  * and calls open with a valid controller listener.
  * It asserts that the returned IHDMIInputController is not null, and then closes the controller.
  *
- * **Test Group ID:** Basic: 01@n
- * **Test Case ID:** 015@n
- * **Priority:** High@n
+ * **Test Group ID:**: 01@n
+ * **Test Case ID:**: 015@n
+ * **Priority:**: High@n
  *
- * **Pre-Conditions:** HDMI input port must be in State::CLOSED@n
- * **Dependencies:** None@n
- * **User Interaction:** None@n
+ * **Pre-Conditions:**: None@n
+ * **Dependencies:**: None@n
+ * **User Interaction:**: None@n
  *
  * **Test Procedure:**@n
  * | Variation / Step | Description | Test Data | Expected Result | Notes |
  * | :----: | --------- | ---------- |-------------- | ----- |
  * | 01 | Retrieve all HDMI input IDs using HDMIINPUT_MANAGER_GETHDMIINPUTIDS. | Output: hdmiInputIds vector | List of HDMI input IDs is obtained. | Should be successful |
- * | 02 | For each HDMI input ID, retrieve the HDMI Input object using HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESSS. | Input: id | HDMI Input object is returned. | Should Pass |
+ * | 02 | For each HDMI input ID, retrieve the HDMI Input object using HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESS. | Input: id | HDMI Input object is returned. | Should Pass |
  * | 03 | Call open with a valid controller listener and check the returned controller. | Output: controller | Controller is not null. | Should Pass |
  * | 04 | Call close on the controller and ensure it succeeds. | Input: controller | Close succeeds. | Should Pass |
  */
@@ -795,7 +794,7 @@ UT_ADD_TEST(VTS_L1_HDMIINPUT, open_pos)
         android::sp<hdmiinput::IHDMIInputControllerListener> listener = new HDMIInputControllerListener();
         android::sp<hdmiinput::IHDMIInputController> controller;
 
-        HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESSS(id, hdmiInput);
+        HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESS(id, hdmiInput);
 
         HDMIINPUT_GET_STATE(hdmiInput, beforeState);
         UT_ASSERT_EQUAL(beforeState, hdmiinput::State::CLOSED);
@@ -813,13 +812,13 @@ UT_ADD_TEST(VTS_L1_HDMIINPUT, open_pos)
  * 1. Calling open twice in a row (should fail on second call due to wrong state).
  * 2. Passing a null pointer as the controller listener (should fail).
  *
- * **Test Group ID:** Negative: 01@n
- * **Test Case ID:** 016@n
- * **Priority:** High@n
+ * **Test Group ID:**: 01@n
+ * **Test Case ID:**: 016@n
+ * **Priority:**: High@n
  *
- * **Pre-Conditions:** HDMI input port must be in State::CLOSED@n
- * **Dependencies:** None@n
- * **User Interaction:** None@n
+ * **Pre-Conditions:**: None@n
+ * **Dependencies:**: None@n
+ * **User Interaction:**: None@n
  *
  * **Test Procedure:**@n
  * | Variation / Step | Description | Test Data | Expected Result | Notes |
@@ -839,12 +838,12 @@ UT_ADD_TEST(VTS_L1_HDMIINPUT, open_neg)
         android::sp<hdmiinput::IHDMIInputControllerListener> listener = new HDMIInputControllerListener();
         android::sp<hdmiinput::IHDMIInputController> controller;
 
-        HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESSS(id, hdmiInput);
+        HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESS(id, hdmiInput);
 
         // open the port with NULL listener
         HDMIINPUT_OPEN_FAILURE(hdmiInput, invalidControllerListener, controller, hdmiinput::State::CLOSED, Status::EX_NULL_POINTER);
 
-        // open the port with valid listner
+        // open the port with valid listener
         HDMIINPUT_OPEN_SUCCESS(hdmiInput, listener, controller, true);
 
         //open the port with invalid state
@@ -862,19 +861,19 @@ UT_ADD_TEST(VTS_L1_HDMIINPUT, open_neg)
  * and calls open with a valid controller listener.
  * It asserts that the returned IHDMIInputController is not null, and then closes the controller.
  *
- * **Test Group ID:** Basic: 01@n
- * **Test Case ID:** 017@n
- * **Priority:** High@n
+ * **Test Group ID:**: 01@n
+ * **Test Case ID:**: 017@n
+ * **Priority:**: High@n
  *
- * **Pre-Conditions:** HDMI input port must be in State::CLOSED@n
- * **Dependencies:** None@n
- * **User Interaction:** None@n
+ * **Pre-Conditions:**: None@n
+ * **Dependencies:**: None@n
+ * **User Interaction:**: None@n
  *
  * **Test Procedure:**@n
  * | Variation / Step | Description | Test Data | Expected Result | Notes |
  * | :----: | --------- | ---------- |-------------- | ----- |
  * | 01 | Retrieve all HDMI input IDs using HDMIINPUT_MANAGER_GETHDMIINPUTIDS. | Output: hdmiInputIds vector | List of HDMI input IDs is obtained. | Should be successful |
- * | 02 | For each HDMI input ID, retrieve the HDMI Input object using HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESSS. | Input: id | HDMI Input object is returned. | Should Pass |
+ * | 02 | For each HDMI input ID, retrieve the HDMI Input object using HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESS. | Input: id | HDMI Input object is returned. | Should Pass |
  * | 03 | Call open with a valid controller listener and check the returned controller. | Output: controller | Controller is not null. | Should Pass |
  * | 04 | Call close on the controller and ensure it succeeds. | Input: controller | Close succeeds. | Should Pass |
  */
@@ -890,7 +889,7 @@ UT_ADD_TEST(VTS_L1_HDMIINPUT, close_pos)
         android::sp<hdmiinput::IHDMIInputControllerListener> listener = new HDMIInputControllerListener();
         android::sp<hdmiinput::IHDMIInputController> controller;
 
-        HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESSS(id, hdmiInput);
+        HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESS(id, hdmiInput);
 
         HDMIINPUT_GET_STATE(hdmiInput, beforeState);
         UT_ASSERT_EQUAL(beforeState, hdmiinput::State::CLOSED);
@@ -904,19 +903,19 @@ UT_ADD_TEST(VTS_L1_HDMIINPUT, close_pos)
 /**
  * @brief Negative and robustness tests for the close API for HDMI Input objects.
  *
- * **Test Group ID:** Negative: 01@n
- * **Test Case ID:** 018@n
- * **Priority:** High@n
+ * **Test Group ID:**: 01@n
+ * **Test Case ID:**: 018@n
+ * **Priority:**: High@n
  *
- * **Pre-Conditions:** HDMI input port must be in State::CLOSED@n
- * **Dependencies:** None@n
- * **User Interaction:** None@n
+ * **Pre-Conditions:**: None@n
+ * **Dependencies:**: None@n
+ * **User Interaction:**: None@n
  *
  * **Test Procedure:**@n
  * | Variation / Step | Description | Test Data | Expected Result | Notes |
  * | :----: | --------- | ---------- |-------------- | ----- |
  * | 01 | Retrieve all HDMI input IDs using HDMIINPUT_MANAGER_GETHDMIINPUTIDS. | Output: hdmiInputIds vector | List of HDMI input IDs is obtained. | Should be successful |
- * | 02 | For each HDMI input ID, retrieve the HDMI Input object using HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESSS. | Input: id | HDMI Input object is returned. | Should Pass |
+ * | 02 | For each HDMI input ID, retrieve the HDMI Input object using HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESS. | Input: id | HDMI Input object is returned. | Should Pass |
  * | 03 | Call open with a valid controller listener and check the returned controller. | Output: controller | Controller is not null. | Should Pass |
  * | 04 | Call close with invalid controller | Input: invalid controller | Close return false. | Should Pass |
  * | 05 | Call close on the controller and ensure it succeeds. | Input: controller | Close succeeds. | Should Pass |
@@ -934,7 +933,7 @@ UT_ADD_TEST(VTS_L1_HDMIINPUT, close_neg)
         android::sp<hdmiinput::IHDMIInputControllerListener> listener = new HDMIInputControllerListener();
         android::sp<hdmiinput::IHDMIInputController> controller;
 
-        HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESSS(id, hdmiInput);
+        HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESS(id, hdmiInput);
 
         // Open the port (should transition to READY)
         HDMIINPUT_OPEN_SUCCESS(hdmiInput, listener, controller, true);
@@ -955,19 +954,19 @@ UT_ADD_TEST(VTS_L1_HDMIINPUT, close_neg)
 /**
  * @brief Validate the registerEventListener API for HDMI Input objects registers an event listener successfully.
  *
- * **Test Group ID:** Basic: 01@n
- * **Test Case ID:** 019@n
- * **Priority:** High@n
+ * **Test Group ID:**: 01@n
+ * **Test Case ID:**: 019@n
+ * **Priority:**: High@n
  *
- * **Pre-Conditions:** None@n
- * **Dependencies:** None@n
- * **User Interaction:** None@n
+ * **Pre-Conditions:**: None@n
+ * **Dependencies:**: None@n
+ * **User Interaction:**: None@n
  *
  * **Test Procedure:**@n
  * | Variation / Step | Description | Test Data | Expected Result | Notes |
  * | :----: | --------- | ---------- |-------------- | ----- |
  * | 01 | Retrieve all HDMI input IDs using HDMIINPUT_MANAGER_GETHDMIINPUTIDS. | Output: hdmiInputIds vector | List of HDMI input IDs is obtained. | Should be successful |
- * | 02 | For each HDMI input ID, retrieve the HDMI Input object using HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESSS. | Input: id | HDMI Input object is returned. | Should Pass |
+ * | 02 | For each HDMI input ID, retrieve the HDMI Input object using HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESS. | Input: id | HDMI Input object is returned. | Should Pass |
  * | 03 | Register a new event listener using HDMIINPUT_REGISTEREVENT_SUCCESS. | Input: eventListener | Registration succeeds. | Should Pass |
  */
 UT_ADD_TEST(VTS_L1_HDMIINPUT, registerEventListener_pos)
@@ -978,7 +977,7 @@ UT_ADD_TEST(VTS_L1_HDMIINPUT, registerEventListener_pos)
     for (const auto& id : hdmiInputIds)
     {
         android::sp<hdmiinput::IHDMIInput> hdmiInput;
-        HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESSS(id, hdmiInput);
+        HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESS(id, hdmiInput);
 
         android::sp<hdmiinput::IHDMIInputEventListener> eventListener = new HDMIInputEventListener();
         HDMIINPUT_REGISTEREVENT_SUCCESS(hdmiInput, eventListener);
@@ -1021,7 +1020,7 @@ UT_ADD_TEST(VTS_L1_HDMIINPUT, registerEventListener_neg)
     for (const auto& id : hdmiInputIds)
     {
         android::sp<hdmiinput::IHDMIInput> hdmiInput;
-        HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESSS(id, hdmiInput);
+        HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESS(id, hdmiInput);
 
         /* Register the event listeners with invalid listener */
         HDMIINPUT_REGISTEREVENT_FAILURE(hdmiInput, invalidEventListener, Status::EX_NULL_POINTER);
@@ -1052,7 +1051,7 @@ UT_ADD_TEST(VTS_L1_HDMIINPUT, registerEventListener_neg)
  * | Variation / Step | Description | Test Data | Expected Result | Notes |
  * | :----: | --------- | ---------- |-------------- | ----- |
  * | 01 | Retrieve all HDMI input IDs using HDMIINPUT_MANAGER_GETHDMIINPUTIDS. | Output: hdmiInputIds vector | List of HDMI input IDs is obtained. | Should be successful |
- * | 02 | For each HDMI input ID, retrieve the HDMI Input object using HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESSS. | Input: id | HDMI Input object is returned. | Should Pass |
+ * | 02 | For each HDMI input ID, retrieve the HDMI Input object using HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESS. | Input: id | HDMI Input object is returned. | Should Pass |
  * | 03 | Register a new event listener using HDMIINPUT_REGISTEREVENT_SUCCESS. | Input: eventListener | Registration succeeds. | Should Pass |
  */
 UT_ADD_TEST(VTS_L1_HDMIINPUT, unregisterEventListener_pos)
@@ -1063,7 +1062,7 @@ UT_ADD_TEST(VTS_L1_HDMIINPUT, unregisterEventListener_pos)
     for (const auto& id : hdmiInputIds)
     {
         android::sp<hdmiinput::IHDMIInput> hdmiInput;
-        HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESSS(id, hdmiInput);
+        HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESS(id, hdmiInput);
 
         android::sp<hdmiinput::IHDMIInputEventListener> eventListener = new HDMIInputEventListener();
         HDMIINPUT_REGISTEREVENT_SUCCESS(hdmiInput, eventListener);
@@ -1075,7 +1074,7 @@ UT_ADD_TEST(VTS_L1_HDMIINPUT, unregisterEventListener_pos)
 /**
  * @brief Negative tests for the unregisterEventListener API for HDMI Input objects
  *
- * **Test Group ID:** Negative: 01@n
+ * **Test Group ID:**: 01@n
  * **Test Case ID:** 022@n
  * **Priority:** High@n
  *
@@ -1087,7 +1086,7 @@ UT_ADD_TEST(VTS_L1_HDMIINPUT, unregisterEventListener_pos)
  * | Variation / Step | Description | Test Data | Expected Result | Notes |
  * | :----: | --------- | ---------- |-------------- | ----- |
  * | 01 | Retrieve all HDMI input IDs using HDMIINPUT_MANAGER_GETHDMIINPUTIDS. | Output: hdmiInputIds vector | List of HDMI input IDs is obtained. | Should be successful |
- * | 02 | For each HDMI input ID, retrieve the HDMI Input object using HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESSS. | Input: id | HDMI Input object is returned. | Should Pass |
+ * | 02 | For each HDMI input ID, retrieve the HDMI Input object using HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESS. | Input: id | HDMI Input object is returned. | Should Pass |
  * | 03 | Attempt to unregister a listener that was never registered. | eventListener_1 | API returns failure (EX_NONE). | Should Pass |
  * | 04 | Register a valid event listener. | eventListener_1 | Registration succeeds. | Should Pass |
  * | 05 | Attempt to unregister a null listener. | nullptr | API returns failure (EX_NULL_POINTER). | Should Pass |
@@ -1103,7 +1102,7 @@ UT_ADD_TEST(VTS_L1_HDMIINPUT, unregisterEventListener_neg)
     for (const auto& id : hdmiInputIds)
     {
         android::sp<hdmiinput::IHDMIInput> hdmiInput;
-        HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESSS(id, hdmiInput);
+        HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESS(id, hdmiInput);
 
         android::sp<hdmiinput::IHDMIInputEventListener> eventListener_1 = new HDMIInputEventListener();
         android::sp<hdmiinput::IHDMIInputEventListener> eventListener_2 = new HDMIInputEventListener();
@@ -1130,11 +1129,11 @@ UT_ADD_TEST(VTS_L1_HDMIINPUT, unregisterEventListener_neg)
  * It iterates over all available HDMI input IDs, opens each port, and checks the connection state.
  * The test asserts that the returned connection state is false (disconnected) after opening, confirming correct default behavior.
  *
- * **Test Group ID:** Basic: 01@n
+ * **Test Group ID:**: 01@n
  * **Test Case ID:** 023@n
  * **Priority:** High@n
  *
- * **Pre-Conditions:** HDMI input port must be in State::CLOSED@n
+ * **Pre-Conditions:** None@n
  * **Dependencies:** None@n
  * **User Interaction:** None@n
  *
@@ -1142,7 +1141,7 @@ UT_ADD_TEST(VTS_L1_HDMIINPUT, unregisterEventListener_neg)
  * | Variation / Step | Description | Test Data | Expected Result | Notes |
  * | :----: | --------- | ---------- |-------------- | ----- |
  * | 01 | Retrieve all HDMI input IDs using HDMIINPUT_MANAGER_GETHDMIINPUTIDS. | Output: hdmiInputIds vector | List of HDMI input IDs is obtained. | Should be successful |
- * | 02 | For each HDMI input ID, retrieve the HDMI Input object using HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESSS. | Input: id | HDMI Input object is returned. | Should Pass |
+ * | 02 | For each HDMI input ID, retrieve the HDMI Input object using HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESS. | Input: id | HDMI Input object is returned. | Should Pass |
  * | 03 | Call open with a valid controller listener and check the returned controller. | Output: controller | Controller is not null. | Should Pass |
  * | 04 | Call getConnectionState on the controller and check the returned value. | Output: connectionState | Value is false (disconnected). | Should Pass |
  * | 05 | Call close on the controller and ensure it succeeds. | Input: controller | Close succeeds. | Should Pass |
@@ -1160,7 +1159,7 @@ UT_ADD_TEST(VTS_L1_HDMIINPUT, getConnectionState_pos)
         android::sp<hdmiinput::IHDMIInputController> controller;
         bool connectionState;
 
-        HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESSS(id, hdmiInput);
+        HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESS(id, hdmiInput);
 
         HDMIINPUT_OPEN_SUCCESS(hdmiInput, listener, controller, true);
 
@@ -1173,63 +1172,115 @@ UT_ADD_TEST(VTS_L1_HDMIINPUT, getConnectionState_pos)
 }
 
 /**
- * @brief Validate the start API for HDMI Input controllers
+ * @brief Positive tests for the start API for HDMI Input controllers
  *
- * This test verifies that the start API on each HDMI Input controller transitions the port to the started state and allows streaming to begin.
- * It iterates over all available HDMI input IDs, opens each port, starts the controller, and then stops and closes it.
- * The test asserts that start and stop operations succeed for each port, confirming correct behavior.
+ * This test validates the correct behavior of the start() API under normal conditions:
+ * 1. Retrieves all HDMI input IDs and opens each port.
+ * 2. Starts and stops each HDMI input port concurrently up to the platform's maximum supported limit, verifying that multiple ports can be active simultaneously.
+ * 3. Starts and stops each HDMI input port sequentially to ensure correct state transitions.
+ * 4. Closes all HDMI input ports at the end of the test.
  *
- * **Test Group ID:** Basic: 01@n
- * **Test Case ID:** 024@n
- * **Priority:** High@n
+ * The test asserts that the start and stop operations succeed and that the HDMI input controllers transition through the expected states without errors.
  *
- * **Pre-Conditions:** HDMI input port must be in State::READY@n
- * **Dependencies:** None@n
- * **User Interaction:** None@n
+ * **Test Group ID:** Positive: 01@p
+ * **Test Case ID:** 024@p
+ * **Priority:** High@p
  *
- * **Test Procedure:**@n
+ * **Pre-Conditions:** None@p
+ * **Dependencies:** None@p
+ * **User Interaction:** None@p
+ *
+ * **Test Procedure:**@p
  * | Variation / Step | Description | Test Data | Expected Result | Notes |
  * | :----: | --------- | ---------- |-------------- | ----- |
  * | 01 | Retrieve all HDMI input IDs using HDMIINPUT_MANAGER_GETHDMIINPUTIDS. | Output: hdmiInputIds vector | List of HDMI input IDs is obtained. | Should be successful |
- * | 02 | For each HDMI input ID, retrieve the HDMI Input object using HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESSS. | Input: id | HDMI Input object is returned. | Should Pass |
+ * | 02 | For each HDMI input ID, retrieve the HDMI Input object using HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESS. | Input: id | HDMI Input object is returned. | Should Pass |
  * | 03 | Call open with a valid controller listener and check the returned controller. | Output: controller | Controller is not null. | Should Pass |
- * | 04 | Call start on the controller and ensure it succeeds. | Input: controller | Start succeeds. | Should Pass |
- * | 05 | Call stop on the controller and ensure it succeeds. | Input: controller | Stop succeeds. | Should Pass |
- * | 06 | Call close on the controller and ensure it succeeds. | Input: controller | Close succeeds. | Should Pass |
+ * | 04 | Call start on the controller and ensure it succeeds (concurrent test). | Input: controller | Start succeeds. | Should Pass |
+ * | 05 | Call stop on the controller and ensure it succeeds (concurrent test). | Input: controller | Stop succeeds. | Should Pass |
+ * | 06 | Call start and stop sequentially on each controller. | Input: controller | Start and stop succeed. | Should Pass |
+ * | 07 | Call close on the controller and ensure it succeeds. | Input: controller | Close succeeds. | Should Pass |
  */
 UT_ADD_TEST(VTS_L1_HDMIINPUT, start_pos)
 {
     std::vector<hdmiinput::IHDMIInput::Id> hdmiInputIds;
+    vector<tuple<IHDMIInput::Id, sp<IHDMIInput>, sp<HDMIInputControllerListener>, sp<hdmiinput::IHDMIInputController>>> hdmiInputList;
 
     HDMIINPUT_MANAGER_GETHDMIINPUTIDS(hdmiInputIds);
 
+    // open all HDMI input ports first to prepare for start testing
     for (const auto& id : hdmiInputIds)
     {
         android::sp<hdmiinput::IHDMIInput> hdmiInput;
-        android::sp<hdmiinput::IHDMIInputControllerListener> listener = new HDMIInputControllerListener();
+        HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESS(id, hdmiInput);
+
+        sp<HDMIInputControllerListener> controllerListener = new HDMIInputControllerListener();
         android::sp<hdmiinput::IHDMIInputController> controller;
 
-        HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESSS(id, hdmiInput);
+        // Open the HDMI input port
+        HDMIINPUT_OPEN_SUCCESS(hdmiInput, controllerListener, controller, true);
 
-        HDMIINPUT_OPEN_SUCCESS(hdmiInput, listener, controller, true);
+        hdmiInputList.push_back({id, hdmiInput, controllerListener, controller});
+    }
+
+    // Start and stop each HDMI input port concurrently to validate that multiple ports
+    // can be active at the same time up to the maximum limit
+    for (int32_t i = 0; i < gHdmiInput_hfp.platformCapabilities.maximumConcurrentStartedPorts; i++)
+    {
+        auto& input = hdmiInputList[i];
+        auto& hdmiInput = std::get<1>(input);
+        auto& controller = std::get<3>(input);
+
+        // Start the HDMI input port
+        HDMIINPUT_START_SUCCESS(hdmiInput, controller, true);
+    }
+    for (int32_t i = 0; i < gHdmiInput_hfp.platformCapabilities.maximumConcurrentStartedPorts; i++)
+    {
+        auto& input = hdmiInputList[i];
+        auto& hdmiInput = std::get<1>(input);
+        auto& controller = std::get<3>(input);
+
+        // Stop the HDMI input port
+        HDMIINPUT_STOP_SUCCESS(hdmiInput, controller, true);
+    }
+
+    // Start and stop each HDMI input port sequentially to validate correct state transitions
+    for (auto& input : hdmiInputList)
+    {
+        auto& hdmiInput = std::get<1>(input);
+        auto& controller = std::get<3>(input);
 
         HDMIINPUT_START_SUCCESS(hdmiInput, controller, true);
 
         HDMIINPUT_STOP_SUCCESS(hdmiInput, controller, true);
+    }
 
+    //close all HDMI input ports at the end of the test
+    for (auto& input : hdmiInputList)
+    {
+        auto& hdmiInput = std::get<1>(input);
+        auto& controller = std::get<3>(input);
+
+        // Close the HDMI input port
         HDMIINPUT_CLOSE_SUCCESS(hdmiInput, controller, true);
-
     }
 }
 
 /**
- * @brief Negative tests for the start API for HDMI Input controllers
+ * @brief Negative test for the start() API of HDMI Input controllers
  *
- * This test covers negative scenarios for the start API:
- * 1. Attempting to start an already started controller (should fail).
- * 2. Ensures the API fails gracefully and returns the correct error status.
- * It iterates over all available HDMI input IDs, opens each port, starts the controller, attempts to start again, then stops and closes it.
- * The test asserts that the second start operation fails with EX_ILLEGAL_STATE.
+ * This test verifies that the start() API correctly handles invalid usage scenarios:
+ *   - Attempts to start an HDMI input controller that is already in the started state, expecting the API to fail with EX_ILLEGAL_STATE.
+ *   - Ensures that the controller state remains unchanged after the failed start attempt and that no unintended side effects occur.
+ *
+ * Test Steps:
+ *   1. Retrieve all HDMI input IDs.
+ *   2. For each HDMI input ID, open the port and obtain a controller instance.
+ *   3. Start the controller (should succeed).
+ *   4. Attempt to start the controller again (should fail with EX_ILLEGAL_STATE).
+ *   5. Stop and close the controller.
+ *
+ * The test asserts that the second start operation fails as expected, the error code is correct, and the controller state is preserved.
  *
  * **Test Group ID:** Negative: 01@n
  * **Test Case ID:** 025@n
@@ -1240,90 +1291,190 @@ UT_ADD_TEST(VTS_L1_HDMIINPUT, start_pos)
  * **User Interaction:** None@n
  *
  * **Test Procedure:**@n
- * | Variation / Step | Description | Test Data | Expected Result | Notes |
- * | :----: | --------- | ---------- |-------------- | ----- |
- * | 01 | Retrieve all HDMI input IDs using HDMIINPUT_MANAGER_GETHDMIINPUTIDS. | Output: hdmiInputIds vector | List of HDMI input IDs is obtained. | Should be successful |
- * | 02 | For each HDMI input ID, retrieve the HDMI Input object using HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESSS. | Input: id | HDMI Input object is returned. | Should Pass |
- * | 03 | Call open with a valid controller listener and check the returned controller. | Output: controller | Controller is not null. | Should Pass |
- * | 04 | Call start on the controller and ensure it succeeds. | Input: controller | Start succeeds. | Should Pass |
- * | 05 | Call start again on the controller and check for failure. | Input: controller | Start fails with EX_ILLEGAL_STATE. | Should Pass |
- * | 06 | Call stop on the controller and ensure it succeeds. | Input: controller | Stop succeeds. | Should Pass |
- * | 07 | Call close on the controller and ensure it succeeds. | Input: controller | Close succeeds. | Should Pass |
+ * | Step | Action | Input / Output | Expected Result | Notes |
+ * | :--: | ------ | ------------- | --------------- | ----- |
+ * | 1 | Retrieve all HDMI input IDs. | Output: hdmiInputIds vector | List of HDMI input IDs is obtained. | Initialization |
+ * | 2 | For each HDMI input ID, retrieve the HDMI Input object. | Input: id | HDMI Input object is returned. |  |
+ * | 3 | Open the HDMI input port with a valid controller listener. | Output: controller | Controller is not null. |  |
+ * | 4 | Start the controller (first attempt). | Input: controller | Start succeeds. | Valid state transition |
+ * | 5 | Attempt to start the controller again (second attempt). | Input: controller | Start fails with EX_ILLEGAL_STATE. | Negative test: already started |
+ * | 6 | Verify controller state remains unchanged after failed start. | Output: controller state | State is unchanged (still started). | Validation |
+ * | 7 | Stop the controller. | Input: controller | Stop succeeds. |  |
+ * | 8 | Close the controller. | Input: controller | Close succeeds. | Cleanup |
  */
 UT_ADD_TEST(VTS_L1_HDMIINPUT, start_neg)
 {
     std::vector<hdmiinput::IHDMIInput::Id> hdmiInputIds;
+    vector<tuple<IHDMIInput::Id, sp<IHDMIInput>, sp<HDMIInputControllerListener>, sp<hdmiinput::IHDMIInputController>>> hdmiInputList;
 
     HDMIINPUT_MANAGER_GETHDMIINPUTIDS(hdmiInputIds);
 
+    // open all HDMI input ports first to prepare for start testing
     for (const auto& id : hdmiInputIds)
     {
         android::sp<hdmiinput::IHDMIInput> hdmiInput;
-        android::sp<hdmiinput::IHDMIInputControllerListener> listener = new HDMIInputControllerListener();
+        HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESS(id, hdmiInput);
+
+        sp<HDMIInputControllerListener> controllerListener = new HDMIInputControllerListener();
         android::sp<hdmiinput::IHDMIInputController> controller;
 
-        HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESSS(id, hdmiInput);
+        // Open the HDMI input port
+        HDMIINPUT_OPEN_SUCCESS(hdmiInput, controllerListener, controller, true);
 
-        HDMIINPUT_OPEN_SUCCESS(hdmiInput, listener, controller, true);
+        hdmiInputList.push_back({id, hdmiInput, controllerListener, controller});
+    }
+
+    // Start and stop each HDMI input port concurrently to validate that multiple ports
+    // can be active at the same time up to the maximum limit
+    for (int32_t i = 0; i < gHdmiInput_hfp.platformCapabilities.maximumConcurrentStartedPorts; i++)
+    {
+        auto& input = hdmiInputList[i];
+        auto& hdmiInput = std::get<1>(input);
+        auto& controller = std::get<3>(input);
+
+        // Start the HDMI input port
+        HDMIINPUT_START_SUCCESS(hdmiInput, controller, true);
+    }
+
+    // Attempt to start additional HDMI input ports beyond the maximum concurrent limit, expecting failure with EX_ILLEGAL_STATE
+    for (int32_t i = gHdmiInput_hfp.platformCapabilities.maximumConcurrentStartedPorts; i < (int32_t)hdmiInputList.size(); i++)
+    {
+        auto& input = hdmiInputList[i];
+        auto& hdmiInput = std::get<1>(input);
+        auto& controller = std::get<3>(input);
+
+        // Start the HDMI input port
+        HDMIINPUT_START_FAILURE(hdmiInput, controller, hdmiinput::State::READY, Status::EX_ILLEGAL_STATE);
+    }
+
+    for (int32_t i = 0; i < gHdmiInput_hfp.platformCapabilities.maximumConcurrentStartedPorts; i++)
+    {
+        auto& input = hdmiInputList[i];
+        auto& hdmiInput = std::get<1>(input);
+        auto& controller = std::get<3>(input);
+
+        // Stop the HDMI input port
+        HDMIINPUT_STOP_SUCCESS(hdmiInput, controller, true);
+    }
+
+    // Start and stop each HDMI input port sequentially to validate correct state transitions
+    for (auto& input : hdmiInputList)
+    {
+        auto& hdmiInput = std::get<1>(input);
+        auto& controller = std::get<3>(input);
 
         HDMIINPUT_START_SUCCESS(hdmiInput, controller, true);
 
         HDMIINPUT_START_FAILURE(hdmiInput, controller, hdmiinput::State::STARTED, Status::EX_ILLEGAL_STATE);
 
         HDMIINPUT_STOP_SUCCESS(hdmiInput, controller, true);
+    }
 
+    //close all HDMI input ports at the end of the test
+    for (auto& input : hdmiInputList)
+    {
+        auto& hdmiInput = std::get<1>(input);
+        auto& controller = std::get<3>(input);
+
+        // Close the HDMI input port
         HDMIINPUT_CLOSE_SUCCESS(hdmiInput, controller, true);
-
     }
 }
 
 /**
- * @brief Validate the stop API for HDMI Input controllers
+ * @brief Positive tests for the stop() API of HDMI Input controllers
  *
- * This test verifies that the stop API on each HDMI Input controller transitions the port to the stopped state and allows streaming to end.
- * It iterates over all available HDMI input IDs, opens each port, starts the controller, stops the controller, and then closes it.
- * The test asserts that start and stop operations succeed for each port, confirming correct behavior.
+ * This test validates that the stop() API correctly transitions HDMI input controllers from the started state to the stopped state, both concurrently and sequentially, and that all state transitions are handled as expected.
+ *
+ * The test performs the following:
+ *   1. Retrieves all HDMI input IDs and opens each port.
+ *   2. Starts and stops each HDMI input port concurrently up to the platform's maximum supported limit, verifying that multiple ports can be stopped simultaneously.
+ *   3. Starts and stops each HDMI input port sequentially to ensure correct state transitions.
+ *   4. Closes all HDMI input ports at the end of the test.
+ *
+ * The test asserts that start and stop operations succeed for each port, and that the controller transitions to the correct state without errors.
  *
  * **Test Group ID:** Basic: 01@n
  * **Test Case ID:** 026@n
  * **Priority:** High@n
  *
- * **Pre-Conditions:** HDMI input port must be in State::READY@n
+ * **Pre-Conditions:** None@n
  * **Dependencies:** None@n
  * **User Interaction:** None@n
  *
  * **Test Procedure:**@n
- * | Variation / Step | Description | Test Data | Expected Result | Notes |
- * | :----: | --------- | ---------- |-------------- | ----- |
- * | 01 | Retrieve all HDMI input IDs using HDMIINPUT_MANAGER_GETHDMIINPUTIDS. | Output: hdmiInputIds vector | List of HDMI input IDs is obtained. | Should be successful |
- * | 02 | For each HDMI input ID, retrieve the HDMI Input object using HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESSS. | Input: id | HDMI Input object is returned. | Should Pass |
- * | 03 | Call open with a valid controller listener and check the returned controller. | Output: controller | Controller is not null. | Should Pass |
- * | 04 | Call start on the controller and ensure it succeeds. | Input: controller | Start succeeds. | Should Pass |
- * | 05 | Call stop on the controller and ensure it succeeds. | Input: controller | Stop succeeds. | Should Pass |
- * | 06 | Call close on the controller and ensure it succeeds. | Input: controller | Close succeeds. | Should Pass |
+ * | Step | Action | Input / Output | Expected Result | Notes |
+ * | :--: | ------ | ------------- | --------------- | ----- |
+ * | 1 | Retrieve all HDMI input IDs. | Output: hdmiInputIds vector | List of HDMI input IDs is obtained. | Initialization |
+ * | 2 | For each HDMI input ID, retrieve the HDMI Input object. | Input: id | HDMI Input object is returned. |  |
+ * | 3 | Open the HDMI input port with a valid controller listener. | Output: controller | Controller is not null. |  |
+ * | 4 | Start each HDMI input port (concurrent test). | Input: controller | Start succeeds. | Up to max concurrent |
+ * | 5 | Stop each HDMI input port (concurrent test). | Input: controller | Stop succeeds. | Up to max concurrent |
+ * | 6 | Start and stop each HDMI input port sequentially. | Input: controller | Start and stop succeed. | State transitions validated |
+ * | 7 | Close each HDMI input port. | Input: controller | Close succeeds. | Cleanup |
  */
 UT_ADD_TEST(VTS_L1_HDMIINPUT, stop_pos)
 {
     std::vector<hdmiinput::IHDMIInput::Id> hdmiInputIds;
+    vector<tuple<IHDMIInput::Id, sp<IHDMIInput>, sp<HDMIInputControllerListener>, sp<hdmiinput::IHDMIInputController>>> hdmiInputList;
 
     HDMIINPUT_MANAGER_GETHDMIINPUTIDS(hdmiInputIds);
 
+    // open all HDMI input ports first to prepare for start testing
     for (const auto& id : hdmiInputIds)
     {
         android::sp<hdmiinput::IHDMIInput> hdmiInput;
-        android::sp<hdmiinput::IHDMIInputControllerListener> listener = new HDMIInputControllerListener();
+        HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESS(id, hdmiInput);
+
+        sp<HDMIInputControllerListener> controllerListener = new HDMIInputControllerListener();
         android::sp<hdmiinput::IHDMIInputController> controller;
 
-        HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESSS(id, hdmiInput);
+        // Open the HDMI input port
+        HDMIINPUT_OPEN_SUCCESS(hdmiInput, controllerListener, controller, true);
 
-        HDMIINPUT_OPEN_SUCCESS(hdmiInput, listener, controller, true);
+        hdmiInputList.push_back({id, hdmiInput, controllerListener, controller});
+    }
+
+    // Start and stop each HDMI input port concurrently to validate that multiple ports
+    // can be active at the same time up to the maximum limit
+    for (int32_t i = 0; i < gHdmiInput_hfp.platformCapabilities.maximumConcurrentStartedPorts; i++)
+    {
+        auto& input = hdmiInputList[i];
+        auto& hdmiInput = std::get<1>(input);
+        auto& controller = std::get<3>(input);
+
+        // Start the HDMI input port
+        HDMIINPUT_START_SUCCESS(hdmiInput, controller, true);
+    }
+    for (int32_t i = 0; i < gHdmiInput_hfp.platformCapabilities.maximumConcurrentStartedPorts; i++)
+    {
+        auto& input = hdmiInputList[i];
+        auto& hdmiInput = std::get<1>(input);
+        auto& controller = std::get<3>(input);
+
+        // Stop the HDMI input port
+        HDMIINPUT_STOP_SUCCESS(hdmiInput, controller, true);
+    }
+
+    // Start and stop each HDMI input port sequentially to validate correct state transitions
+    for (auto& input : hdmiInputList)
+    {
+        auto& hdmiInput = std::get<1>(input);
+        auto& controller = std::get<3>(input);
 
         HDMIINPUT_START_SUCCESS(hdmiInput, controller, true);
 
         HDMIINPUT_STOP_SUCCESS(hdmiInput, controller, true);
+    }
 
+    //close all HDMI input ports at the end of the test
+    for (auto& input : hdmiInputList)
+    {
+        auto& hdmiInput = std::get<1>(input);
+        auto& controller = std::get<3>(input);
+
+        // Close the HDMI input port
         HDMIINPUT_CLOSE_SUCCESS(hdmiInput, controller, true);
-
     }
 }
 
@@ -1348,7 +1499,7 @@ UT_ADD_TEST(VTS_L1_HDMIINPUT, stop_pos)
  * | Variation / Step | Description | Test Data | Expected Result | Notes |
  * | :----: | --------- | ---------- |-------------- | ----- |
  * | 01 | Retrieve all HDMI input IDs using HDMIINPUT_MANAGER_GETHDMIINPUTIDS. | Output: hdmiInputIds vector | List of HDMI input IDs is obtained. | Should be successful |
- * | 02 | For each HDMI input ID, retrieve the HDMI Input object using HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESSS. | Input: id | HDMI Input object is returned. | Should Pass |
+ * | 02 | For each HDMI input ID, retrieve the HDMI Input object using HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESS. | Input: id | HDMI Input object is returned. | Should Pass |
  * | 03 | Call open with a valid controller listener and check the returned controller. | Output: controller | Controller is not null. | Should Pass |
  * | 04 | Call stop on the controller before starting and check for failure. | Input: controller | Stop fails with EX_ILLEGAL_STATE. | Should Pass |
  * | 05 | Call start on the controller and ensure it succeeds. | Input: controller | Start succeeds. | Should Pass |
@@ -1368,7 +1519,7 @@ UT_ADD_TEST(VTS_L1_HDMIINPUT, stop_neg)
         android::sp<hdmiinput::IHDMIInputControllerListener> listener = new HDMIInputControllerListener();
         android::sp<hdmiinput::IHDMIInputController> controller;
 
-        HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESSS(id, hdmiInput);
+        HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESS(id, hdmiInput);
 
         HDMIINPUT_OPEN_SUCCESS(hdmiInput, listener, controller, true);
 
@@ -1401,7 +1552,7 @@ UT_ADD_TEST(VTS_L1_HDMIINPUT, stop_neg)
  * | Variation / Step | Description | Test Data | Expected Result | Notes |
  * | :----: | --------- | ---------- |-------------- | ----- |
  * | 01 | Retrieve all HDMI input IDs using HDMIINPUT_MANAGER_GETHDMIINPUTIDS. | Output: hdmiInputIds vector | List of HDMI input IDs is obtained. | Should be successful |
- * | 02 | For each HDMI input ID, retrieve the HDMI Input object using HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESSS. | Input: id | HDMI Input object is returned. | Should Pass |
+ * | 02 | For each HDMI input ID, retrieve the HDMI Input object using HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESS. | Input: id | HDMI Input object is returned. | Should Pass |
  * | 03 | Call open with a valid controller listener and check the returned controller. | Output: controller | Controller is not null. | Should Pass |
  * | 04 | Call setEDID on the controller and ensure it succeeds. | Input: controller, edidData | setEDID succeeds. | Should Pass |
  * | 05 | Call start on the controller and ensure it succeeds. | Input: controller | Start succeeds. | Should Pass |
@@ -1441,7 +1592,7 @@ UT_ADD_TEST(VTS_L1_HDMIINPUT, setEDID_pos)
         android::sp<hdmiinput::IHDMIInputControllerListener> listener = new HDMIInputControllerListener();
         android::sp<hdmiinput::IHDMIInputController> controller;
 
-        HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESSS(id, hdmiInput);
+        HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESS(id, hdmiInput);
 
         HDMIINPUT_OPEN_SUCCESS(hdmiInput, listener, controller, true);
 
@@ -1478,7 +1629,7 @@ UT_ADD_TEST(VTS_L1_HDMIINPUT, setEDID_pos)
  * | Variation / Step | Description | Test Data | Expected Result | Notes |
  * | :----: | --------- | ---------- |-------------- | ----- |
  * | 01 | Retrieve all HDMI input IDs using HDMIINPUT_MANAGER_GETHDMIINPUTIDS. | Output: hdmiInputIds vector | List of HDMI input IDs is obtained. | Should be successful |
- * | 02 | For each HDMI input ID, retrieve the HDMI Input object using HDMIINPUT_MANAGER_GETHDMIINPUT_SUCESSS. | Input: id | HDMI Input object is returned. | Should Pass |
+ * | 02 | For each HDMI input ID, retrieve the HDMI Input object using HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESS. | Input: id | HDMI Input object is returned. | Should Pass |
  * | 03 | Call open with a valid controller listener and check the returned controller. | Output: controller | Controller is not null. | Should Pass |
  * | 04 | Call setEDID on the controller with invalid data (empty or wrong size) and check for failure. | Input: controller, invalidEdidData | setEDID fails with EX_ILLEGAL_ARGUMENT. | Should Pass |
  * | 05 | Call close on the controller and ensure it succeeds. | Input: controller | Close succeeds. | Should Pass |
@@ -1522,7 +1673,7 @@ UT_ADD_TEST(VTS_L1_HDMIINPUT, setEDID_neg)
         android::sp<hdmiinput::IHDMIInputControllerListener> listener = new HDMIInputControllerListener();
         android::sp<hdmiinput::IHDMIInputController> controller;
 
-        HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESSS(id, hdmiInput);
+        HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESS(id, hdmiInput);
 
         HDMIINPUT_OPEN_SUCCESS(hdmiInput, listener, controller, true);
 

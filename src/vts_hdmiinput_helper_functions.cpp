@@ -2,7 +2,7 @@
  *  If not stated otherwise in this file or this component's LICENSE
  *  file the following copyright and licenses apply:
  *
- *  Copyright 2024 RDK Management
+ *  Copyright 2026 RDK Management
  *
  *  Licensed under the Apache License, Version 2.0 (the License);
  *  you may not use this file except in compliance with the License.
@@ -92,10 +92,10 @@ const ut_control_keyStringMapping_t statusHdmiInputException_mapTable[] =
 /* HDMIVersion */
 const ut_control_keyStringMapping_t hdmiVersion_mapTable[] =
 {
-    {"UNDEFINED",    (int32_t) HDMIVersion::HDMI_1_3},
-    {"VERSION_1_X",  (int32_t) HDMIVersion::HDMI_1_4},
-    {"VERSION_2_X",  (int32_t) HDMIVersion::HDMI_2_0},
-    {"VERSION_2_X",  (int32_t) HDMIVersion::HDMI_2_1},
+    {"HDMI_1_3",    (int32_t) HDMIVersion::HDMI_1_3},
+    {"HDMI_1_4",  (int32_t) HDMIVersion::HDMI_1_4},
+    {"HDMI_2_0",  (int32_t) HDMIVersion::HDMI_2_0},
+    {"HDMI_2_1",  (int32_t) HDMIVersion::HDMI_2_1},
     {NULL, -1}
 };
 

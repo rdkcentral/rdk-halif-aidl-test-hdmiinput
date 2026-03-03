@@ -121,7 +121,7 @@ UT_ADD_TEST(VTS_L2_HDMIINPUT, StateTransitions)
         android::sp<hdmiinput::IHDMIInputController> controller;
         hdmiinput::State state;
 
-        HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESSS(id, hdmiInput);
+        HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESS(id, hdmiInput);
 
         // Check initial state is CLOSED
         HDMIINPUT_GET_STATE(hdmiInput, state);
@@ -227,7 +227,7 @@ UT_ADD_TEST(VTS_L2_HDMIINPUT, DefaultCallbacks)
         android::sp<hdmiinput::IHDMIInputController> controller;
         bool connectionState = true;
 
-        HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESSS(id, hdmiInput);
+        HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESS(id, hdmiInput);
 
         // Open the HDMI input port and check onConnectionStateChanged(false)
         HDMIINPUT_OPEN_SUCCESS(hdmiInput, controlListener, controller, true);
@@ -333,7 +333,7 @@ UT_ADD_TEST(VTS_L2_HDMIINPUT, SetandGetEDID)
         std::vector<uint8_t> changedEDID;
         std::vector<uint8_t> verifyEDID;
 
-        HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESSS(id, hdmiInput);
+        HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESS(id, hdmiInput);
 
         HDMIINPUT_GET_CAPABILITIES(hdmiInput, &caps);
 
@@ -458,7 +458,7 @@ UT_ADD_TEST(VTS_L2_HDMIINPUT, MaxConcurrentPorts)
         android::sp<hdmiinput::IHDMIInput> hdmiInput;
         android::sp<hdmiinput::IHDMIInputControllerListener> listener = new HDMIInputControllerListener();
         android::sp<hdmiinput::IHDMIInputController> controller;
-        HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESSS(hdmiInputIds[i], hdmiInput);
+        HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESS(hdmiInputIds[i], hdmiInput);
         HDMIINPUT_OPEN_SUCCESS(hdmiInput, listener, controller, true);
         HDMIINPUT_START_SUCCESS(hdmiInput, controller, true);
         hdmiInputs.push_back(hdmiInput);
@@ -473,7 +473,7 @@ UT_ADD_TEST(VTS_L2_HDMIINPUT, MaxConcurrentPorts)
         android::sp<hdmiinput::IHDMIInput> hdmiInputFail;
         android::sp<hdmiinput::IHDMIInputControllerListener> listenerFail = new HDMIInputControllerListener();
         android::sp<hdmiinput::IHDMIInputController> controllerFail;
-        HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESSS(hdmiInputIds[failIndex], hdmiInputFail);
+        HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESS(hdmiInputIds[failIndex], hdmiInputFail);
         HDMIINPUT_OPEN_SUCCESS(hdmiInputFail, listenerFail, controllerFail, true);
         HDMIINPUT_START_FAILURE(hdmiInputFail, controllerFail, hdmiinput::State::READY, Status::EX_ILLEGAL_STATE);
         HDMIINPUT_CLOSE_SUCCESS(hdmiInputFail, controllerFail, true);

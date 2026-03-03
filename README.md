@@ -29,4 +29,4 @@ This repository contains the Test Suites(`L1` , `L2` and `L3`) for HDMI INPUT `H
 |2|High Level Test Specification|High Level Test Specification Documentation for the `HDMI` Input|[hdmiinput_High-Level_TestSpecification.md](docs/pages/hdmiinput_High-Level_TestSpecification.md )||
 |3|`L2` Low Level Test Specification|`L2` Low Level Test Specification and Procedure Documentation for the `HDMI` Input|[hdmiinput_L2_Low-Level_TestSpecification.md](docs/pages/hdmiinput_L2_Low-Level_TestSpecification.md)|
 |4|`L3` Low Level Test Specification|`L3` Low Level Test Specification for the `HDMI` Input|[hdmiinput_L3_Low-Level_TestSpecification.md](docs/pages/hdmiinput_L3_Low-Level_TestSpecification.md)|
-|5|`L1` `L2` and `L3` Test procedure document|This document contains Build Instructions and `L1` `L2` and `L3` Test procedure for the `HDMI` Input|[vts_hdmiinput_L1_L2_L3_TestProcedure.md](docs/pages/vts_hdmiinput_L1_L2_L3_TestProcedure.md)|
+|5|`L1` `L2` and `L3` Test procedure document|This document contains Build Instructions and `L1` `L2` and `L3` Test procedure for the `HDMI` Input|[hdmiinput_L1_L2_L3_TestProcedure.md](docs/pages/hdmiinput_L1_L2_L3_TestProcedure.md)|

@@ -48,7 +48,7 @@
  *
  * ### Common functions/macros required for the hdmi input :
  *
- * Common functions/macros required for the hdmi cec .
+ * Common functions/macros required for the hdmi input .
  *
  * **Pre-Conditions:**  None @n
  * **Dependencies:** None @n
@@ -121,7 +121,7 @@ using namespace com::rdk::hal::hdmiinput;
         UT_ASSERT_EQUAL_FATAL(status.exceptionCode(), Status::EX_NONE); \
     } while (0)
 
-#define HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESSS(_hdmiinputId, hdmiinput) \
+#define HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESS(_hdmiinputId, hdmiinput) \
     do { \
         android::binder::Status status; \
         UT_LOG_DEBUG("Calling getHDMIInput(IN:_hdmiinputId:[%d], OUT:hdmiinput[])", _hdmiinputId.value); \
@@ -681,10 +681,7 @@ public:
 public:
     bool getNextConnectionState(bool& connectionState, chrono::milliseconds timeout = chrono::milliseconds(0));
     void clearConnectionStateQueue();
-    int32_t getConnectionStateQueueSize(){
-        lock_guard<mutex> lock(mConnectionStateMutex);
-        return mConnectionStateQueue.size();
-    }
+    bool waitForConnectionCount(int32_t count, chrono::milliseconds timeout);
     bool getNextSignalState(hdmiinput::SignalState& signalState, chrono::milliseconds timeout = chrono::milliseconds(0));
     bool getNextVideoFormat(hdmiinput::VIC& vic, chrono::milliseconds timeout = chrono::milliseconds(0));
     bool getNextVRRInfo(bool& vrrActive, bool& M_CONST, bool& fastVActive, double& frameRate, chrono::milliseconds timeout = chrono::milliseconds(0));

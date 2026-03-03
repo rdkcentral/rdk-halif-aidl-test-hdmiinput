@@ -46,6 +46,7 @@ typedef struct hdmiinputHFP
         std::vector<HDMIVersion> supportedVersions;
         std::vector<VIC> supportedVICs;
         std::vector<HDCPProtocolVersion> supportedHDCPProtocolVersions;
+        HDCPProtocolVersion maxHdcpVersion;
         bool supports3D;
         bool supportsFRL;
         bool supportsVRR;

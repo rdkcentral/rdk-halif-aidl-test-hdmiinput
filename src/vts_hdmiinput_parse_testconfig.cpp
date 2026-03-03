@@ -56,123 +56,257 @@ static void hdmiinputkvp_destroy_instance(void *instance)
     ut_kvp_destroyInstance((ut_kvp_instance_t*)instance);
 }
 
-static void vts_hdmiinput_parse_connectionTestOpen(ut_kvp_instance_t* kvpTestInstance, const char* testList,
-                                                   hdmiinputConnectionStateOpenConfig_t* connectionStateConfig)
+UT_status_t vts_hdmiinput_parse_connectionTest(char *configurationFile, const char *module, const char *testGroup,
+                                               const char *testName, std::vector<hdmiinputConnectionConfig_t>& connectionStateConfigs)
 {
     char key[2 * UT_KVP_MAX_ELEMENT_SIZE];
-    char subkey[2 *UT_KVP_MAX_ELEMENT_SIZE];
+    char subkey[2 * UT_KVP_MAX_ELEMENT_SIZE];
     char subValue[UT_KVP_MAX_ELEMENT_SIZE];
 
-    // portId
-    snprintf(key, sizeof(key), "%s.portId", testList);
-    connectionStateConfig->portId = ut_kvp_getUInt32Field(kvpTestInstance, key);
-
-    // Connection state before Open
-    snprintf(key, sizeof(key), "%s.connection_state_before_open", testList);
-    connectionStateConfig->connectionStateBeforeOpen = ut_kvp_getBoolField(kvpTestInstance, key);
-
-    // connectionStates
-    snprintf(key, sizeof(key), "%s.connection_state_after_open", testList);
-    int numConnectionStates = ut_kvp_getListCount(kvpTestInstance, key);
-    connectionStateConfig->connectionStatesAfterOpen.clear();
-    for (int i = 0; i < numConnectionStates; ++i)
-    {
-        snprintf(subkey, sizeof(subkey), "%s.connection_state_after_open.%d", testList, i);
-        bool state = ut_kvp_getBoolField(kvpTestInstance, subkey);
-        connectionStateConfig->connectionStatesAfterOpen.push_back(state);
-    }
-
-    // signalStateBeforeOpen
-    snprintf(key, sizeof(key), "%s.signal_state_before_open", testList);
-    ut_kvp_getStringField(kvpTestInstance, key, subValue, sizeof(subValue));
-    connectionStateConfig->signalStateBeforeOpen = (hdmiinput::SignalState)UT_Control_GetMapValue(signalState_mapTable, subValue, (int32_t)hdmiinput::SignalState::UNKNOWN);
-
-    // signalStates
-    snprintf(key, sizeof(key), "%s.signal_state_after_open", testList);
-    int numSignalStatesAfterOpen = ut_kvp_getListCount(kvpTestInstance, key);
-    connectionStateConfig->signalStatesAfterOpen.clear();
-    for (int i = 0; i < numSignalStatesAfterOpen; ++i)
-    {
-        snprintf(subkey, sizeof(subkey), "%s.signal_state_after_open.%d", testList, i);
-        ut_kvp_getStringField(kvpTestInstance, subkey, subValue, sizeof(subValue));
-        connectionStateConfig->signalStatesAfterOpen.push_back((hdmiinput::SignalState)UT_Control_GetMapValue(signalState_mapTable, subValue, (int32_t)hdmiinput::SignalState::UNKNOWN));
-    }
-
-    // maxWaitTimeMs
-    snprintf(key, sizeof(key), "%s.max_wait_time_ms", testList);
-    connectionStateConfig->maxWaitTimeMs = ut_kvp_getUInt32Field(kvpTestInstance, key);
-}
-
-static void vts_hdmiinput_parse_connectionTestStart(ut_kvp_instance_t* kvpTestInstance, const char* testList,
-                                                    hdmiinputConnectionStateStartConfig_t* connectionStateConfig)
-{
-    char key[2 * UT_KVP_MAX_ELEMENT_SIZE];
-    char subkey[2 *UT_KVP_MAX_ELEMENT_SIZE];
-    char subValue[UT_KVP_MAX_ELEMENT_SIZE];
-
-    // portId
-    snprintf(key, sizeof(key), "%s.portId", testList);
-    connectionStateConfig->portId = ut_kvp_getUInt32Field(kvpTestInstance, key);
-
-    // Connection state before Open
-    snprintf(key, sizeof(key), "%s.connection_state_before_open", testList);
-    connectionStateConfig->connectionStateBeforeOpen = ut_kvp_getBoolField(kvpTestInstance, key);
-
-    // connectionStatesAfterStart
-    snprintf(key, sizeof(key), "%s.connection_state_after_start", testList);
-    int numConnectionStatesAfterStart = ut_kvp_getListCount(kvpTestInstance, key);
-    connectionStateConfig->connectionStatesAfterStart.clear();
-    for (int i = 0; i < numConnectionStatesAfterStart; ++i)
-    {
-        snprintf(subkey, sizeof(subkey), "%s.connection_state_after_start.%d", testList, i);
-        bool state = ut_kvp_getBoolField(kvpTestInstance, subkey);
-        connectionStateConfig->connectionStatesAfterStart.push_back(state);
-    }
-
-    // signalStateBeforeOpen
-    snprintf(key, sizeof(key), "%s.signal_state_before_open", testList);
-    ut_kvp_getStringField(kvpTestInstance, key, subValue, sizeof(subValue));
-    connectionStateConfig->signalStateBeforeOpen = (hdmiinput::SignalState)UT_Control_GetMapValue(signalState_mapTable, subValue, (int32_t)hdmiinput::SignalState::UNKNOWN);
-
-    // signalStates
-    snprintf(key, sizeof(key), "%s.signal_state_after_start", testList);
-    int numSignalStatesAfterStart = ut_kvp_getListCount(kvpTestInstance, key);
-    connectionStateConfig->signalStatesAfterStart.clear();
-    for (int i = 0; i < numSignalStatesAfterStart; ++i)
-    {
-        snprintf(subkey, sizeof(subkey), "%s.signal_state_after_start.%d", testList, i);
-        ut_kvp_getStringField(kvpTestInstance, subkey, subValue, sizeof(subValue));
-        connectionStateConfig->signalStatesAfterStart.push_back((hdmiinput::SignalState)UT_Control_GetMapValue(signalState_mapTable, subValue, (int32_t)hdmiinput::SignalState::UNKNOWN));
-    }
-
-    // maxWaitTimeMs
-    snprintf(key, sizeof(key), "%s.max_wait_time_ms", testList);
-    connectionStateConfig->maxWaitTimeMs = ut_kvp_getUInt32Field(kvpTestInstance, key);
-}
-
-UT_status_t vts_hdmiinput_parse_test_config(char *configurationFile, const char *module, const char *testGroup,
-                                            const char *testName, void *testConfig)
-{
     void *testconfig = hdmiinputkvp_create_instance(configurationFile);
     ut_kvp_instance_t* kvpTestInstance = (ut_kvp_instance_t*)testconfig;
 
-    const std::string testList = string(module) + "." + string(testGroup) + "." + string(testName);
-
-    if(!strcmp(testName, "ConnectionSignalStateTestOpen"))
-    {
-        vts_hdmiinput_parse_connectionTestOpen(kvpTestInstance, testList.c_str(), (hdmiinputConnectionStateOpenConfig_t*)testConfig);
-    }
-    else if(!strcmp(testName, "ConnectionSignalStateTestStart"))
-    {
-        vts_hdmiinput_parse_connectionTestStart(kvpTestInstance, testList.c_str(), (hdmiinputConnectionStateStartConfig_t*)testConfig);
-    }
-    else
-    {
-        UT_LOG_ERROR("Unsupported test name: %s", testName);
-        hdmiinputkvp_destroy_instance(kvpTestInstance);
+    if (!kvpTestInstance)
         return UT_STATUS_FAILURE;
+
+    const std::string testListString = string(module) + "." + string(testGroup) + "." + string(testName);
+    char *testList = const_cast<char*>(testListString.c_str());
+
+    // ports array
+    snprintf(key, sizeof(key), "%s.ports", testList);
+    int numPorts = ut_kvp_getListCount(kvpTestInstance, key);
+    for (int i = 0; i < numPorts; ++i)
+    {
+        hdmiinputConnectionConfig_t config;
+        // id
+        snprintf(subkey, sizeof(subkey), "%s.ports.%d.id", testList, i);
+        config.portId = ut_kvp_getUInt32Field(kvpTestInstance, subkey);
+
+        // source_HDCP_Version
+        snprintf(subkey, sizeof(subkey), "%s.ports.%d.source_HDCP_Version", testList, i);
+        ut_kvp_getStringField(kvpTestInstance, subkey, subValue, sizeof(subValue));
+        config.sourceHdcpProtocolVersion = (hdmiinput::HDCPProtocolVersion)UT_Control_GetMapValue(hdcpProtocolVersion_mapTable, subValue, (int32_t)hdmiinput::HDCPProtocolVersion::UNDEFINED);
+
+        // connection_state_before_open
+        snprintf(subkey, sizeof(subkey), "%s.ports.%d.connection_state_before_open", testList, i);
+        config.connectionStateBeforeOpen = ut_kvp_getBoolField(kvpTestInstance, subkey);
+
+        // signal_state_before_open
+        snprintf(subkey, sizeof(subkey), "%s.ports.%d.signal_state_before_open", testList, i);
+        ut_kvp_getStringField(kvpTestInstance, subkey, subValue, sizeof(subValue));
+        config.signalStateBeforeOpen = (hdmiinput::SignalState)UT_Control_GetMapValue(signalState_mapTable, subValue, (int32_t)hdmiinput::SignalState::UNKNOWN);
+
+        // connection_state (array)
+        snprintf(subkey, sizeof(subkey), "%s.ports.%d.connection_state", testList, i);
+        int numStates = ut_kvp_getListCount(kvpTestInstance, subkey);
+        config.connectionStates.clear();
+        for (int j = 0; j < numStates; ++j)
+        {
+            char elemkey[2 * UT_KVP_MAX_ELEMENT_SIZE];
+            snprintf(elemkey, sizeof(elemkey), "%s.ports.%d.connection_state.%d", testList, i, j);
+            config.connectionStates.push_back(ut_kvp_getBoolField(kvpTestInstance, elemkey));
+        }
+
+        // signal_state (array)
+        snprintf(subkey, sizeof(subkey), "%s.ports.%d.signal_state", testList, i);
+        int numSignalStates = ut_kvp_getListCount(kvpTestInstance, subkey);
+        config.signalStates.clear();
+        for (int j = 0; j < numSignalStates; ++j)
+        {
+            char elemkey[2 * UT_KVP_MAX_ELEMENT_SIZE];
+            snprintf(elemkey, sizeof(elemkey), "%s.ports.%d.signal_state.%d", testList, i, j);
+            ut_kvp_getStringField(kvpTestInstance, elemkey, subValue, sizeof(subValue));
+            config.signalStates.push_back((hdmiinput::SignalState)UT_Control_GetMapValue(signalState_mapTable, subValue, (int32_t)hdmiinput::SignalState::UNKNOWN));
+        }
+
+        // max_wait_time_ms
+        snprintf(subkey, sizeof(subkey), "%s.ports.%d.max_wait_time_ms", testList, i);
+        config.maxWaitTimeMs = ut_kvp_getUInt32Field(kvpTestInstance, subkey);
+
+        connectionStateConfigs.push_back(config);
+    }
+    hdmiinputkvp_destroy_instance(kvpTestInstance);
+    return UT_STATUS_OK;
+}
+
+UT_status_t  vts_hdmiinput_parse_infoFramesTestConfig(char *configurationFile, const char *module, const char *testGroup,
+                                                      const char *testName, std::vector<hdmiinputInfoFramesTestConfig_t>& infoFramesTestConfig)
+{
+    char key[2 * UT_KVP_MAX_ELEMENT_SIZE];
+    char subkey[2 * UT_KVP_MAX_ELEMENT_SIZE];
+    char subValue[UT_KVP_MAX_ELEMENT_SIZE];
+
+    void *testconfig = hdmiinputkvp_create_instance(configurationFile);
+    ut_kvp_instance_t* kvpTestInstance = (ut_kvp_instance_t*)testconfig;
+
+    if (!kvpTestInstance)
+        return UT_STATUS_FAILURE;
+
+    const std::string testListString = string(module) + "." + string(testGroup) + "." + string(testName);
+    char *testList = const_cast<char*>(testListString.c_str());
+
+    // ports array
+    snprintf(key, sizeof(key), "%s.ports", testList);
+    int numPorts = ut_kvp_getListCount(kvpTestInstance, key);
+
+    for (int i = 0; i < numPorts; ++i)
+    {
+        hdmiinputInfoFramesTestConfig_t config;
+        // id
+        snprintf(subkey, sizeof(subkey), "%s.ports.%d.id", testList, i);
+        config.portId = ut_kvp_getUInt32Field(kvpTestInstance, subkey);
+
+        // info_frame_type (array of strings)
+        snprintf(subkey, sizeof(subkey), "%s.ports.%d.info_frame_type", testList, i);
+        int numTypes = ut_kvp_getListCount(kvpTestInstance, subkey);
+        config.infoFrameType.clear();
+
+        for (int j = 0; j < numTypes; ++j)
+        {
+            char elemkey[2 * UT_KVP_MAX_ELEMENT_SIZE];
+            snprintf(elemkey, sizeof(elemkey), "%s.ports.%d.info_frame_type.%d", testList, i, j);
+            ut_kvp_getStringField(kvpTestInstance, elemkey, subValue, sizeof(subValue));
+            config.infoFrameType.push_back(std::string(subValue));
+
+            if(std::string(subValue) == "VIC")
+            {
+                // Read VIC value for this info frame
+                char vicKey[2 * UT_KVP_MAX_ELEMENT_SIZE];
+                snprintf(vicKey, sizeof(vicKey), "%s.ports.%d.frame_data.%d.0", testList, i, j);
+                ut_kvp_getStringField(kvpTestInstance, vicKey, subValue, sizeof(subValue));
+                config.vic = (hdmiinput::VIC)UT_Control_GetMapValue(vic_mapTable, subValue, (int32_t)hdmiinput::VIC::VIC0_UNAVAILABLE);
+            }
+            else if(std::string(subValue) == "VRR")
+            {
+                // Read VRR parameters for this info frame
+                char vrrKey[2 * UT_KVP_MAX_ELEMENT_SIZE];
+
+                // vrrActive
+                snprintf(vrrKey, sizeof(vrrKey), "%s.ports.%d.frame_data.%d.0", testList, i, j);
+                config.vrrActive = ut_kvp_getBoolField(kvpTestInstance, vrrKey);
+
+                // mConst
+                snprintf(vrrKey, sizeof(vrrKey), "%s.ports.%d.frame_data.%d.1", testList, i, j);
+                config.mConst = ut_kvp_getBoolField(kvpTestInstance, vrrKey);
+
+                // fastVActive
+                snprintf(vrrKey, sizeof(vrrKey), "%s.ports.%d.frame_data.%d.2", testList, i, j);
+                config.fastVActive = ut_kvp_getBoolField(kvpTestInstance, vrrKey);
+
+                // frameRate
+                snprintf(vrrKey, sizeof(vrrKey), "%s.ports.%d.frame_data.%d.3", testList, i, j);
+                config.frameRate = ut_kvp_getDoubleField(kvpTestInstance, vrrKey);
+            }
+            else if(std::string(subValue) == "AUDIO")
+            {
+                // frame_data (array of arrays)
+                snprintf(subkey, sizeof(subkey), "%s.ports.%d.frame_data.%d", testList, i, j);
+                int32_t numBytes = ut_kvp_getListCount(kvpTestInstance, subkey);
+
+                for (int k = 0; k < numBytes; ++k)
+                {
+                    char bytekey[2 * UT_KVP_MAX_ELEMENT_SIZE];
+                    snprintf(bytekey, sizeof(bytekey), "%s.ports.%d.frame_data.%d.%d", testList, i, j, k);
+                    uint32_t byteValue = ut_kvp_getUInt8Field(kvpTestInstance, bytekey);
+                    config.audioInfoData.push_back(static_cast<uint8_t>(byteValue));
+                }
+            }
+            else if(std::string(subValue) == "AVI")
+            {
+                // frame_data (array of arrays)
+                snprintf(subkey, sizeof(subkey), "%s.ports.%d.frame_data.%d", testList, i, j);
+                int32_t numBytes = ut_kvp_getListCount(kvpTestInstance, subkey);
+
+                for (int k = 0; k < numBytes; ++k)
+                {
+                    char bytekey[2 * UT_KVP_MAX_ELEMENT_SIZE];
+                    snprintf(bytekey, sizeof(bytekey), "%s.ports.%d.frame_data.%d.%d", testList, i, j, k);
+                    uint32_t byteValue = ut_kvp_getUInt8Field(kvpTestInstance, bytekey);
+                    config.aviInfoData.push_back(static_cast<uint8_t>(byteValue));
+                }
+            }
+            else if(std::string(subValue) == "VSIF")
+            {
+                // frame_data (array of arrays)
+                snprintf(subkey, sizeof(subkey), "%s.ports.%d.frame_data.%d", testList, i, j);
+                int32_t numBytes = ut_kvp_getListCount(kvpTestInstance, subkey);
+
+                for (int k = 0; k < numBytes; ++k)
+                {
+                    char bytekey[2 * UT_KVP_MAX_ELEMENT_SIZE];
+                    snprintf(bytekey, sizeof(bytekey), "%s.ports.%d.frame_data.%d.%d", testList, i, j, k);
+                    uint32_t byteValue = ut_kvp_getUInt8Field(kvpTestInstance, bytekey);
+                    config.vsiInfoData.push_back(static_cast<uint8_t>(byteValue));
+                }
+            }
+            else if(std::string(subValue) == "SPD")
+            {
+                // frame_data (array of arrays)
+                snprintf(subkey, sizeof(subkey), "%s.ports.%d.frame_data.%d", testList, i, j);
+                int32_t numBytes = ut_kvp_getListCount(kvpTestInstance, subkey);
+
+                for (int k = 0; k < numBytes; ++k)
+                {
+                    char bytekey[2 * UT_KVP_MAX_ELEMENT_SIZE];
+                    snprintf(bytekey, sizeof(bytekey), "%s.ports.%d.frame_data.%d.%d", testList, i, j, k);
+                    uint32_t byteValue = ut_kvp_getUInt8Field(kvpTestInstance, bytekey);
+                    config.spdInfoData.push_back(static_cast<uint8_t>(byteValue));
+                }
+            }
+        }
+
+        // max_wait_time_ms
+        snprintf(subkey, sizeof(subkey), "%s.ports.%d.max_wait_time_ms", testList, i);
+        config.maxWaitTimeMs = ut_kvp_getUInt32Field(kvpTestInstance, subkey);
+
+        infoFramesTestConfig.push_back(config);
     }
 
+    hdmiinputkvp_destroy_instance(kvpTestInstance);
+
+    return UT_STATUS_OK;
+}
+
+
+UT_status_t vts_hdmiinput_parse_edidTestConfig(char *configurationFile, const char *module, const char *testGroup,
+                                               const char *testName, std::vector<hdmiinputEdidTestConfig_t>& edidTestConfig)
+{
+    char key[2 * UT_KVP_MAX_ELEMENT_SIZE];
+    char subkey[2 * UT_KVP_MAX_ELEMENT_SIZE];
+
+    void *testconfig = hdmiinputkvp_create_instance(configurationFile);
+    ut_kvp_instance_t* kvpTestInstance = (ut_kvp_instance_t*)testconfig;
+
+    if (!kvpTestInstance)
+        return UT_STATUS_FAILURE;
+
+    const std::string testListString = string(module) + "." + string(testGroup) + "." + string(testName);
+    char *testList = const_cast<char*>(testListString.c_str());
+
+    // ports array
+    snprintf(key, sizeof(key), "%s.ports", testList);
+    int numPorts = ut_kvp_getListCount(kvpTestInstance, key);
+    for (int i = 0; i < numPorts; ++i)
+    {
+        hdmiinputEdidTestConfig_t config;
+        // id
+        snprintf(subkey, sizeof(subkey), "%s.ports.%d.id", testList, i);
+        config.portId = ut_kvp_getUInt32Field(kvpTestInstance, subkey);
+
+        // edid (array of bytes)
+        snprintf(subkey, sizeof(subkey), "%s.ports.%d.edid", testList, i);
+        int numBytes = ut_kvp_getListCount(kvpTestInstance, subkey);
+        config.edidData.clear();
+        for (int j = 0; j < numBytes; ++j)
+        {
+            char bytekey[2 * UT_KVP_MAX_ELEMENT_SIZE];
+            snprintf(bytekey, sizeof(bytekey), "%s.ports.%d.edid.%d", testList, i, j);
+            uint32_t byteValue = ut_kvp_getUInt32Field(kvpTestInstance, bytekey);
+            config.edidData.push_back(static_cast<uint8_t>(byteValue));
+        }
+
+        edidTestConfig.push_back(config);
+    }
     hdmiinputkvp_destroy_instance(kvpTestInstance);
     return UT_STATUS_OK;
 }

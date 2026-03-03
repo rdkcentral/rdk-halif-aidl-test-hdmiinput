@@ -90,11 +90,17 @@ UT_status_t vts_hdmiinput_parse_hfp()
         snprintf(key, sizeof(key), "%s.supportedHDCPProtocolVersions", portBaseKey.c_str());
         int numSupportedHDCPVersions = UT_KVP_PROFILE_GET_LIST_COUNT(key);
         port.supportedHDCPProtocolVersions.clear();
+        port.maxHdcpVersion = hdmiinput::HDCPProtocolVersion::UNDEFINED;
         for (int j = 0; j < numSupportedHDCPVersions; ++j)
         {
             snprintf(subkey, sizeof(subkey), "%s.supportedHDCPProtocolVersions.%d", portBaseKey.c_str(), j);
             UT_KVP_PROFILE_GET_STRING(subkey, subValue);
-            port.supportedHDCPProtocolVersions.push_back((HDCPProtocolVersion)UT_Control_GetMapValue(hdcpProtocolVersion_mapTable, subValue, (int32_t)HDCPProtocolVersion::UNDEFINED));
+            HDCPProtocolVersion hdcpVersion = (HDCPProtocolVersion)UT_Control_GetMapValue(hdcpProtocolVersion_mapTable, subValue, (int32_t)HDCPProtocolVersion::UNDEFINED);
+            port.supportedHDCPProtocolVersions.push_back(hdcpVersion);
+            if (static_cast<int>(hdcpVersion) > static_cast<int>(port.maxHdcpVersion))
+            {
+                port.maxHdcpVersion = hdcpVersion;
+            }
         }
 
         // Booleans

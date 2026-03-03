@@ -70,6 +70,7 @@ android::binder::Status HDMIInputControllerListener::onConnectionStateChanged(bo
     {
         std::lock_guard<std::mutex> lock(mConnectionStateMutex);
         mConnectionStateQueue.emplace(connectionState);
+        mConnectionStateCV.notify_one();
     }
     UT_LOG_INFO("HDMIInputControllerListener::onConnectionStateChanged called with connectionState[%s]", UT_Control_GetMapString(bool_mapTable_hdmiinput, connectionState));
     return android::binder::Status::ok();
@@ -86,6 +87,15 @@ bool HDMIInputControllerListener::getNextConnectionState(bool& connectionState, 
     return true;
 }
 
+bool HDMIInputControllerListener::waitForConnectionCount(int32_t count, chrono::milliseconds timeout)
+{
+    std::unique_lock<std::mutex> lock(mConnectionStateMutex);
+    if (!mConnectionStateCV.wait_for(lock, timeout, [this, count]{ return mConnectionStateQueue.size() >= count; })) {
+        return false; // Timed out
+    }
+    return true;
+}
+
 void HDMIInputControllerListener::clearConnectionStateQueue()
 {
     std::lock_guard<std::mutex> lock(mConnectionStateMutex);
@@ -98,6 +108,7 @@ android::binder::Status HDMIInputControllerListener::onSignalStateChanged(hdmiin
     {
         std::lock_guard<std::mutex> lock(mSignalStateMutex);
         mSignalStateQueue.emplace(signalState);
+        mSignalStateCV.notify_one();
     }
     UT_LOG_INFO("HDMIInputControllerListener::onSignalStateChanged called with signalState[%s]", hdmiinput::toString(signalState).c_str());
     return android::binder::Status::ok();
@@ -119,6 +130,7 @@ android::binder::Status HDMIInputControllerListener::onVideoFormatChanged(hdmiin
     {
         std::lock_guard<std::mutex> lock(mVideoFormatMutex);
         mVideoFormatQueue.emplace(vic);
+        mVideoFormatCV.notify_one();
     }
     UT_LOG_INFO("HDMIInputControllerListener::onVideoFormatChanged called with VIC[%s]", hdmiinput::toString(vic).c_str());
     return android::binder::Status::ok();
@@ -140,6 +152,7 @@ android::binder::Status HDMIInputControllerListener::onVRRChanged(bool vrrActive
     {
         std::lock_guard<std::mutex> lock(mVRRMutex);
         mVRRQueue.emplace(vrrActive, M_CONST, fastVActive, frameRate);
+        mVRRCV.notify_one();
     }
     UT_LOG_INFO("HDMIInputControllerListener::onVRRChanged called with vrrActive[%s], M_CONST[%s], fastVActive[%s], frameRate[%.2f]",
         UT_Control_GetMapString(bool_mapTable_hdmiinput, vrrActive),
@@ -165,6 +178,7 @@ android::binder::Status HDMIInputControllerListener::onAVIInfoFrame(const ::std:
     {
         std::lock_guard<std::mutex> lock(mAVIInfoMutex);
         mAVIInfoQueue.emplace(data);
+        mAVIInfoCV.notify_one();
     }
     UT_LOG_INFO("HDMIInputControllerListener::onAVIInfoFrame called with size[%d] data[%s]", static_cast<int>(data.size()), hdmiinputVecByteToHexString(data).c_str());
     return android::binder::Status::ok();
@@ -186,6 +200,7 @@ android::binder::Status HDMIInputControllerListener::onAudioInfoFrame(const ::st
     {
         std::lock_guard<std::mutex> lock(mAudioInfoMutex);
         mAudioInfoQueue.emplace(data);
+        mAudioInfoCV.notify_one();
     }
     UT_LOG_INFO("HDMIInputControllerListener::onAudioInfoFrame called with size[%d] data[%s]", static_cast<int>(data.size()), hdmiinputVecByteToHexString(data).c_str());
     return android::binder::Status::ok();
@@ -207,6 +222,7 @@ android::binder::Status HDMIInputControllerListener::onSPDInfoFrame(const ::std:
     {
         std::lock_guard<std::mutex> lock(mSPDInfoMutex);
         mSPDInfoQueue.emplace(data);
+        mSPDInfoCV.notify_one();
     }
     UT_LOG_INFO("HDMIInputControllerListener::onSPDInfoFrame called with size[%d] data[%s]", static_cast<int>(data.size()), hdmiinputVecByteToHexString(data).c_str());
     return android::binder::Status::ok();
@@ -228,6 +244,7 @@ android::binder::Status HDMIInputControllerListener::onDRMInfoFrame(const ::std:
     {
         std::lock_guard<std::mutex> lock(mDRMInfoMutex);
         mDRMInfoQueue.emplace(data);
+        mDRMInfoCV.notify_one();
     }
     UT_LOG_INFO("HDMIInputControllerListener::onDRMInfoFrame called with size[%d] data[%s]", static_cast<int>(data.size()), hdmiinputVecByteToHexString(data).c_str());
     return android::binder::Status::ok();
@@ -249,6 +266,7 @@ android::binder::Status HDMIInputControllerListener::onVendorSpecificInfoFrame(c
     {
         std::lock_guard<std::mutex> lock(mVendorSpecificInfoMutex);
         mVendorSpecificInfoQueue.emplace(data);
+        mVendorSpecificInfoCV.notify_one();
     }
     UT_LOG_INFO("HDMIInputControllerListener::onVendorSpecificInfoFrame called with size[%d] data[%s]", static_cast<int>(data.size()), hdmiinputVecByteToHexString(data).c_str());
     return android::binder::Status::ok();
@@ -270,6 +288,7 @@ android::binder::Status HDMIInputControllerListener::onHDCPStatusChanged(hdmiinp
     {
         std::lock_guard<std::mutex> lock(mHDCPStatusMutex);
         mHDCPStatusQueue.emplace(hdcpStatus, hdcpProtocolVersion);
+        mHDCPStatusCV.notify_one();
     }
     UT_LOG_INFO("HDMIInputControllerListener::onHDCPStatusChanged called with hdcpStatus[%s], hdcpProtocolVersion[%s]",
         hdmiinput::toString(hdcpStatus).c_str(),
