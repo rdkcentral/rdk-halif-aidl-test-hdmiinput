@@ -40,9 +40,6 @@ HDMIINPUT_TEST_MENU_CONFIGURATION_FILE = os.path.join(dir_path, "vts_hdmiinput_t
 HDMIINPUT_TESTCASES_CONFIGURATION_FILE = os.path.join(os.path.join(dir_path, "../configs"), "vts_hdmiinput_testcase_configuration.yaml")
 HDMIINPUT_L3_TEST_CONFIG_FILE = os.path.join(os.path.join(dir_path, "../../test_configuration"), "vts_l3_HdmiInput.yaml")
 
-#TODO: remove once the vendor layer start handled by vDevice service
-HDMIINPUT_BINDER_SERVICE_NAME = "Vendor-HdmiInput"
-
 class hdmiInputHelperClass(utHelperClass):
 
     def __init__(self, testName:str, qcId:str, log:logModule=None ):
@@ -50,6 +47,7 @@ class hdmiInputHelperClass(utHelperClass):
         Initializes the test class
         """
         self.moduleName = "hdmiinput"
+        self.testLevel = "L3"
         super().__init__(testName, qcId, log)
 
         self.log = log

@@ -27,6 +27,8 @@ dir_path = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(dir_path)
 
 from hdmiModules.virtualHdmiController import virtualHdmiController
+from hdmiModules.manualHdmiController import manualHdmiController
+
 # Add other controller imports here as needed
 
 class HdmiController:
@@ -40,6 +42,14 @@ class HdmiController:
 
         if self.controllerType == 'virtual-hdmi-controller':
             self.controller = virtualHdmiController(self._log,
+                                                    address=config.get('address'),
+                                                    username=config.get('username',''),
+                                                    password=config.get('password',''),
+                                                    port=config.get('port',22),
+                                                    prompt=config.get('prompt', '~#'),
+                                                    control_port=config.get('control_port', 8080))
+        elif self.controllerType == 'manual-hdmi-controller':
+            self.controller = manualHdmiController(self._log,
                                                     address=config.get('address'),
                                                     username=config.get('username',''),
                                                     password=config.get('password',''),

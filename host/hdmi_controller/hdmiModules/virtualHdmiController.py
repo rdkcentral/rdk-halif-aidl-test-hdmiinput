@@ -135,8 +135,8 @@ class virtualHdmiController(HdmiInterface):
         with open(HDCP_STATUS_CMD_TEMPLATE, 'r') as f:
             msg = yaml.safe_load(f)
         msg['hdmiinput']['params']['port'] = port
-        msg['hdmiinput']['params']['hdcp_version'] = hdcp_version
-        msg['hdmiinput']['params']['status'] = status
+        msg['hdmiinput']['params']['version'] = hdcp_version
+        msg['hdmiinput']['params']['state'] = status
         yaml_str = yaml.dump(msg)
         return self.utPlaneController.sendMessage(yaml_str)
 
@@ -147,7 +147,7 @@ class virtualHdmiController(HdmiInterface):
         with open(SIGNAL_STATUS_CMD_TEMPLATE, 'r') as f:
             msg = yaml.safe_load(f)
         msg['hdmiinput']['params']['port'] = port
-        msg['hdmiinput']['params']['signal_state'] = signal_state
+        msg['hdmiinput']['params']['state'] = signal_state
         yaml_str = yaml.dump(msg)
         return self.utPlaneController.sendMessage(yaml_str)
 
@@ -180,7 +180,7 @@ class virtualHdmiController(HdmiInterface):
         with open(VIDEO_FORMAT_CHANGE_CMD_TEMPLATE, 'r') as f:
             msg = yaml.safe_load(f)
         msg['hdmiinput']['params']['port'] = port
-        msg['hdmiinput']['params']['vic'] = vic
+        msg['hdmiinput']['params']['format'] = vic
         yaml_str = yaml.dump(msg)
         return self.utPlaneController.sendMessage(yaml_str)
 

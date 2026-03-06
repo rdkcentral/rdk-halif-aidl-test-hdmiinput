@@ -108,6 +108,17 @@ using namespace com::rdk::hal::hdmiinput;
 #define MAX_FINAL_STATE_WAIT_MS  500
 #define MAX_MESSAGE_SENT_WAIT_MS  50
 
+#ifndef ENABLE_UT_INFO_LOGGING
+#ifdef UT_LOG_DEBUG
+#undef UT_LOG_DEBUG
+#define UT_LOG_DEBUG(...)
+#endif
+#ifdef UT_LOG_INFO
+#undef UT_LOG_INFO
+#define UT_LOG_INFO(...)
+#endif
+#endif
+
 #define HDMIINPUT_MANAGER_GETHDMIINPUTIDS(hdmiinputIds) \
     do { \
         android::binder::Status status; \

@@ -88,6 +88,7 @@ public:
         for (const auto& id : hdmiInputIds)
         {
             android::sp<hdmiinput::IHDMIInput> hdmiInput;
+
             HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESS(id, hdmiInput);
 
             sp<HDMIInputControllerListener> controllerListener = new HDMIInputControllerListener();
