@@ -39,27 +39,35 @@ from vts_hdmiinput_helper import hdmiInputHelperClass
 
 HDMIINPUT_L3_TEST_SUITE_NAME = "VTS_L3_HDMIINPUT"
 
-class  VTS_HDMIINPUT_L3_SendMessage(hdmiInputHelperClass):
+class  VTS_HDMIINPUT_L3_ConnectionTestsAfterStart(hdmiInputHelperClass):
     """
-    Runs L3 SendMessage test
+    Runs L3 ConnectionTestsAfterStart test
     """
     def __init__(self, log:logModule=None):
         """
         Initializes the test class
+        Args:
+            log (logModule, optional): Log module instance. Defaults to None.
+        Returns:
+            None
         """
-        self.testName = "HdmiInput_L3_ConnectionTestsAfterOpen"
+        self.testName = "HdmiInput_L3_ConnectionTestsAfterStart"
         qcId = "1"
         super().__init__(self.testName, qcId, log)
 
         self.hdmiController = HdmiController(self.log, self.dut.rawConfig.get("dut").get("hdmiController"))
 
     def updateConnectionTestConfiguration(self, testName, port_ids):
-        profile_path = self.moduleHFPFile
-        config_path = self.l3TestConfigFile
-
+        '''
+        Updates the connection test configuration for the specified test and port IDs.
+        Args:
+            testName (str): Name of the test case to update.
+            port_ids (list): List of port IDs to include in the test configuration.
+        Returns:
+            None
+        '''
         # Read profile file
         self.test_config_data = self.hdmiInputReadYaml(self.l3TestConfigFile)
-        profile_data = self.hdmiInputReadYaml(profile_path)
 
         # Get the template from the first port entry
         ports_section = self.test_config_data[self.moduleName][self.testLevel][testName]['ports']
@@ -82,12 +90,13 @@ class  VTS_HDMIINPUT_L3_SendMessage(hdmiInputHelperClass):
         target_config_path = self.targetWorkspace + "/test_configuration/"
         self.utilities.sftpCopy(self.hal_session, self.l3TestConfigFile, target_config_path)
 
-    def connectionThread(self, current_ports=None):
+    def connectionThread(self):
+        """
+        Thread function to handle HDMI connection and signal status updates.
+        """
         time.sleep(10)
         ports = self.test_config_data[self.moduleName][self.testLevel][self.testcase]['ports']
-        # Only send commands to ports in current_ports if provided
-        if current_ports is not None:
-            ports = [port for port in ports if port.get('id') in current_ports]
+
         for port in ports:
             conn_states = port.get('connection_state', [])
             signal_states = port.get('signal_state', [])
@@ -102,8 +111,9 @@ class  VTS_HDMIINPUT_L3_SendMessage(hdmiInputHelperClass):
 
     def testFunction(self):
         """
-        The main test function to run the L3 SendMessage.
-
+        The main test function to run the L3 ConnectionTestsAfterStart.
+        Args:
+            None
         Returns:
             bool: Final result of the test.
         """
@@ -122,7 +132,7 @@ class  VTS_HDMIINPUT_L3_SendMessage(hdmiInputHelperClass):
             current_ports = port_ids[i:i+max_ports]
             self.updateConnectionTestConfiguration(self.testcase, current_ports)
 
-            self.connectionThreadObj = threading.Thread(target=self.connectionThread, args=(current_ports,))
+            self.connectionThreadObj = threading.Thread(target=self.connectionThread)
             self.utMenu.start()
 
             ports = self.test_config_data[self.moduleName][self.testLevel][self.testcase]['ports']
@@ -154,5 +164,5 @@ class  VTS_HDMIINPUT_L3_SendMessage(hdmiInputHelperClass):
 if __name__ == '__main__':
     summaryLogName = os.path.splitext(os.path.basename(__file__))[0] + "_summary"
     summaryLog = logModule(summaryLogName, level=logModule.INFO)
-    test = VTS_HDMIINPUT_L3_SendMessage(summaryLog)
+    test = VTS_HDMIINPUT_L3_ConnectionTestsAfterStart(summaryLog)
     test.run(False)

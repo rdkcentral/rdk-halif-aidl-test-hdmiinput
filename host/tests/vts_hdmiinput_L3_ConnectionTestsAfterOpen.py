@@ -39,13 +39,17 @@ from vts_hdmiinput_helper import hdmiInputHelperClass
 
 HDMIINPUT_L3_TEST_SUITE_NAME = "VTS_L3_HDMIINPUT"
 
-class  VTS_HDMIINPUT_L3_SendMessage(hdmiInputHelperClass):
+class  VTS_HDMIINPUT_L3_ConnectionTestsAfterOpen(hdmiInputHelperClass):
     """
-    Runs L3 SendMessage test
+    Runs L3 ConnectionTestsAfterOpen test
     """
     def __init__(self, log:logModule=None):
         """
         Initializes the test class
+        Args:
+            log (logModule, optional): Log module instance. Defaults to None.
+        Returns:
+            None
         """
         self.testName = "HdmiInput_L3_ConnectionTestsAfterOpen"
         qcId = "1"
@@ -54,9 +58,16 @@ class  VTS_HDMIINPUT_L3_SendMessage(hdmiInputHelperClass):
         self.hdmiController = HdmiController(self.log, self.dut.rawConfig.get("dut").get("hdmiController"))
 
     def updateConnectionTestConfiguration(self, testName):
+        """
+        Updates the connection test configuration for the specified test.
 
+        Args:
+            testName (str): Name of the test case to update.
+
+        Returns:
+            None
+        """
         profile_path = self.moduleHFPFile
-        config_path = self.l3TestConfigFile
 
         # Read profile file
         self.test_config_data = self.hdmiInputReadYaml(self.l3TestConfigFile)
@@ -89,6 +100,9 @@ class  VTS_HDMIINPUT_L3_SendMessage(hdmiInputHelperClass):
         self.utilities.sftpCopy(self.hal_session, self.l3TestConfigFile, target_config_path)
 
     def connectionThread(self):
+        """
+        Thread function to handle HDMI connection and signal status updates.
+        """
         time.sleep(10)
         ports = self.test_config_data[self.moduleName][self.testLevel][self.testcase]['ports']
         for port in ports:
@@ -109,8 +123,9 @@ class  VTS_HDMIINPUT_L3_SendMessage(hdmiInputHelperClass):
 
     def testFunction(self):
         """
-        The main test function to run the L3 SendMessage.
-
+        The main test function to run the L3 ConnectionTestsAfterOpen.
+        Args:
+            None
         Returns:
             bool: Final result of the test.
         """
@@ -152,5 +167,5 @@ class  VTS_HDMIINPUT_L3_SendMessage(hdmiInputHelperClass):
 if __name__ == '__main__':
     summaryLogName = os.path.splitext(os.path.basename(__file__))[0] + "_summary"
     summaryLog = logModule(summaryLogName, level=logModule.INFO)
-    test = VTS_HDMIINPUT_L3_SendMessage(summaryLog)
+    test = VTS_HDMIINPUT_L3_ConnectionTestsAfterOpen(summaryLog)
     test.run(False)
