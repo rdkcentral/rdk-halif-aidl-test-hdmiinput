@@ -116,6 +116,7 @@ UT_status_t VTS_HDMIINPUT_init()
     if(vts_hdmiinput_parse_hfp() != UT_STATUS_OK)
     {
         UT_LOG_ERROR("Failed to process the HDMIInput HFP file");
+        return UT_STATUS_FAILURE;
     }
 
     return UT_STATUS_OK;
