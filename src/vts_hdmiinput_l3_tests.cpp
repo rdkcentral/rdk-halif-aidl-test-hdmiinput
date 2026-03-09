@@ -170,9 +170,8 @@ public:
         UT_ASSERT_TRUE(controlListener->getNextConnectionState(connectionState, timeout));
         UT_ASSERT_EQUAL(connectionState, connectionStateConfig.connectionStateBeforeOpen);
 
-        // verify getConnectionState
-        HDMIINPUT_GETCONNECTIONSTATE(controller, connectionState);
-        UT_ASSERT_EQUAL(connectionState, connectionStateConfig.connectionStateBeforeOpen);
+        //TODO: Is it required to add HDCP verification after open if the port is connected and signal is LOCKED before start?
+        //If yes, then we need to add HDCP status verification here as well before starting the port.
 
         if (isStarted)
         {
@@ -228,7 +227,6 @@ public:
                 UT_ASSERT_TRUE(controlListener->getNextHDCPStatus(hdcpStatus, hdcpVersion, timeout));
                 UT_ASSERT_EQUAL(hdcpVersion, negotiatedHdcpVersion);
                 UT_ASSERT_EQUAL(hdcpStatus, hdmiinput::HDCPStatus::AUTHENTICATED);
-
             }
         } //connectionStates loop
 

@@ -51,13 +51,14 @@ class  VTS_HDMIINPUT_L3_ConnectionTestsAfterOpen(hdmiInputHelperClass):
         Returns:
             None
         """
+        self.sourceHDCPVersions = ["UNDEFINED", "VERSION_1_X", "VERSION_2_X"]
         self.testName = "HdmiInput_L3_ConnectionTestsAfterOpen"
         qcId = "1"
         super().__init__(self.testName, qcId, log)
 
         self.hdmiController = HdmiController(self.log, self.dut.rawConfig.get("dut").get("hdmiController"))
 
-    def updateConnectionTestConfiguration(self, testName):
+    def updateConnectionTestConfiguration(self, testName, sourceHDCPVersion):
         """
         Updates the connection test configuration for the specified test.
 
@@ -81,6 +82,7 @@ class  VTS_HDMIINPUT_L3_ConnectionTestsAfterOpen(hdmiInputHelperClass):
         template = ports_section[0].copy()
         # Remove 'id' field from template
         template.pop('id', None)
+        template["source_HDCP_Version"] = sourceHDCPVersion
 
         # Create new ports section
         new_ports = []
@@ -114,8 +116,8 @@ class  VTS_HDMIINPUT_L3_ConnectionTestsAfterOpen(hdmiInputHelperClass):
                 # Set signal status
                 self.hdmiController.setSignalStatus(port_id, signal_state)
 
-                # Send HDCP statuses if connect true
-                if conn_state is True:
+                # Send HDCP statuses if connect true and signal locked
+                if conn_state is True and signal_state == "LOCKED" and port['source_HDCP_Version'] != "UNDEFINED":
                     self.hdmiController.setHDCPStatus(port_id, port['source_HDCP_Version'], 'AUTHENTICATION_IN_PROGRESS')
                     self.hdmiController.setHDCPStatus(port_id, port['source_HDCP_Version'], 'AUTHENTICATED')
 
@@ -132,37 +134,40 @@ class  VTS_HDMIINPUT_L3_ConnectionTestsAfterOpen(hdmiInputHelperClass):
         self.testcase = "ConnectionTestAfterOpen"
         self.utilities.change_directory(self.hal_session, self.targetWorkspace)
 
-        self.updateConnectionTestConfiguration(self.testcase)
+        final_results = True
 
-        self.connectionThreadObj = threading.Thread(target=self.connectionThread)
+        for sourceHDCPVersion in self.sourceHDCPVersions:
+            self.updateConnectionTestConfiguration(self.testcase, sourceHDCPVersion)
 
-        self.utMenu.start()
+            self.connectionThreadObj = threading.Thread(target=self.connectionThread)
 
-        # Loop through ports and set connection/signal status
-        ports = self.test_config_data[self.moduleName][self.testLevel][self.testcase]['ports']
-        for port in ports:
-            port_id = port.get('id')
-            conn_state = port.get('connection_state_before_open', False)
-            self.hdmiController.connectDevice(port_id, conn_state)
-            signal_state = port.get('signal_state_before_open', "UNKNOWN")
-            self.hdmiController.setSignalStatus(port_id, signal_state)
+            self.utMenu.start()
 
-        self.connectionThreadObj.start()
+            # Loop through ports and set connection/signal status
+            ports = self.test_config_data[self.moduleName][self.testLevel][self.testcase]['ports']
+            for port in ports:
+                port_id = port.get('id')
+                conn_state = port.get('connection_state_before_open', False)
+                self.hdmiController.connectDevice(port_id, conn_state)
+                signal_state = port.get('signal_state_before_open', "UNKNOWN")
+                self.hdmiController.setSignalStatus(port_id, signal_state)
 
-        self.log.stepStart(f'Test Suit: {HDMIINPUT_L3_TEST_SUITE_NAME} Test Case: {self.testcase}')
-        output = self.utMenu.select(HDMIINPUT_L3_TEST_SUITE_NAME, self.testcase, None, 40, False)
+            self.connectionThreadObj.start()
 
-        results = self.utMenu.collect_results(output, True)
-        if results is None:
-            results = False
+            self.log.stepStart(f'Test Suit: {HDMIINPUT_L3_TEST_SUITE_NAME} Test Case: {self.testcase}')
+            output = self.utMenu.select(HDMIINPUT_L3_TEST_SUITE_NAME, self.testcase, None, 40, False)
 
-        self.connectionThreadObj.join()
+            results = self.utMenu.collect_results(output, True)
+            if results is None:
+                final_results = False
 
-        self.log.stepResult(results, f'Test Suit: {HDMIINPUT_L3_TEST_SUITE_NAME} Test Case: {self.testcase}')
+            self.connectionThreadObj.join()
 
-        self.utMenu.stop()
+            self.log.stepResult(results, f'Test Suit: {HDMIINPUT_L3_TEST_SUITE_NAME} Test Case: {self.testcase}')
 
-        return results
+            self.utMenu.stop()
+
+        return final_results
 
 if __name__ == '__main__':
     summaryLogName = os.path.splitext(os.path.basename(__file__))[0] + "_summary"
