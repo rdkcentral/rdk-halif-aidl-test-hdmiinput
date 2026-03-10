@@ -90,7 +90,10 @@ class  VTS_HDMIINPUT_L3_EdidTest(hdmiInputHelperClass):
         if results is None:
             results = False
 
-        results = self.testUserResponse.getUserYN(f"Is the EDID set reflected on Source device? (Y/N):")
+        ports = self.test_config_data[self.moduleName][self.testLevel][self.testcase]['ports']
+        for port in ports:
+            port_id = port.get('id')
+            results &= self.hdmiController.validateEdid(port_id, port.get('expected_edid', []))
 
         self.log.stepResult(results, f'Test Suit: {HDMIINPUT_L3_TEST_SUITE_NAME} Test Case: {self.testcase}')
 

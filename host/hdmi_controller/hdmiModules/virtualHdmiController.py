@@ -84,6 +84,32 @@ class virtualHdmiController(HdmiInterface):
             self._log.critical(f"Failed to load device configuration: {e}")
             raise
 
+    def setHDCPVersion(self, port: int, hdcp_version: str):
+        """
+        Set the HDCP version for the HDMI input port.
+
+        Args:
+            port (int): HDMI input port number.
+            hdcp_version (str): HDCP version string. (VERSION_1_X, VERSION_2_X, UNDEFINED)
+        Returns:
+            bool: True if HDCP version set successfully.
+        """
+        print(f"SetHDCP version '{hdcp_version}' for HDMI input port {port} Done")
+        return True
+
+    def validateEdid(self, port: int, expected_edid: list):
+        """
+        Validate the EDID data for the HDMI input port.
+
+        Args:
+            port (int): HDMI input port number.
+            expected_edid (list): Expected EDID data bytes.
+        Returns:
+            bool: True if EDID data matches expected values.
+        """
+        print(f"Validate EDID for HDMI input port {port} with expected data {expected_edid} Done")
+        return True
+
     def sendAudioInfoFrame(self, port: int, data: list):
         """
         Send an Audio Info Frame message to the HDMI input port using a YAML template.

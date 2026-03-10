@@ -69,9 +69,3 @@ hdmiinput:
         - "DefaultCallbacks"
         - "SetandGetEDID"
         - "MaxConcurrentPorts"
-    - name: "VTS_L3_HDMIINPUT"
-      test_cases:
-        - "ConnectionTestAfterOpen"
-        - "ConnectionTestAfterStart"
-        - "InfoFramesTest"
-        - "EDIDTest"

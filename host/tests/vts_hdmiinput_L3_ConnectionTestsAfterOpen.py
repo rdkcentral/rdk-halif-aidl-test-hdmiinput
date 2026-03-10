@@ -58,71 +58,6 @@ class  VTS_HDMIINPUT_L3_ConnectionTestsAfterOpen(hdmiInputHelperClass):
 
         self.hdmiController = HdmiController(self.log, self.dut.rawConfig.get("dut").get("hdmiController"))
 
-    def updateConnectionTestConfiguration(self, testName, sourceHDCPVersion):
-        """
-        Updates the connection test configuration for the specified test.
-
-        Args:
-            testName (str): Name of the test case to update.
-
-        Returns:
-            None
-        """
-        profile_path = self.moduleHFPFile
-
-        # Read profile file
-        self.test_config_data = self.hdmiInputReadYaml(self.l3TestConfigFile)
-        profile_data = self.hdmiInputReadYaml(profile_path)
-
-        port_list = profile_data[self.moduleName]['ports']
-        port_ids = [port['id'] for port in port_list]
-
-        # Get the template from the first port entry
-        ports_section = self.test_config_data[self.moduleName][self.testLevel][testName]['ports']
-        template = ports_section[0].copy()
-        # Remove 'id' field from template
-        template.pop('id', None)
-        template["source_HDCP_Version"] = sourceHDCPVersion
-
-        # Create new ports section
-        new_ports = []
-        for pid in port_ids:
-            entry = {'id': pid}
-            entry.update(template)
-            new_ports.append(entry)
-
-        # Update the config
-        self.test_config_data[self.moduleName][self.testLevel][testName]['ports'] = new_ports
-
-        # Write back to YAML file
-        self.hdmiInputWriteYaml(self.l3TestConfigFile, self.test_config_data)
-
-        target_config_path = self.targetWorkspace + "/test_configuration/"
-
-        self.utilities.sftpCopy(self.hal_session, self.l3TestConfigFile, target_config_path)
-
-    def connectionThread(self):
-        """
-        Thread function to handle HDMI connection and signal status updates.
-        """
-        time.sleep(10)
-        ports = self.test_config_data[self.moduleName][self.testLevel][self.testcase]['ports']
-        for port in ports:
-            conn_states = port.get('connection_state', [])
-            signal_states = port.get('signal_state', [])
-            port_id = port.get('id')
-            for conn_state, signal_state in zip(conn_states, signal_states):
-                self.hdmiController.connectDevice(port_id, conn_state)
-                # Set signal status
-                self.hdmiController.setSignalStatus(port_id, signal_state)
-
-                # Send HDCP statuses if connect true and signal locked
-                if conn_state is True and signal_state == "LOCKED" and port['source_HDCP_Version'] != "UNDEFINED":
-                    self.hdmiController.setHDCPStatus(port_id, port['source_HDCP_Version'], 'AUTHENTICATION_IN_PROGRESS')
-                    self.hdmiController.setHDCPStatus(port_id, port['source_HDCP_Version'], 'AUTHENTICATED')
-
-                time.sleep(1)
-
     def testFunction(self):
         """
         The main test function to run the L3 ConnectionTestsAfterOpen.
@@ -137,7 +72,7 @@ class  VTS_HDMIINPUT_L3_ConnectionTestsAfterOpen(hdmiInputHelperClass):
         final_results = True
 
         for sourceHDCPVersion in self.sourceHDCPVersions:
-            self.updateConnectionTestConfiguration(self.testcase, sourceHDCPVersion)
+            self.updateOpenConnectionTestConfiguration(self.testcase, sourceHDCPVersion)
 
             self.connectionThreadObj = threading.Thread(target=self.connectionThread)
 
@@ -151,6 +86,7 @@ class  VTS_HDMIINPUT_L3_ConnectionTestsAfterOpen(hdmiInputHelperClass):
                 self.hdmiController.connectDevice(port_id, conn_state)
                 signal_state = port.get('signal_state_before_open', "UNKNOWN")
                 self.hdmiController.setSignalStatus(port_id, signal_state)
+                self.hdmiController.setHDCPVersion(port_id, sourceHDCPVersion)
 
             self.connectionThreadObj.start()
 

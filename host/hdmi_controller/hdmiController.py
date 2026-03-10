@@ -58,6 +58,30 @@ class HdmiController:
                                                     control_port=config.get('control_port', 8080))
         # Add other controller types here if needed
 
+    def setHDCPVersion(self, port: int, hdcp_version: str):
+        """
+        Set the HDCP version for the HDMI input port.
+
+        Args:
+            port (int): HDMI input port number.
+            hdcp_version (str): HDCP version string. (VERSION_1_X, VERSION_2_X, UNDEFINED)
+        Returns:
+            bool: True if HDCP version set successfully.
+        """
+        return self.controller.setHDCPVersion(port, hdcp_version)
+
+    def validateEdid(self, port: int, expected_edid: list):
+        """
+        Validate the EDID data for the HDMI input port.
+
+        Args:
+            port (int): HDMI input port number.
+            expected_edid (list): Expected EDID data bytes.
+        Returns:
+            bool: True if EDID data matches expected values.
+        """
+        return self.controller.validateEdid(port, expected_edid)
+
     def sendAudioInfoFrame(self, port: int, data: list):
         """
         Send an Audio Info Frame message to the HDMI input port.
