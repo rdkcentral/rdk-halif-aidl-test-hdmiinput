@@ -173,18 +173,50 @@ hdmiinput:
 
 ### Host Side Implementation
 
-RAFT automates communication, synchronization, and verification between the test host and the DUT.
+The host tests use `RAFT` to control `DUT` execution, collect VTS output/events, and validate expected behaviour from YAML-driven scenarios.
 
-#### Connection/InfoFrame/EDID Tests
+#### Host Test Scope
 
-**Purpose:** Validates that the DUT can successfully report connection/signal states, deliver info frame call-backs, and handle EDID changes.
+The host validates the same `L3` behaviour categories as `DUT` side `VTS`:
 
-**Test Flow:**
-- Deploy VTS binaries to DUT.
-- Initialize and configure RAFT host.
-- Trigger test scenarios via configuration.
-- Verify that:
-  - HAL call-backs are triggered correctly.
-  - State transitions, info frame data, and EDID changes match expected values.
+1. **ConnectionTestAfterOpen**
+   - Triggers `DUT` side `ConnectionTestAfterOpen`.
+   - Verifies connection and signal state sequence for each configured port.
+   - Verifies `HDCP` expectations from configuration.
 
----
+2. **ConnectionTestAfterStart**
+   - Triggers `DUT` side `ConnectionTestAfterStart`.
+   - Verifies state transitions after port start.
+   - Verifies `HDCP` authentication/version expectations.
+
+3. **InfoFramesTest**
+   - Triggers `DUT` side `InfoFramesTest`.
+   - Validates callback delivery for configured info-frame types (AUDIO/AVI/SPD/VSIF/VIC/VRR).
+   - Compares received frame payload with expected YAML values.
+
+4. **EDIDTest**
+   - Triggers DUT-side `EDIDTest`.
+   - Applies configured `EDID` data per port.
+   - Verifies `onEDIDChange` callback and EDID payload integrity.
+
+#### Host-Side Flow (Python/RAFT)
+
+```mermaid
+flowchart TD
+    Start([Host Test Start]) --> LoadCfg[Load YAML Config]
+    LoadCfg --> Setup[Initialize RAFT + DUT Session]
+    Setup --> Deploy[Deploy/Verify VTS Binary on DUT]
+    Deploy --> Execute[Execute Selected L3 Test]
+    Execute --> Collect[Collect Logs, Events, and Callbacks]
+    Collect --> Validate[Validate Against Expected Config]
+    Validate --> Teardown[Teardown Session / Cleanup]
+    Teardown --> Report([Pass/Fail Report])
+```
+
+#### Configuration Responsibility (Host)
+
+The host test layer is responsible for:
+- Reading L3 inputs from `YAML` (`hdmiinput.L3.*`).
+- Passing scenario parameters to `DUT`-side VTS execution.
+- Applying timeout handling (`max_wait_time_ms`) and synchronization.
+- Producing pass/fail verdicts with failure diagnostics.
