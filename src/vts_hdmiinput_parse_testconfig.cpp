@@ -26,7 +26,7 @@
 #include "vts_hdmiinput_helper_functions.h"
 #include "vts_hdmiinput_parse_testconfig.h"
 
-static void* hdmiinputkvp_create_instance(char *fileName)
+static void* hdmiinputkvp_create_instance(const char *fileName)
 {
     ut_kvp_instance_t* instance;
     ut_kvp_status_t result;
@@ -39,7 +39,7 @@ static void* hdmiinputkvp_create_instance(char *fileName)
         return nullptr;
     }
 
-    result = ut_kvp_open(instance, fileName);
+    result = ut_kvp_open(instance, const_cast<char*>(fileName));
 
     if(result != UT_KVP_STATUS_SUCCESS)
     {
@@ -56,7 +56,7 @@ static void hdmiinputkvp_destroy_instance(void *instance)
     ut_kvp_destroyInstance((ut_kvp_instance_t*)instance);
 }
 
-UT_status_t vts_hdmiinput_parse_connectionTest(char *configurationFile, const char *module, const char *testGroup,
+UT_status_t vts_hdmiinput_parse_connectionTest(const char *configurationFile, const char *module, const char *testGroup,
                                                const char *testName, std::vector<hdmiinputConnectionConfig_t>& connectionStateConfigs)
 {
     char key[2 * UT_KVP_MAX_ELEMENT_SIZE];
@@ -129,7 +129,7 @@ UT_status_t vts_hdmiinput_parse_connectionTest(char *configurationFile, const ch
     return UT_STATUS_OK;
 }
 
-UT_status_t  vts_hdmiinput_parse_infoFramesTestConfig(char *configurationFile, const char *module, const char *testGroup,
+UT_status_t  vts_hdmiinput_parse_infoFramesTestConfig(const char *configurationFile, const char *module, const char *testGroup,
                                                       const char *testName, std::vector<hdmiinputInfoFramesTestConfig_t>& infoFramesTestConfig)
 {
     char key[2 * UT_KVP_MAX_ELEMENT_SIZE];
@@ -268,7 +268,7 @@ UT_status_t  vts_hdmiinput_parse_infoFramesTestConfig(char *configurationFile, c
 }
 
 
-UT_status_t vts_hdmiinput_parse_edidTestConfig(char *configurationFile, const char *module, const char *testGroup,
+UT_status_t vts_hdmiinput_parse_edidTestConfig(const char *configurationFile, const char *module, const char *testGroup,
                                                const char *testName, std::vector<hdmiinputEdidTestConfig_t>& edidTestConfig)
 {
     char key[2 * UT_KVP_MAX_ELEMENT_SIZE];
@@ -301,7 +301,7 @@ UT_status_t vts_hdmiinput_parse_edidTestConfig(char *configurationFile, const ch
         {
             char bytekey[2 * UT_KVP_MAX_ELEMENT_SIZE];
             snprintf(bytekey, sizeof(bytekey), "%s.ports.%d.edid.%d", testList, i, j);
-            uint32_t byteValue = ut_kvp_getUInt32Field(kvpTestInstance, bytekey);
+            uint32_t byteValue = ut_kvp_getUInt8Field(kvpTestInstance, bytekey);
             config.edidData.push_back(static_cast<uint8_t>(byteValue));
         }
 

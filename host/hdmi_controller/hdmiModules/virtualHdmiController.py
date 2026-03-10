@@ -47,7 +47,6 @@ from framework.core.logModule import logModule
 from framework.core.commandModules.sshConsole import sshConsole
 from abstractHdmiController import HdmiInterface
 from framework.core.utPlaneController import utPlaneController
-import yaml
 
 class virtualHdmiController(HdmiInterface):
     """

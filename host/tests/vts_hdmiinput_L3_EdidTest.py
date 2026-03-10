@@ -93,7 +93,7 @@ class  VTS_HDMIINPUT_L3_EdidTest(hdmiInputHelperClass):
         ports = self.test_config_data[self.moduleName][self.testLevel][self.testcase]['ports']
         for port in ports:
             port_id = port.get('id')
-            results &= self.hdmiController.validateEdid(port_id, port.get('expected_edid', []))
+            results &= self.hdmiController.validateEdid(port_id, port.get('edid', []))
 
         self.log.stepResult(results, f'Test Suit: {HDMIINPUT_L3_TEST_SUITE_NAME} Test Case: {self.testcase}')
 

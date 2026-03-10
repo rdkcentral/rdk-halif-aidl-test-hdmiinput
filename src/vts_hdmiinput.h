@@ -196,14 +196,14 @@ using namespace com::rdk::hal::hdmiinput;
                         hdmiinput::toString(property).c_str(), \
                         propertyValue->value->get<hdmiinput::PropertyValue::Value::Tag::intValue>(), \
                         UT_Control_GetMapString(bool_mapTable_hdmiinput, status.isOk()), \
-                        UT_Control_GetMapString(statusHDMIInputException_mapTable, status.exceptionCode())); \
+                        UT_Control_GetMapString(statusHdmiInputException_mapTable, status.exceptionCode())); \
                     break; \
                 case hdmiinput::PropertyValue::Value::Tag::stringValue: \
                     UT_LOG_DEBUG("Result getProperty(IN:property[%s], OUT:propertyValue[%s]), status:[isOK:%s, exception:%s]", \
                         hdmiinput::toString(property).c_str(), \
                         propertyValue->value->get<hdmiinput::PropertyValue::Value::Tag::stringValue>().string(), \
                         UT_Control_GetMapString(bool_mapTable_hdmiinput, status.isOk()), \
-                        UT_Control_GetMapString(statusHDMIInputException_mapTable, status.exceptionCode())); \
+                        UT_Control_GetMapString(statusHdmiInputException_mapTable, status.exceptionCode())); \
                     break; \
                 default: \
                     break; \
@@ -212,7 +212,7 @@ using namespace com::rdk::hal::hdmiinput;
             UT_LOG_DEBUG("Result getProperty(IN:property[%s], OUT:propertyValue[]), status:[isOK:%s, exception:%s]", \
                 hdmiinput::toString(property).c_str(), \
                 UT_Control_GetMapString(bool_mapTable_hdmiinput, status.isOk()), \
-                UT_Control_GetMapString(statusHDMIInputException_mapTable, status.exceptionCode())); \
+                UT_Control_GetMapString(statusHdmiInputException_mapTable, status.exceptionCode())); \
             UT_ASSERT_TRUE(false); \
         } \
         UT_ASSERT_TRUE(status.isOk()); \

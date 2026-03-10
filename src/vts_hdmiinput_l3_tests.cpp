@@ -57,6 +57,9 @@
  * @file vts_hdmiinput_l3_tests.cpp
  *
  */
+
+#include <unistd.h>
+
 #include "vts_hdmiinput.h"
 #include "vts_hdmiinput_parse_hfp.h"
 #include "vts_hdmiinput_parse_testconfig.h"
@@ -115,12 +118,17 @@ public:
             auto& hdmiInput = std::get<1>(input);
             auto& eventListener = std::get<3>(input);
             auto& controller = std::get<4>(input);
+            auto*& capabilities = std::get<5>(input);
 
             // Close the HDMI input port
             HDMIINPUT_CLOSE_SUCCESS(hdmiInput, controller, true);
 
             // Unregister the event listener
             HDMIINPUT_UNREGISTEREVENT_SUCCESS(hdmiInput, eventListener);
+
+            // Free allocated capabilities
+            delete capabilities;
+            capabilities = nullptr;
         }
     }
 
@@ -179,7 +187,7 @@ public:
             UT_ASSERT_EQUAL(signalState, connectionStateConfig.signalStateBeforeOpen);
         }
 
-        controlListener->waitForConnectionCount(connectionStateConfig.connectionStates.size(), timeout);
+        UT_ASSERT_TRUE(controlListener->waitForConnectionCount(connectionStateConfig.connectionStates.size(), timeout));
         sleep(1); // Small delay to ensure all events are processed
 
         // Find the negotiated HDCP protocol versions for this port
@@ -581,8 +589,8 @@ UT_ADD_TEST(VTS_L3_HDMIINPUT, EDIDTest)
 
             HDMIINPUT_SETEDID_SUCCESS(controller, config.edidData);
 
-            // Wait for and verify onEDIDChange() callback
-            UT_ASSERT_TRUE(eventListener->getNextEDIDChange(changedEDID));
+            // Verify getEDID() returns the new value
+            HDMIINPUT_GETEDID_SUCCESS(hdmiInput, changedEDID);
             UT_ASSERT_EQUAL(changedEDID.size(), config.edidData.size());
             for (size_t i = 0; i < changedEDID.size(); ++i)
             {
@@ -591,8 +599,8 @@ UT_ADD_TEST(VTS_L3_HDMIINPUT, EDIDTest)
 
             changedEDID.clear();
 
-            // Verify getEDID() returns the new value
-            HDMIINPUT_GETEDID_SUCCESS(hdmiInput, changedEDID);
+            // Wait for and verify onEDIDChange() callback
+            UT_ASSERT_TRUE(eventListener->getNextEDIDChange(changedEDID));
             UT_ASSERT_EQUAL(changedEDID.size(), config.edidData.size());
             for (size_t i = 0; i < changedEDID.size(); ++i)
             {

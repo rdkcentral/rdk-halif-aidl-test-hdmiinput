@@ -70,13 +70,13 @@ typedef struct hdmiinputEdidTestConfig
     std::vector<uint8_t> edidData;
 } hdmiinputEdidTestConfig_t;
 
-UT_status_t vts_hdmiinput_parse_connectionTest(char *configurationFile, const char *module, const char *testGroup,
+UT_status_t vts_hdmiinput_parse_connectionTest(const char *configurationFile, const char *module, const char *testGroup,
                                                const char *testName, std::vector<hdmiinputConnectionConfig_t>& connectionStateConfigs);
 
-UT_status_t vts_hdmiinput_parse_infoFramesTestConfig(char *configurationFile, const char *module, const char *testGroup,
+UT_status_t vts_hdmiinput_parse_infoFramesTestConfig(const char *configurationFile, const char *module, const char *testGroup,
                                                       const char *testName, std::vector<hdmiinputInfoFramesTestConfig_t>& infoFramesTestConfig);
 
-UT_status_t vts_hdmiinput_parse_edidTestConfig(char *configurationFile, const char *module, const char *testGroup,
+UT_status_t vts_hdmiinput_parse_edidTestConfig(const char *configurationFile, const char *module, const char *testGroup,
                                                const char *testName, std::vector<hdmiinputEdidTestConfig_t>& edidTestConfig);
 
 #endif // __VTS_HDMIINPUT_PARSE_TESTCONFIG_H__
