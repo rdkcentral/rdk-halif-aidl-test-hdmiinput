@@ -259,10 +259,6 @@ install_test()
     cp -r "${VCOMPONENT_DIR}/hdmiinput_post_command.sh" ${INSTALL_PATH}
     cp -r "${TOP}/test_configuration" ${INSTALL_PATH}
 
-    #TODO: Remove this when the test framework supports providing additional files for test execution
-    cp -r ${TOP}/test*.sh ${INSTALL_PATH}
-    cp -r ${TOP}/test*.yaml ${INSTALL_PATH}
-
     cd ${INSTALL_PATH}
     tar -czf ${OUT_TAR_FILE} *
     cd -

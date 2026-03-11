@@ -91,9 +91,11 @@ class  VTS_HDMIINPUT_L3_ConnectionTestsAfterStart(hdmiInputHelperClass):
                     port_id = port.get('id')
                     conn_state = port.get('connection_state_before_open', False)
                     self.hdmiController.connectDevice(port_id, conn_state)
+                    time.sleep(2)  # Wait for the connection state to stabilize
                     signal_state = port.get('signal_state_before_open', "UNKNOWN")
                     self.hdmiController.setSignalStatus(port_id, signal_state)
                     self.hdmiController.setHDCPVersion(port_id, sourceHDCPVersion)
+                    time.sleep(2)  # Wait for the connection state to stabilize
 
                 self.connectionThreadObj.start()
 

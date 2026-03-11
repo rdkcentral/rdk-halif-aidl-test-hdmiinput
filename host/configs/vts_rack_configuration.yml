@@ -24,7 +24,7 @@
 # you will need at least 1 rack and 1 slot to operate.
 # each module e.g. console options, will be off by default unless otherwise stated
 
-# Depreciated
+# Deprecated
 # slotx: address:  IP of device while running locally, replaced with slotx: ip
 # slotx: deviceConsole:  IP of device while running locally, replaced with slotx: devices
 

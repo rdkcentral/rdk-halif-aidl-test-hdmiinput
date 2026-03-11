@@ -31,6 +31,7 @@
 #include "ut_kvp_profile.h"
 #include <vector>
 #include <string>
+#include <map>
 
 #include "com/rdk/hal/hdmiinput/HDCPProtocolVersion.h"
 #include "com/rdk/hal/hdmiinput/VIC.h"
