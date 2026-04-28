@@ -95,7 +95,7 @@ UT_status_t vts_hdmiinput_parse_hfp()
         {
             snprintf(subkey, sizeof(subkey), "%s.supportedHDCPProtocolVersions.%d", portBaseKey.c_str(), j);
             UT_KVP_PROFILE_GET_STRING(subkey, subValue);
-            HDCPProtocolVersion hdcpVersion = (HDCPProtocolVersion)UT_Control_GetMapValue(hdcpProtocolVersion_mapTable, subValue, (int32_t)HDCPProtocolVersion::UNDEFINED);
+            HDCPProtocolVersion hdcpVersion = (HDCPProtocolVersion)UT_Control_GetMapValue(hdmicecHdcpProtocolVersion_mapTable, subValue, (int32_t)HDCPProtocolVersion::UNDEFINED);
             port.supportedHDCPProtocolVersions.push_back(hdcpVersion);
             if (static_cast<int>(hdcpVersion) > static_cast<int>(port.maxHdcpVersion))
             {
