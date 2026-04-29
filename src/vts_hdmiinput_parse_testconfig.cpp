@@ -85,7 +85,7 @@ UT_status_t vts_hdmiinput_parse_connectionTest(const char *configurationFile, co
         // source_HDCP_Version
         snprintf(subkey, sizeof(subkey), "%s.ports.%d.source_HDCP_Version", testList, i);
         ut_kvp_getStringField(kvpTestInstance, subkey, subValue, sizeof(subValue));
-        config.sourceHdcpProtocolVersion = (hdmiinput::HDCPProtocolVersion)UT_Control_GetMapValue(hdmicecHdcpProtocolVersion_mapTable, subValue, (int32_t)hdmiinput::HDCPProtocolVersion::UNDEFINED);
+        config.sourceHdcpProtocolVersion = (hdmiinput::HDCPProtocolVersion)UT_Control_GetMapValue(hdmiinputHdcpProtocolVersion_mapTable, subValue, (int32_t)hdmiinput::HDCPProtocolVersion::UNDEFINED);
 
         // connection_state_before_open
         snprintf(subkey, sizeof(subkey), "%s.ports.%d.connection_state_before_open", testList, i);

@@ -100,7 +100,7 @@ const ut_control_keyStringMapping_t hdmiVersion_mapTable[] =
 };
 
 /* HDCPProtocolVersion */
-const ut_control_keyStringMapping_t hdmicecHdcpProtocolVersion_mapTable[] =
+const ut_control_keyStringMapping_t hdmiinputHdcpProtocolVersion_mapTable[] =
 {
     {"UNDEFINED",    (int32_t) HDCPProtocolVersion::UNDEFINED},
     {"VERSION_1_X",  (int32_t) HDCPProtocolVersion::VERSION_1_X},
