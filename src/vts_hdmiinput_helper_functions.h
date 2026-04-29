@@ -106,7 +106,7 @@ using namespace com::rdk::hal::hdmiinput;
 
 extern const ut_control_keyStringMapping_t bool_mapTable_hdmiinput[];
 extern const ut_control_keyStringMapping_t statusHdmiInputException_mapTable[];
-extern const ut_control_keyStringMapping_t hdcpProtocolVersion_mapTable[];
+extern const ut_control_keyStringMapping_t hdmiinputHdcpProtocolVersion_mapTable[];
 extern const ut_control_keyStringMapping_t vic_mapTable[];
 extern const ut_control_keyStringMapping_t hdmiVersion_mapTable[];
 extern const ut_control_keyStringMapping_t freeSync_mapTable[];
