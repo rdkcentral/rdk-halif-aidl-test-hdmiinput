@@ -678,17 +678,16 @@ public:
     HDMIInputControllerListener() : BnHDMIInputControllerListener(){}
     virtual ~HDMIInputControllerListener() = default;
 
-    android::binder::Status onConnectionStateChanged(bool connectionState) override;
-    android::binder::Status onSignalStateChanged(::com::rdk::hal::hdmiinput::SignalState signalState) override;
-    android::binder::Status onVideoFormatChanged(::com::rdk::hal::hdmiinput::VIC vic) override;
-    android::binder::Status onVRRChanged(bool vrrActive, bool M_CONST, bool fastVActive, double frameRate) override;
-    android::binder::Status onAVIInfoFrame(const ::std::vector<uint8_t>& data) override;
-    android::binder::Status onAudioInfoFrame(const ::std::vector<uint8_t>& data) override;
-    android::binder::Status onSPDInfoFrame(const ::std::vector<uint8_t>& data) override;
-    android::binder::Status onDRMInfoFrame(const ::std::vector<uint8_t>& data) override;
-    android::binder::Status onVendorSpecificInfoFrame(const ::std::vector<uint8_t>& data) override;
-    android::binder::Status onHDCPStatusChanged(::com::rdk::hal::hdmiinput::HDCPStatus hdcpStatus, ::com::rdk::hal::hdmiinput::HDCPProtocolVersion hdcpProtocolVersion) override;
-
+  android::binder::Status onConnectionStateChanged(bool connectionState) override;
+  android::binder::Status onSignalStateChanged(hdmiinput::SignalState signalState) override;
+  android::binder::Status onVIChanged(hdmiinput::VIC vic) override;
+  android::binder::Status onVRRChanged(bool vrrActive, bool M_CONST, bool fastVActive, double frameRate) override;
+  android::binder::Status onAVIInfoFrame(const std::vector<uint8_t>& data) override;
+  android::binder::Status onAudioInfoFrame(const std::vector<uint8_t>& data) override;
+  android::binder::Status onSPDInfoFrame(const std::vector<uint8_t>& data) override;
+  android::binder::Status onDRMInfoFrame(const std::vector<uint8_t>& data) override;
+  android::binder::Status onVendorSpecificInfoFrame(const std::vector<uint8_t>& data) override;
+  android::binder::Status onHDCPStatusChanged(hdmiinput::HDCPStatus hdcpStatus, hdmiinput::HDCPProtocolVersion hdcpProtocolVersion) override;
 public:
     bool getNextConnectionState(bool& connectionState, chrono::milliseconds timeout = chrono::milliseconds(0));
     void clearConnectionStateQueue();

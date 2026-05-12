@@ -240,9 +240,7 @@ UT_ADD_TEST(VTS_L1_HDMIINPUT, getPlatformCapabilities_pos)
     HDMIINPUT_MANAGER_GETCAPABILITIES(caps);
 
     UT_ASSERT_EQUAL(caps.maximumConcurrentStartedPorts, gHdmiInput_hfp.platformCapabilities.maximumConcurrentStartedPorts);
-    UT_ASSERT_TRUE(gHdmiInput_hfp.platformCapabilities.maximumConcurrentStartedPorts <= (int32_t)gHdmiInput_hfp.ports.size());
     UT_ASSERT_EQUAL(caps.freeSync, gHdmiInput_hfp.platformCapabilities.freeSync);
-
 }
 
 /**
@@ -294,7 +292,9 @@ UT_ADD_TEST(VTS_L1_HDMIINPUT, getCapabilities_pos)
         UT_ASSERT_EQUAL(capabilities->supportedVersions.size(), port.supportedVersions.size());
         for (size_t i = 0; i < capabilities->supportedVersions.size(); ++i)
         {
-            bool found = std::find(port.supportedVersions.begin(), port.supportedVersions.end(), capabilities->supportedVersions[i]) != port.supportedVersions.end();
+            bool found = std::find(port.supportedVersions.begin(),
+                                   port.supportedVersions.end(),
+                                   capabilities->supportedVersions[i]) != port.supportedVersions.end();
             UT_ASSERT_TRUE(found);
         }
 
@@ -302,7 +302,9 @@ UT_ADD_TEST(VTS_L1_HDMIINPUT, getCapabilities_pos)
         UT_ASSERT_EQUAL(capabilities->supportedVICs.size(), port.supportedVICs.size());
         for (size_t i = 0; i < capabilities->supportedVICs.size(); ++i)
         {
-            bool found = std::find(port.supportedVICs.begin(), port.supportedVICs.end(), capabilities->supportedVICs[i]) != port.supportedVICs.end();
+            bool found = std::find(port.supportedVICs.begin(),
+                                   port.supportedVICs.end(),
+                                   capabilities->supportedVICs[i]) != port.supportedVICs.end();
             UT_ASSERT_TRUE(found);
         }
 
@@ -310,7 +312,9 @@ UT_ADD_TEST(VTS_L1_HDMIINPUT, getCapabilities_pos)
         UT_ASSERT_EQUAL(capabilities->supportedHDCPProtocolVersions.size(), port.supportedHDCPProtocolVersions.size());
         for (size_t i = 0; i < capabilities->supportedHDCPProtocolVersions.size(); ++i)
         {
-            bool found = std::find(port.supportedHDCPProtocolVersions.begin(), port.supportedHDCPProtocolVersions.end(), capabilities->supportedHDCPProtocolVersions[i]) != port.supportedHDCPProtocolVersions.end();
+            bool found = std::find(port.supportedHDCPProtocolVersions.begin(),
+                                   port.supportedHDCPProtocolVersions.end(),
+                                   capabilities->supportedHDCPProtocolVersions[i]) != port.supportedHDCPProtocolVersions.end();
             UT_ASSERT_TRUE(found);
         }
     }

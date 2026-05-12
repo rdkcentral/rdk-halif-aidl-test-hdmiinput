@@ -125,14 +125,14 @@ bool HDMIInputControllerListener::getNextSignalState(hdmiinput::SignalState& sig
     return true;
 }
 
-android::binder::Status HDMIInputControllerListener::onVideoFormatChanged(hdmiinput::VIC vic)
+android::binder::Status HDMIInputControllerListener::onVIChanged(hdmiinput::VIC vic)
 {
     {
         std::lock_guard<std::mutex> lock(mVideoFormatMutex);
         mVideoFormatQueue.emplace(vic);
         mVideoFormatCV.notify_one();
     }
-    UT_LOG_INFO("HDMIInputControllerListener::onVideoFormatChanged called with VIC[%s]", hdmiinput::toString(vic).c_str());
+    UT_LOG_INFO("HDMIInputControllerListener::onVIChanged called with VIC[%s]", hdmiinput::toString(vic).c_str());
     return android::binder::Status::ok();
 }
 
