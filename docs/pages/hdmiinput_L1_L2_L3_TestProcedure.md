@@ -32,12 +32,6 @@ The test suite depends on Linux binder with `AIDL` support.
 
 For detailed instructions, refer to: [Linux Binder](https://github.com/rdkcentral/linux_binder_idl/tree/1.0.0)
 
-```bash
-git clone -b develop 'https://github.com/rdkcentral/linux_binder_idl.git'
-cd linux_binder_idl
-./build-linux-binder-aidl.sh 64
-```
-
 ### Build VTS binaries
 
 Clone and build the HDMI Input test suite:
@@ -61,8 +55,8 @@ Example:
 export UT_CORE_VERSION=5.0.0
 export RDK_HALIF_AIDL_VERSION=0.15.0
 export VCOMPONENT_HDMIINPUT_VERSION=0.1.1
-export AIDL_BIN=/path/to/linux_binder_idl/out/aidl
-export LINUX_BINDER_OUT_DIR=/path/to/linux_binder_idl/local/
+export AIDL_BIN=/path_to_binder_tool/aidl
+export LINUX_BINDER_OUT_DIR=/path_to_binder_out_dir/
 ```
 
 Enable UT logs (optional):
