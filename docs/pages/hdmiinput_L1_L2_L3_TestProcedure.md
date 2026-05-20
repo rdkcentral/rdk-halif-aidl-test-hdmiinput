@@ -58,6 +58,9 @@ export VCOMPONENT_HDMIINPUT_VERSION=0.1.1
 export AIDL_BIN=/path_to_binder_tool/aidl
 export LINUX_BINDER_OUT_DIR=/path_to_binder_out_dir/
 ```
+#### Note:
+
+- This build has been compiled and reviewed against AIDL version 0.15.0.
 
 Enable UT logs (optional):
 
