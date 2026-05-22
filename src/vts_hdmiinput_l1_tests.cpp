@@ -239,10 +239,9 @@ UT_ADD_TEST(VTS_L1_HDMIINPUT, getPlatformCapabilities_pos)
 
     HDMIINPUT_MANAGER_GETCAPABILITIES(caps);
 
+    UT_ASSERT_TRUE(caps.maximumConcurrentStartedPorts <= gHdmiInput_hfp.ports.size());
     UT_ASSERT_EQUAL(caps.maximumConcurrentStartedPorts, gHdmiInput_hfp.platformCapabilities.maximumConcurrentStartedPorts);
-    UT_ASSERT_TRUE(gHdmiInput_hfp.platformCapabilities.maximumConcurrentStartedPorts <= (int32_t)gHdmiInput_hfp.ports.size());
     UT_ASSERT_EQUAL(caps.freeSync, gHdmiInput_hfp.platformCapabilities.freeSync);
-
 }
 
 /**
@@ -294,7 +293,9 @@ UT_ADD_TEST(VTS_L1_HDMIINPUT, getCapabilities_pos)
         UT_ASSERT_EQUAL(capabilities->supportedVersions.size(), port.supportedVersions.size());
         for (size_t i = 0; i < capabilities->supportedVersions.size(); ++i)
         {
-            bool found = std::find(port.supportedVersions.begin(), port.supportedVersions.end(), capabilities->supportedVersions[i]) != port.supportedVersions.end();
+            bool found = std::find(port.supportedVersions.begin(),
+                                   port.supportedVersions.end(),
+                                   capabilities->supportedVersions[i]) != port.supportedVersions.end();
             UT_ASSERT_TRUE(found);
         }
 
@@ -302,7 +303,9 @@ UT_ADD_TEST(VTS_L1_HDMIINPUT, getCapabilities_pos)
         UT_ASSERT_EQUAL(capabilities->supportedVICs.size(), port.supportedVICs.size());
         for (size_t i = 0; i < capabilities->supportedVICs.size(); ++i)
         {
-            bool found = std::find(port.supportedVICs.begin(), port.supportedVICs.end(), capabilities->supportedVICs[i]) != port.supportedVICs.end();
+            bool found = std::find(port.supportedVICs.begin(),
+                                   port.supportedVICs.end(),
+                                   capabilities->supportedVICs[i]) != port.supportedVICs.end();
             UT_ASSERT_TRUE(found);
         }
 
@@ -310,7 +313,9 @@ UT_ADD_TEST(VTS_L1_HDMIINPUT, getCapabilities_pos)
         UT_ASSERT_EQUAL(capabilities->supportedHDCPProtocolVersions.size(), port.supportedHDCPProtocolVersions.size());
         for (size_t i = 0; i < capabilities->supportedHDCPProtocolVersions.size(); ++i)
         {
-            bool found = std::find(port.supportedHDCPProtocolVersions.begin(), port.supportedHDCPProtocolVersions.end(), capabilities->supportedHDCPProtocolVersions[i]) != port.supportedHDCPProtocolVersions.end();
+            bool found = std::find(port.supportedHDCPProtocolVersions.begin(),
+                                   port.supportedHDCPProtocolVersions.end(),
+                                   capabilities->supportedHDCPProtocolVersions[i]) != port.supportedHDCPProtocolVersions.end();
             UT_ASSERT_TRUE(found);
         }
     }
@@ -672,7 +677,7 @@ UT_ADD_TEST(VTS_L1_HDMIINPUT, getHDCPCurrentVersion_pos)
 
         HDMIINPUT_GETHDCPCURRENTVERSION(hdmiInput, currentVersion);
 
-        // It should be either one of the supported versions or UNDEFINED
+        // It should be UNDEFINED
         UT_ASSERT_EQUAL(currentVersion, HDCPProtocolVersion::UNDEFINED);
     }
 }
@@ -713,7 +718,7 @@ UT_ADD_TEST(VTS_L1_HDMIINPUT, getHDCPStatus_pos)
         // Call getHDCPStatus
         HDMIINPUT_GETHDCPSTATUS(hdmiInput, hdcpStatus);
 
-        // If HDCP is not in use, status should be UNKNOWN
+        // status should be UNKNOWN
         UT_ASSERT_EQUAL(hdcpStatus, hdmiinput::HDCPStatus::UNKNOWN);
     }
 }
@@ -1176,11 +1181,13 @@ UT_ADD_TEST(VTS_L1_HDMIINPUT, getConnectionState_pos)
  *
  * This test validates the correct behavior of the start() API under normal conditions:
  * 1. Retrieves all HDMI input IDs and opens each port.
- * 2. Starts and stops each HDMI input port concurrently up to the platform's maximum supported limit, verifying that multiple ports can be active simultaneously.
+ * 2. Starts and stops each HDMI input port concurrently up to the platform's maximum supported limit,
+ *   verifying that multiple ports can be active simultaneously.
  * 3. Starts and stops each HDMI input port sequentially to ensure correct state transitions.
  * 4. Closes all HDMI input ports at the end of the test.
  *
- * The test asserts that the start and stop operations succeed and that the HDMI input controllers transition through the expected states without errors.
+ * The test asserts that the start and stop operations succeed and that the HDMI input controllers
+ * transition through the expected states without errors.
  *
  * **Test Group ID:** Positive: 01@p
  * **Test Case ID:** 024@p
@@ -1522,6 +1529,8 @@ UT_ADD_TEST(VTS_L1_HDMIINPUT, stop_neg)
         HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESS(id, hdmiInput);
 
         HDMIINPUT_OPEN_SUCCESS(hdmiInput, listener, controller, true);
+
+        HDMIINPUT_STOP_FAILURE(hdmiInput, controller, hdmiinput::State::READY, Status::EX_ILLEGAL_STATE);
 
         HDMIINPUT_START_SUCCESS(hdmiInput, controller, true);
 
