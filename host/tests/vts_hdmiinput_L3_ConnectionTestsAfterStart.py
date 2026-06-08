@@ -43,7 +43,7 @@ class  VTS_HDMIINPUT_L3_ConnectionTestsAfterStart(hdmiInputHelperClass):
     """
     Runs L3 ConnectionTestsAfterStart test
     """
-    def __init__(self, log:logModule=None):
+    def __init__(self, log:logModule=None, hfpfile:str=None, testMenuConfigFile:str=None, moduleName:str=None, artifactDirPath:str=None):
         """
         Initializes the test class
         Args:
@@ -54,7 +54,7 @@ class  VTS_HDMIINPUT_L3_ConnectionTestsAfterStart(hdmiInputHelperClass):
         self.sourceHDCPVersions = ["UNDEFINED", "VERSION_1_X", "VERSION_2_X"]
         self.testName = "HdmiInput_L3_ConnectionTestsAfterStart"
         qcId = "1"
-        super().__init__(self.testName, qcId, log)
+        super().__init__(self.testName, qcId, log, hfpfile, testMenuConfigFile, moduleName, artifactDirPath)
 
         self.hdmiController = HdmiController(self.log, self.dut.rawConfig.get("dut").get("hdmiController"))
 
