@@ -61,11 +61,11 @@ class hdmiInputHelperClass(utHelperClass):
 
         # Parse device configuration
         self.deviceTestSetup = self.cpe.get("test")
-        self.targetWorkspace = os.path.join(self.cpe.get("target_directory"), self.moduleName)
+        self.targetWorkspace = os.path.join(self.cpe.get("target_directory"), self.moduleName).replace("\\", "/")
         
         profileFileFromConfig = self.deviceTestSetup.get("profile")
         profileFileTmp = hfpfile or profileFileFromConfig
-        self.moduleHFPFile = os.path.join(dir_path, profileFileTmp)
+        self.moduleHFPFile = os.path.join(dir_path, profileFileTmp).replace("\\", "/")
         if moduleName is None:
             # Individual test case
             profileOnTarget = os.path.join(self.targetWorkspace, "profiles")
@@ -102,9 +102,9 @@ class hdmiInputHelperClass(utHelperClass):
         self.utilities.change_directory(self.hal_session, self.targetWorkspace)
         for artifact in self.testMenuConfiguration.test.artifacts:
             if artifactDirPath is None:
-                filesPath = os.path.join(dir_path, artifact)
+                filesPath = os.path.join(dir_path, artifact).replace("\\", "/")
             else:
-                filesPath = os.path.join(artifactDirPath, artifact)
+                filesPath = os.path.join(artifactDirPath, artifact).replace("\\", "/")
             self.hal_session.write("ls " + self.targetWorkspace + "/" + os.path.basename(artifact) + "\n")
             res = self.hal_session.read_until(self.hal_session.prompt, timeout=5)
             if "No such file or directory" not in res:
