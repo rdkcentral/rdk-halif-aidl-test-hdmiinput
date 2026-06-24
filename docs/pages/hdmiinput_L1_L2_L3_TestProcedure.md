@@ -116,7 +116,7 @@ Update console sessions for DUT operations and test execution.
 | Console Session | Description |
 |----------------|-------------|
 | `default`      | Device status and basic operations |
-| `ssh_hal_test` | Executes HDMI Input HAL VTS binary |
+| `ssh_hal_test_0` | Executes HDMI Input HAL VTS binary |
 
 ```yaml
 rackConfig:
@@ -136,7 +136,7 @@ rackConfig:
                   ip: ""
                   password: ""
                   prompt: "~#"
-              - ssh_hal_test:
+              - ssh_hal_test_0:
                   type: "ssh"
                   port: 5522
                   username: "root"

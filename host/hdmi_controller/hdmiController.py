@@ -47,7 +47,7 @@ class HdmiController:
                                                     password=config.get('password',''),
                                                     port=config.get('port',22),
                                                     prompt=config.get('prompt', '~#'),
-                                                    control_port=config.get('control_port', 8080))
+                                                    control_port=config.get('source_control_port', 8080))
         elif self.controllerType == 'manual-hdmi-controller':
             self.controller = manualHdmiController(self._log,
                                                     address=config.get('address'),
@@ -55,7 +55,7 @@ class HdmiController:
                                                     password=config.get('password',''),
                                                     port=config.get('port',22),
                                                     prompt=config.get('prompt', '~#'),
-                                                    control_port=config.get('control_port', 8080))
+                                                    control_port=config.get('source_control_port', 8080))
         # Add other controller types here if needed
 
     def setHDCPVersion(self, port: int, hdcp_version: str):
