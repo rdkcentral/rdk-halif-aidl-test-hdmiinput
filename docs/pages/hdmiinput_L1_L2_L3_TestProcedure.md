@@ -148,19 +148,20 @@ rackConfig:
               upload_url: "sftp://server-address/home/workspace/tftp/rack1/slot1/"
               upload_url_base_dir: "sftp://server-address/home/workspace/tftp/rack1/slot1"
               workspaceDirectory: "./logs/workspace"
-            hdmiController:
-                type: virtual-hdmi-controller
-                vendor: "vComponent"
-                address: "127.0.0.1" # IP address
-                username: "" # username
-                password: '' # password
-                port: 5522
-                control_port: 8080
+            hdmiAnalyserController:
+              type: virtual-hdmi-controller
+              device: "source"
+              vendor: "vComponent"
+              address: "127.0.0.1" # Needs to be be filled out with IP address
+              username: "" # Needs to be filled out with login username
+              password: '' # Needs to be filled out with login password
+              port: 5522
+              source_control_port: 8080
 ```
 
-***hdmiController:***
+***hdmiAnalyserController:***
 Configure this field according to your test platform. For physical hardware testing, use `manual-hdmi-controller` as `RAFT` doesn't support `HDMI` controller device. For virtual device testing, use `virtual-hdmi-controller`. For virtual device provide the connection details of the device running vComponent.
-- `control_port` - The port number where vComponent accepts command requests.
+- `source_control_port` - The port number where vComponent accepts command requests.
 
 #### Device Configuration File
 
