@@ -51,7 +51,7 @@ export UT_LOG_LEVEL=4
 ```
 #### Note:
 
-- This build has been compiled and reviewed against AIDL version 0.15.0.
+- This build has been compiled and reviewed against AIDL version 0.21.0.
 
 Enable UT logs (optional):
 
@@ -71,11 +71,11 @@ The build.sh script:
 
 - Clones the `rdk-halif-aidl` repository and UT-Core framework.
 - Builds the Binder SDK via `rdk-halif-aidl/build_binder.sh`.
-- Resolves the `hdmiouput` component version from `rdk-halif-aidl/versions_released.yaml` and builds it into a versioned shared library (`libhdmiinput-v<version>-cpp.so`) via `rdk-halif-aidl/build_modules.sh hdmiinput`.
+- Resolves the `hdmiinput` component version from `rdk-halif-aidl/versions_released.yaml` and builds it into a versioned shared library (`libhdmiinput-v<version>-cpp.so`) via `rdk-halif-aidl/build_modules.sh hdmiinput`.
 - Creates unversioned softlinks (`lib<module>-cpp.so → lib<module>-v<version>-cpp.so`) and writes `halif_generated.mk` used by the Makefile.
 - Compiles the test suite.
 - Generates binaries in the `build/bin` directory.
-- tarball `vts-hdmiinput.tar.gz` under `build/bin`
+- tarball `vts-HdmiInput.tar.gz` under `build/bin`
 
 ## Run L1 L2 Tests Without Python
 
