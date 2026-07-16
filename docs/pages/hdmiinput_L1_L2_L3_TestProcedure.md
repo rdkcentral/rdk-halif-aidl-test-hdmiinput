@@ -72,7 +72,7 @@ The build.sh script:
 - Clones the `rdk-halif-aidl` repository and UT-Core framework.
 - Builds the Binder SDK via `rdk-halif-aidl/build_binder.sh`.
 - Resolves the `hdmiinput` component version from `rdk-halif-aidl/versions_released.yaml` and builds it into a versioned shared library (`libhdmiinput-v<version>-cpp.so`) via `rdk-halif-aidl/build_modules.sh hdmiinput`.
-- Creates unversioned softlinks (`lib<module>-cpp.so → lib<module>-v<version>-cpp.so`) and writes `halif_generated.mk` used by the Makefile.
+- Creates unversioned softlinks (`lib<module>-cpp_vts.so → lib<module>-v<version>-cpp.so`) and writes `halif_generated.mk` used by the Makefile.
 - Compiles the test suite.
 - Generates binaries in the `build/bin` directory.
 - tarball `vts-HdmiInput.tar.gz` under `build/bin`
