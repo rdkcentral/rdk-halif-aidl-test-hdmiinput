@@ -40,13 +40,13 @@ The Binder SDK is built automatically by `build.sh` via `rdk-halif-aidl/build_bi
 The following environment variables are optional:
 
 - `UT_CORE_VERSION`: Specific version of the UT-Core framework (e.g., `5.0.0`). Defaults to `5.1.0`.
-- `RDK_HALIF_AIDL_VERSION`: Branch, tag, or commit of `rdk-halif-aidl` to clone (e.g., `0.21.0`). Defaults to `main`. Component versions within it are resolved from `versions_released.yaml`.
+- `RDK_HALIF_AIDL_VERSION`: Branch, tag, or commit of `rdk-halif-aidl` to clone (e.g., `0.22.0`). Defaults to `main`. Component versions within it are resolved from `versions_released.yaml`.
 
 Example:
 
 ```bash
 export UT_CORE_VERSION=5.1.0
-export RDK_HALIF_AIDL_VERSION=develop
+export RDK_HALIF_AIDL_VERSION=0.22.0
 export UT_LOG_LEVEL=4
 ```
 #### Note:
