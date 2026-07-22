@@ -28,9 +28,8 @@
 ## Introduction
 This document provides a comprehensive high-level test specification for the `HDMI` Input `HAL`. It details the `L2` and `L3` test cases designed to validate the functionality, reliability, and compliance of the `HDMI` Input `HAL` according to the defined interface and `HFP`.
 
-- **HDMI Input Interface Definitions:** [HDMI Input HAL](https://github.com/rdkcentral/rdk-halif-aidl/tree/0.13.1/hdmiinput/current/com/rdk/hal/hdmiinput)
-- **HDMI Input HFP:** [HFP](https://github.com/rdkcentral/rdk-halif-aidl/blob/0.13.1/hdmiinput/current/hfp-hdmiinput.yaml)
-
+- **HDMI Input Interface Definitions:** [HDMI Input HAL](https://github.com/rdkcentral/rdk-halif-aidl/tree/0.21.0/hdmiinput/current/com/rdk/hal/hdmiinput)
+- **HDMI Input HFP:** [HFP](https://github.com/rdkcentral/rdk-halif-aidl/blob/0.21.0/hdmiinput/current/hfp-hdmiinput.yaml)
 
 
 ## L2 Test Specification
