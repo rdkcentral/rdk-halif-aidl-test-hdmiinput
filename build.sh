@@ -706,6 +706,8 @@ clean_test()
     make clean
 
     rm -rf ${TOP_BUILD_DIR}/bin/${OUT_TAR_FILE}
+    rm -rf "${TOP_BUILD_DIR}/usr"
+    rm -rf "${RDK_HAL_DIR}/out/target" "${RDK_HAL_DIR}/out/build"
 }
 
 ###############################################################################
