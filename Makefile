@@ -77,7 +77,7 @@ INC_DIRS += $(ROOT_DIR)/build/usr/include
 INC_DIRS += $(SRC_DIRS)
 
 XLDFLAGS := -rdynamic
-XLDFLAGS := -L$(ROOT_DIR)/build/usr/lib
+XLDFLAGS += -L$(ROOT_DIR)/build/usr/lib
 XLDFLAGS += -Wl,-rpath-link=$(ROOT_DIR)/build/usr/lib
 XLDFLAGS += -L$(HALIF_LIB_DIR)
 XLDFLAGS += -Wl,-rpath-link=$(HALIF_LIB_DIR)
