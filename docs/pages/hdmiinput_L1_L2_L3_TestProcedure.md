@@ -53,12 +53,6 @@ export UT_LOG_LEVEL=4
 
 - This build has been compiled and reviewed against AIDL version 0.21.0.
 
-Enable UT logs (optional):
-
-```bash
-export ENABLE_UT_INFO_LOGGING=1
-```
-
 Build:
 
 ```bash
