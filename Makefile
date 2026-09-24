@@ -60,11 +60,6 @@ CXXFLAGS := -std=c++17 -g3 -O0 \
 $(info CXXFLAGS: $(CXXFLAGS))
 CXXFLAGS += -DBUILD_TIMESTAMP=\"$(BUILD_TIMESTAMP)\"
 
-# TODO: remove this once the ut-core implements runtime logging configuration
-ifeq ($(ENABLE_UT_INFO_LOGGING),1)
-CXXFLAGS += -DENABLE_UT_INFO_LOGGING
-endif
-
 SRC_DIRS := $(HDMIINPUT_TEST_DIR)
 SRC_DIRS += $(ROOT_DIR)/test
 
