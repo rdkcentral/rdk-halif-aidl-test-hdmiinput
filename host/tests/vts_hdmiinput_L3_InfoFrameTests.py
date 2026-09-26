@@ -29,7 +29,6 @@ import threading
 dir_path = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(os.path.join(dir_path, "../"))
 
-from hdmi_controller.hdmiController import HdmiController
 from raft.framework.plugins.ut_raft.configRead import ConfigRead
 from raft.framework.core.logModule import logModule
 from raft.framework.plugins.ut_raft import utHelperClass
@@ -54,8 +53,6 @@ class  VTS_HDMIINPUT_L3_InfoFrameTests(hdmiInputHelperClass):
         self.testName = "HdmiInput_L3_InfoFrameTests"
         qcId = "1"
         super().__init__(self.testName, qcId, log, hfpfile, testMenuConfigFile, moduleName, artifactDirPath)
-
-        self.hdmiController = HdmiController(self.log, self.dut.rawConfig.get("dut").get("hdmiController"))
 
     def updateConnectionTestConfiguration(self, testName, port_ids):
         '''
@@ -106,19 +103,19 @@ class  VTS_HDMIINPUT_L3_InfoFrameTests(hdmiInputHelperClass):
             for idx, info_type in enumerate(info_types):
                 data = frame_data[idx] if idx < len(frame_data) else None
                 if info_type == 'AUDIO':
-                    self.hdmiController.sendAudioInfoFrame(port_id, data)
+                    self.hdmiAnalyserController.sendAudioInfoFrame(port_id, data)
                 elif info_type == 'AVI':
-                    self.hdmiController.sendAVIInfoFrame(port_id, data)
+                    self.hdmiAnalyserController.sendAVIInfoFrame(port_id, data)
                 elif info_type == 'SPD':
-                    self.hdmiController.sendSPDInfoFrame(port_id, data)
+                    self.hdmiAnalyserController.sendSPDInfoFrame(port_id, data)
                 elif info_type == 'VSIF':
-                    self.hdmiController.sendVSIFInfoFrame(port_id, data)
+                    self.hdmiAnalyserController.sendVSIFInfoFrame(port_id, data)
                 elif info_type == 'VIC':
-                    self.hdmiController.SetVIC(port_id, data[0] if isinstance(data, list) else data)
+                    self.hdmiAnalyserController.SetVIC(port_id, data[0] if isinstance(data, list) else data)
                 elif info_type == 'VRR':
                     # VRR expects [vrrActive, mConst, fastVActive, frameRate]
                     if isinstance(data, list) and len(data) == 4:
-                        self.hdmiController.setVRRStatus(port_id, data[0], data[1], data[2], data[3])
+                        self.hdmiAnalyserController.setVRRStatus(port_id, data[0], data[1], data[2], data[3])
                 time.sleep(1)
 
     def testFunction(self):
@@ -150,8 +147,8 @@ class  VTS_HDMIINPUT_L3_InfoFrameTests(hdmiInputHelperClass):
             ports = self.test_config_data[self.moduleName][self.testLevel][self.testcase]['ports']
             for port in ports:
                 port_id = port.get('id')
-                self.hdmiController.connectDevice(port_id, True)
-                self.hdmiController.setSignalStatus(port_id, "LOCKED")
+                self.hdmiAnalyserController.setHotplugState(port_id, True)
+                self.hdmiAnalyserController.setSignalStatus(port_id, "LOCKED")
 
             self.infoFramesThreadObj.start()
 

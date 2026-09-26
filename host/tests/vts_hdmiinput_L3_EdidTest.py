@@ -29,7 +29,6 @@ import threading
 dir_path = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(os.path.join(dir_path, "../"))
 
-from hdmi_controller.hdmiController import HdmiController
 from raft.framework.plugins.ut_raft.configRead import ConfigRead
 from raft.framework.core.logModule import logModule
 from raft.framework.plugins.ut_raft import utHelperClass
@@ -56,8 +55,6 @@ class  VTS_HDMIINPUT_L3_EdidTest(hdmiInputHelperClass):
         qcId = "1"
         super().__init__(self.testName, qcId, log, hfpfile, testMenuConfigFile, moduleName, artifactDirPath)
 
-        self.hdmiController = HdmiController(self.log, self.dut.rawConfig.get("dut").get("hdmiController"))
-
     def testFunction(self):
         """
         The main test function to run the L3 EDID test.
@@ -80,8 +77,8 @@ class  VTS_HDMIINPUT_L3_EdidTest(hdmiInputHelperClass):
         ports = self.test_config_data[self.moduleName][self.testLevel][self.testcase]['ports']
         for port in ports:
             port_id = port.get('id')
-            self.hdmiController.connectDevice(port_id, True)
-            self.hdmiController.setSignalStatus(port_id, "LOCKED")
+            self.hdmiAnalyserController.setHotplugState(port_id, True)
+            self.hdmiAnalyserController.setSignalStatus(port_id, "LOCKED")
 
         self.log.stepStart(f'Test Suit: {HDMIINPUT_L3_TEST_SUITE_NAME} Test Case: {self.testcase}')
         output = self.utMenu.select(HDMIINPUT_L3_TEST_SUITE_NAME, self.testcase, None, 40, False)
@@ -93,7 +90,7 @@ class  VTS_HDMIINPUT_L3_EdidTest(hdmiInputHelperClass):
         ports = self.test_config_data[self.moduleName][self.testLevel][self.testcase]['ports']
         for port in ports:
             port_id = port.get('id')
-            results &= self.hdmiController.validateEdid(port_id, port.get('edid', []))
+            results &= self.hdmiAnalyserController.validateEdid(port_id, port.get('edid', []))
 
         self.log.stepResult(results, f'Test Suit: {HDMIINPUT_L3_TEST_SUITE_NAME} Test Case: {self.testcase}')
 

@@ -224,14 +224,14 @@ class hdmiInputHelperClass(utHelperClass):
             signal_states = port.get('signal_state', [])
             port_id = port.get('id')
             for conn_state, signal_state in zip(conn_states, signal_states):
-                self.hdmiController.connectDevice(port_id, conn_state)
+                self.hdmiAnalyserController.setHotplugState(port_id, conn_state)
                 # Set signal status
-                self.hdmiController.setSignalStatus(port_id, signal_state)
+                self.hdmiAnalyserController.setSignalStatus(port_id, signal_state)
 
                 # Send HDCP statuses if connect true and signal locked
                 if conn_state is True and signal_state == "LOCKED" and port['source_HDCP_Version'] != "UNDEFINED":
-                    self.hdmiController.setHDCPStatus(port_id, port['source_HDCP_Version'], 'AUTHENTICATION_IN_PROGRESS')
-                    self.hdmiController.setHDCPStatus(port_id, port['source_HDCP_Version'], 'AUTHENTICATED')
+                    self.hdmiAnalyserController.setHDCPStatus(port_id, 'AUTHENTICATION_IN_PROGRESS', port['source_HDCP_Version'] )
+                    self.hdmiAnalyserController.setHDCPStatus(port_id, 'AUTHENTICATED', port['source_HDCP_Version'])
                 time.sleep(1)
 
     def hdmiInputWriteYaml(self, yaml_path: str, data: dict):

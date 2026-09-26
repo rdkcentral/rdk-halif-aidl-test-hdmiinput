@@ -29,7 +29,6 @@ import threading
 dir_path = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(os.path.join(dir_path, "../"))
 
-from hdmi_controller.hdmiController import HdmiController
 from raft.framework.plugins.ut_raft.configRead import ConfigRead
 from raft.framework.core.logModule import logModule
 from raft.framework.plugins.ut_raft import utHelperClass
@@ -55,8 +54,6 @@ class  VTS_HDMIINPUT_L3_ConnectionTestsAfterStart(hdmiInputHelperClass):
         self.testName = "HdmiInput_L3_ConnectionTestsAfterStart"
         qcId = "1"
         super().__init__(self.testName, qcId, log, hfpfile, testMenuConfigFile, moduleName, artifactDirPath)
-
-        self.hdmiController = HdmiController(self.log, self.dut.rawConfig.get("dut").get("hdmiController"))
 
     def testFunction(self):
         """
@@ -90,11 +87,11 @@ class  VTS_HDMIINPUT_L3_ConnectionTestsAfterStart(hdmiInputHelperClass):
                 for port in ports:
                     port_id = port.get('id')
                     conn_state = port.get('connection_state_before_open', False)
-                    self.hdmiController.connectDevice(port_id, conn_state)
+                    self.hdmiAnalyserController.setHotplugState(port_id, conn_state)
                     time.sleep(2)  # Wait for the connection state to stabilize
                     signal_state = port.get('signal_state_before_open', "UNKNOWN")
-                    self.hdmiController.setSignalStatus(port_id, signal_state)
-                    self.hdmiController.setHDCPVersion(port_id, sourceHDCPVersion)
+                    self.hdmiAnalyserController.setSignalStatus(port_id, signal_state)
+                    self.hdmiAnalyserController.setHDCPVersion(port_id, sourceHDCPVersion)
                     time.sleep(2)  # Wait for the connection state to stabilize
 
                 self.connectionThreadObj.start()
