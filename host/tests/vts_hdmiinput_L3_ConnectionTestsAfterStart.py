@@ -29,13 +29,13 @@ import threading
 dir_path = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(os.path.join(dir_path, "../"))
 
-from rdk_raft.controller import Controller
 from raft.framework.plugins.ut_raft.configRead import ConfigRead
 from raft.framework.core.logModule import logModule
 from raft.framework.plugins.ut_raft import utHelperClass
 from raft.framework.plugins.ut_raft.utSuiteNavigator import UTSuiteNavigatorClass
 from raft.framework.plugins.ut_raft.utBaseUtils import utBaseUtils
 from vts_hdmiinput_helper import hdmiInputHelperClass
+from rdk_raft.controller import Controller
 
 HDMIINPUT_L3_TEST_SUITE_NAME = "VTS_L3_HDMIINPUT"
 
