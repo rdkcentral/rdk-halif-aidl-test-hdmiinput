@@ -82,6 +82,7 @@ public:
     void SetUp() override
     {
         std::vector<hdmiinput::IHDMIInput::Id> hdmiInputIds;
+        pair<hdmiinput::State, hdmiinput::State> stateChanges;
 
         android::ProcessState::self()->startThreadPool();
 
@@ -104,8 +105,23 @@ public:
             // Register an event listener
             HDMIINPUT_REGISTEREVENT_SUCCESS(hdmiInput, eventListener);
 
+            // Verify the initial onStateChanged callback delivered during registration
+            UT_ASSERT_TRUE(eventListener->getNextStateChanges(stateChanges));
+            UT_ASSERT_EQUAL(stateChanges.first, hdmiinput::State::CLOSED);
+            UT_ASSERT_EQUAL(stateChanges.second, hdmiinput::State::CLOSED);
+
             // Open the HDMI input port
             HDMIINPUT_OPEN_SUCCESS(hdmiInput, controllerListener, controller, true);
+
+            // Verify CLOSE -> OPENING
+            UT_ASSERT_TRUE(eventListener->getNextStateChanges(stateChanges));
+            UT_ASSERT_EQUAL(stateChanges.first, hdmiinput::State::CLOSED);
+            UT_ASSERT_EQUAL(stateChanges.second, hdmiinput::State::OPENING);
+
+            // Verify OPENING -> READY
+            UT_ASSERT_TRUE(eventListener->getNextStateChanges(stateChanges));
+            UT_ASSERT_EQUAL(stateChanges.first, hdmiinput::State::OPENING);
+            UT_ASSERT_EQUAL(stateChanges.second, hdmiinput::State::READY);
 
             mHDMIInputList.push_back({id, hdmiInput, controllerListener, eventListener, controller, capabilities});
         }
@@ -113,6 +129,8 @@ public:
 
     void TearDown() override
     {
+        pair<hdmiinput::State, hdmiinput::State> stateChanges;
+
         for (auto& input : mHDMIInputList)
         {
             auto& hdmiInput = std::get<1>(input);
@@ -122,6 +140,16 @@ public:
 
             // Close the HDMI input port
             HDMIINPUT_CLOSE_SUCCESS(hdmiInput, controller, true);
+
+            // Verify READY -> CLOSING
+            UT_ASSERT_TRUE(eventListener->getNextStateChanges(stateChanges));
+            UT_ASSERT_EQUAL(stateChanges.first, hdmiinput::State::READY);
+            UT_ASSERT_EQUAL(stateChanges.second, hdmiinput::State::CLOSING);
+
+            // Verify CLOSING -> CLOSED
+            UT_ASSERT_TRUE(eventListener->getNextStateChanges(stateChanges));
+            UT_ASSERT_EQUAL(stateChanges.first, hdmiinput::State::CLOSING);
+            UT_ASSERT_EQUAL(stateChanges.second, hdmiinput::State::CLOSED);
 
             // Unregister the event listener
             HDMIINPUT_UNREGISTEREVENT_SUCCESS(hdmiInput, eventListener);
@@ -134,6 +162,7 @@ public:
 
     void StartPort(int32_t portId)
     {
+        pair<hdmiinput::State, hdmiinput::State> stateChanges;
         // Find the matching tuple in mHDMIInputList
         for (const auto& hdmiInputTuple : mHDMIInputList)
         {
@@ -143,11 +172,24 @@ public:
             auto& hdmiInput = std::get<1>(hdmiInputTuple);
             auto& controller = std::get<4>(hdmiInputTuple);
             HDMIINPUT_START_SUCCESS(hdmiInput, controller, true);
+
+            // Verify READY -> STARTING
+            auto& eventListener = std::get<3>(hdmiInputTuple);
+            UT_ASSERT_TRUE(eventListener->getNextStateChanges(stateChanges));
+            UT_ASSERT_EQUAL(stateChanges.first, hdmiinput::State::READY);
+            UT_ASSERT_EQUAL(stateChanges.second, hdmiinput::State::STARTING);
+
+            // Verify STARTING -> STARTED
+            UT_ASSERT_TRUE(eventListener->getNextStateChanges(stateChanges));
+            UT_ASSERT_EQUAL(stateChanges.first, hdmiinput::State::STARTING);
+            UT_ASSERT_EQUAL(stateChanges.second, hdmiinput::State::STARTED);
+
         }
     }
 
     void StopPort(int32_t portId)
     {
+        pair<hdmiinput::State, hdmiinput::State> stateChanges;
         // Find the matching tuple in mHDMIInputList
         for (const auto& hdmiInputTuple : mHDMIInputList)
         {
@@ -157,6 +199,16 @@ public:
             auto& hdmiInput = std::get<1>(hdmiInputTuple);
             auto& controller = std::get<4>(hdmiInputTuple);
             HDMIINPUT_STOP_SUCCESS(hdmiInput, controller, true);
+            auto& eventListener = std::get<3>(hdmiInputTuple);
+            // Verify STARTED -> STOPPING
+            UT_ASSERT_TRUE(eventListener->getNextStateChanges(stateChanges));
+            UT_ASSERT_EQUAL(stateChanges.first, hdmiinput::State::STARTED);
+            UT_ASSERT_EQUAL(stateChanges.second, hdmiinput::State::STOPPING);
+
+            // Verify STOPPING -> STOPPED
+            UT_ASSERT_TRUE(eventListener->getNextStateChanges(stateChanges));
+            UT_ASSERT_EQUAL(stateChanges.first, hdmiinput::State::STOPPING);
+            UT_ASSERT_EQUAL(stateChanges.second, hdmiinput::State::READY);
         }
     }
     // Helper function to validate connection, signal, and HDCP states for a specific port

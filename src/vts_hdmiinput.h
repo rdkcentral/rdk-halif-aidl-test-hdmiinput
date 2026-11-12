@@ -736,10 +736,12 @@ public:
     android::binder::Status onEDIDChange(const ::std::vector<uint8_t>& edid) override;
 
 public:
-    bool getNextStateChanges(pair<hdmiinput::State, hdmiinput::State>& stateChanges);
+    bool getNextStateChanges(pair<hdmiinput::State, hdmiinput::State>& stateChanges, chrono::milliseconds timeout = chrono::milliseconds(MAX_FINAL_STATE_WAIT_MS));
     bool getNextEDIDChange(std::vector<uint8_t>& edid);
 
 private:
+    condition_variable mStateChangeCV;
+
     mutex mStateChangeMutex;
     mutex mEDIDChangeMutex;
 

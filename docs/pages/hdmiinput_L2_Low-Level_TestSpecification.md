@@ -56,29 +56,38 @@ None
 
 | Variation / Steps | Description | Test Data | Expected Result | Notes |
 |-------------------|-------------|-----------|----------------|-------|
-| 1 | Register Event Listeners | None | Register the event listener |
-| 2 | Get the State before Open | None | State should be CLOSED |
-| 3 | Open the HDMI INPUT with event listener | event listener handle | Function should return valid controller handle |
-| 4 | Get the State | None | State should be OPENING |
-| 5 | Check the event listener callback | | Previous State should be CLOSED and current state should be OPENING |
-| 6 | Get the State | None | State should be READY |
-| 7 | Check the event listener callback | | Previous State should be OPENING and current state should be READY |
-| 8 | Start the HDMI INPUT | | Function should return `True` |
-| 9 | Get the State | None | State should be STARTING |
-| 10 | Check the event listener callback | | Previous State should be READY and current state should be STARTING |
-| 11 | Get the State | None | State should be STARTED |
-| 12 | Check the event listener callback | | Previous State should be STARTING and current state should be STARTED |
-| 13 | Stop the HDMI INPUT | | Function should return `True` |
-| 14 | Get the State | None | State should be STOPPING |
-| 15 | Check the event listener callback | | Previous State should be STARTED and current state should be STOPPING |
-| 16 | Get the State | None | State should be READY |
-| 17 | Check the event listener callback | | Previous State should be STOPPING and current state should be READY |
-| 18 | Close the HDMI INPUT | | Function should return `True` |
-| 19 | Get the State | None | State should be CLOSING |
-| 20 | Check the event listener callback | | Previous State should be READY and current state should be CLOSING |
-| 21 | Get the State | None | State should be CLOSED |
-| 22 | Check the event listener callback | | Previous State should be CLOSING and current state should be CLOSED |
-| 23 | Unregister Event Listeners | | Function should return `True` |
+| 1 | Get the State before Open | None | State should be CLOSED |
+| 2 | Register Event Listeners | None | Register the event listener |
+| 3 | Check the event listener callback | | Initial callback should report CLOSED as both previous and current state |
+| 4 | Open the HDMI INPUT with event listener | event listener handle | Function should return valid controller handle |
+| 5 | Get the State | None | State should be OPENING |
+| 6 | Check the event listener callback | | Previous State should be CLOSED and current state should be OPENING |
+| 7 | Get the State | None | State should be READY |
+| 8 | Check the event listener callback | | Previous State should be OPENING and current state should be READY |
+| 9 | Unregister and register the event listener | | Registration succeeds before start |
+| 10 | Check the event listener callback | | Initial callback should report READY as both previous and current state |
+| 11 | Start the HDMI INPUT | | Function should return `True` |
+| 12 | Get the State | None | State should be STARTING |
+| 13 | Check the event listener callback | | Previous State should be READY and current state should be STARTING |
+| 14 | Get the State | None | State should be STARTED |
+| 15 | Check the event listener callback | | Previous State should be STARTING and current state should be STARTED |
+| 16 | Unregister and register the event listener | | Registration succeeds after start and before stop |
+| 17 | Check the event listener callback | | Initial callback should report STARTED as both previous and current state |
+| 18 | Stop the HDMI INPUT | | Function should return `True` |
+| 19 | Get the State | None | State should be STOPPING |
+| 20 | Check the event listener callback | | Previous State should be STARTED and current state should be STOPPING |
+| 21 | Get the State | None | State should be READY |
+| 22 | Check the event listener callback | | Previous State should be STOPPING and current state should be READY |
+| 23 | Unregister and register the event listener | | Registration succeeds after stop and before close |
+| 24 | Check the event listener callback | | Initial callback should report READY as both previous and current state |
+| 25 | Close the HDMI INPUT | | Function should return `True` |
+| 26 | Get the State | None | State should be CLOSING |
+| 27 | Check the event listener callback | | Previous State should be READY and current state should be CLOSING |
+| 28 | Get the State | None | State should be CLOSED |
+| 29 | Check the event listener callback | | Previous State should be CLOSING and current state should be CLOSED |
+| 30 | Unregister and register the event listener | | Registration succeeds after close |
+| 31 | Check the event listener callback | | Initial callback should report CLOSED as both previous and current state |
+| 32 | Unregister Event Listeners | | Function should return `True` |
 
 ### Test 2
 

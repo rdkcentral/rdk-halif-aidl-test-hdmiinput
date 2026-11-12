@@ -130,6 +130,11 @@ UT_ADD_TEST(VTS_L2_HDMIINPUT, StateTransitions)
         // Register an event listener
         HDMIINPUT_REGISTEREVENT_SUCCESS(hdmiInput, eventListener);
 
+        // Verify the initial onStateChanged callback delivered during registration
+        UT_ASSERT_TRUE(eventListener->getNextStateChanges(stateChanges));
+        UT_ASSERT_EQUAL(stateChanges.first, hdmiinput::State::CLOSED);
+        UT_ASSERT_EQUAL(stateChanges.second, hdmiinput::State::CLOSED);
+
         // Open the HDMI input port
         HDMIINPUT_OPEN_SUCCESS(hdmiInput, controlListener, controller, true);
 
@@ -141,6 +146,13 @@ UT_ADD_TEST(VTS_L2_HDMIINPUT, StateTransitions)
         // Verify onStateChanged for OPENING→READY
         UT_ASSERT_TRUE(eventListener->getNextStateChanges(stateChanges));
         UT_ASSERT_EQUAL(stateChanges.first, hdmiinput::State::OPENING);
+        UT_ASSERT_EQUAL(stateChanges.second, hdmiinput::State::READY);
+
+        // Re-register after open and verify the current state callback
+        HDMIINPUT_UNREGISTEREVENT_SUCCESS(hdmiInput, eventListener);
+        HDMIINPUT_REGISTEREVENT_SUCCESS(hdmiInput, eventListener);
+        UT_ASSERT_TRUE(eventListener->getNextStateChanges(stateChanges));
+        UT_ASSERT_EQUAL(stateChanges.first, hdmiinput::State::READY);
         UT_ASSERT_EQUAL(stateChanges.second, hdmiinput::State::READY);
 
         // Start the HDMI input port
@@ -156,6 +168,13 @@ UT_ADD_TEST(VTS_L2_HDMIINPUT, StateTransitions)
         UT_ASSERT_EQUAL(stateChanges.first, hdmiinput::State::STARTING);
         UT_ASSERT_EQUAL(stateChanges.second, hdmiinput::State::STARTED);
 
+        // Re-register after start and verify the current state callback
+        HDMIINPUT_UNREGISTEREVENT_SUCCESS(hdmiInput, eventListener);
+        HDMIINPUT_REGISTEREVENT_SUCCESS(hdmiInput, eventListener);
+        UT_ASSERT_TRUE(eventListener->getNextStateChanges(stateChanges));
+        UT_ASSERT_EQUAL(stateChanges.first, hdmiinput::State::STARTED);
+        UT_ASSERT_EQUAL(stateChanges.second, hdmiinput::State::STARTED);
+
         // Stop the HDMI input port
         HDMIINPUT_STOP_SUCCESS(hdmiInput, controller, true);
 
@@ -169,6 +188,13 @@ UT_ADD_TEST(VTS_L2_HDMIINPUT, StateTransitions)
         UT_ASSERT_EQUAL(stateChanges.first, hdmiinput::State::STOPPING);
         UT_ASSERT_EQUAL(stateChanges.second, hdmiinput::State::READY);
 
+        // Re-register after stop and verify the current state callback
+        HDMIINPUT_UNREGISTEREVENT_SUCCESS(hdmiInput, eventListener);
+        HDMIINPUT_REGISTEREVENT_SUCCESS(hdmiInput, eventListener);
+        UT_ASSERT_TRUE(eventListener->getNextStateChanges(stateChanges));
+        UT_ASSERT_EQUAL(stateChanges.first, hdmiinput::State::READY);
+        UT_ASSERT_EQUAL(stateChanges.second, hdmiinput::State::READY);
+
         // Close the HDMI input port
         HDMIINPUT_CLOSE_SUCCESS(hdmiInput, controller, true);
 
@@ -180,6 +206,13 @@ UT_ADD_TEST(VTS_L2_HDMIINPUT, StateTransitions)
         // Verify onStateChanged for CLOSING→CLOSED
         UT_ASSERT_TRUE(eventListener->getNextStateChanges(stateChanges));
         UT_ASSERT_EQUAL(stateChanges.first, hdmiinput::State::CLOSING);
+        UT_ASSERT_EQUAL(stateChanges.second, hdmiinput::State::CLOSED);
+
+        // Re-register after close and verify the current state callback
+        HDMIINPUT_UNREGISTEREVENT_SUCCESS(hdmiInput, eventListener);
+        HDMIINPUT_REGISTEREVENT_SUCCESS(hdmiInput, eventListener);
+        UT_ASSERT_TRUE(eventListener->getNextStateChanges(stateChanges));
+        UT_ASSERT_EQUAL(stateChanges.first, hdmiinput::State::CLOSED);
         UT_ASSERT_EQUAL(stateChanges.second, hdmiinput::State::CLOSED);
 
         // Unregister the event listener
@@ -279,6 +312,7 @@ UT_ADD_TEST(VTS_L2_HDMIINPUT, DefaultCallbacks)
 UT_ADD_TEST(VTS_L2_HDMIINPUT, SetandGetEDID)
 {
     std::vector<hdmiinput::IHDMIInput::Id> hdmiInputIds;
+    pair<hdmiinput::State, hdmiinput::State> stateChanges;
     std::vector<uint8_t> testEdidData_1 =
     {
         0x00,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0x00,0x04,0x69,0x88,0x88,0x01,0x00,0x00,0x00,
@@ -348,6 +382,11 @@ UT_ADD_TEST(VTS_L2_HDMIINPUT, SetandGetEDID)
         }
         // Register an event listener
         HDMIINPUT_REGISTEREVENT_SUCCESS(hdmiInput, eventListener);
+
+        // Verify onstateChange() callback is fired with the correct state soon after registering the event listener
+        UT_ASSERT_TRUE(eventListener->getNextStateChanges(stateChanges));
+        UT_ASSERT_EQUAL(stateChanges.first, hdmiinput::State::CLOSED);
+        UT_ASSERT_EQUAL(stateChanges.second, hdmiinput::State::CLOSED);
 
         // Open the port and transition to READY state
         HDMIINPUT_OPEN_SUCCESS(hdmiInput, controlListener, controller, true);

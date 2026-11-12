@@ -313,6 +313,7 @@ android::binder::Status HDMIInputEventListener::onStateChanged(hdmiinput::State 
     {
         std::lock_guard<std::mutex> lock(mStateChangeMutex);
         mStateChangeQueue.emplace(oldState, newState);
+        mStateChangeCV.notify_one();
     }
     UT_LOG_INFO("HDMIInputEventListener::onStateChanged called with oldState[%s], newState[%s]",
         hdmiinput::toString(oldState).c_str(),
@@ -320,12 +321,11 @@ android::binder::Status HDMIInputEventListener::onStateChanged(hdmiinput::State 
     return android::binder::Status::ok();
 }
 
-bool HDMIInputEventListener::getNextStateChanges(pair<hdmiinput::State, hdmiinput::State>& stateChanges)
+bool HDMIInputEventListener::getNextStateChanges(pair<hdmiinput::State, hdmiinput::State>& stateChanges, chrono::milliseconds timeout)
 {
-    std::lock_guard<std::mutex> lock(mStateChangeMutex);
-    if (mStateChangeQueue.empty())
-    {
-        return false;
+    std::unique_lock<std::mutex> lock(mStateChangeMutex);
+    if (!mStateChangeCV.wait_for(lock, timeout, [this]{ return !mStateChangeQueue.empty(); })) {
+        return false; // Timed out
     }
     stateChanges = mStateChangeQueue.front();
     mStateChangeQueue.pop();
