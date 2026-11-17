@@ -982,10 +982,15 @@ UT_ADD_TEST(VTS_L1_HDMIINPUT, registerEventListener_pos)
     for (const auto& id : hdmiInputIds)
     {
         android::sp<hdmiinput::IHDMIInput> hdmiInput;
+        pair<hdmiinput::State, hdmiinput::State> stateChanges;
         HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESS(id, hdmiInput);
 
-        android::sp<hdmiinput::IHDMIInputEventListener> eventListener = new HDMIInputEventListener();
+        android::sp<HDMIInputEventListener> eventListener = new HDMIInputEventListener();
         HDMIINPUT_REGISTEREVENT_SUCCESS(hdmiInput, eventListener);
+
+        UT_ASSERT_TRUE(eventListener->getNextStateChanges(stateChanges));
+        UT_ASSERT_EQUAL(stateChanges.first, hdmiinput::State::CLOSED);
+        UT_ASSERT_EQUAL(stateChanges.second, hdmiinput::State::CLOSED);
 
         HDMIINPUT_UNREGISTEREVENT_SUCCESS(hdmiInput, eventListener);
     }
@@ -1600,10 +1605,14 @@ UT_ADD_TEST(VTS_L1_HDMIINPUT, setEDID_pos)
         android::sp<hdmiinput::IHDMIInput> hdmiInput;
         android::sp<hdmiinput::IHDMIInputControllerListener> listener = new HDMIInputControllerListener();
         android::sp<hdmiinput::IHDMIInputController> controller;
+        std::vector<uint8_t> originalEDID;
 
         HDMIINPUT_MANAGER_GETHDMIINPUT_SUCCESS(id, hdmiInput);
 
         HDMIINPUT_OPEN_SUCCESS(hdmiInput, listener, controller, true);
+
+        // Get the original EDID data before making any changes
+        HDMIINPUT_GETEDID_SUCCESS(hdmiInput, originalEDID);
 
         HDMIINPUT_SETEDID_SUCCESS(controller, edidData);
 
@@ -1612,6 +1621,9 @@ UT_ADD_TEST(VTS_L1_HDMIINPUT, setEDID_pos)
         HDMIINPUT_STOP_SUCCESS(hdmiInput, controller, true);
 
         HDMIINPUT_SETEDID_SUCCESS(controller, edidData);
+
+        // Restore the original EDID data before closing the controller
+        HDMIINPUT_SETEDID_SUCCESS(controller, originalEDID);
 
         HDMIINPUT_CLOSE_SUCCESS(hdmiInput, controller, true);
     }
