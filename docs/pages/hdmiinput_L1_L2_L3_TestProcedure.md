@@ -46,12 +46,12 @@ Example:
 
 ```bash
 export UT_CORE_VERSION=5.1.0
-export RDK_HALIF_AIDL_VERSION=0.22.0
+export RDK_HALIF_AIDL_VERSION=0.23.0
 export UT_LOG_LEVEL=4
 ```
 #### Note:
 
-- This build has been compiled and reviewed against AIDL version 0.21.0.
+- This build has been compiled and reviewed against AIDL version 0.23.0.
 
 Build:
 
